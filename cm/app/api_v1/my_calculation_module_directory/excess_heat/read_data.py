@@ -1,6 +1,8 @@
 import pandas as pd
 import re
 import fiona
+import os
+import csv
 
 from pyproj import Proj, transform
 from shapely.geometry import Point, Polygon, MultiPolygon
@@ -145,3 +147,65 @@ def ad_residential_heating_profile_dict(dict):
 
 
 
+def ad_industry_profiles_local():
+    """
+    Loads industry profiles of different subcategories from different csv files.
+
+    :return: List of dataframes containing the csv files data.
+    :rtype: list [pd.Dataframe, pd.Dataframe, ...].
+    """
+
+    file_names = ("hotmaps_task_2.7_load_profile_industry_chemicals_and_petrochemicals_yearlong_2018.csv",
+                  "hotmaps_task_2.7_load_profile_industry_food_and_tobacco_yearlong_2018.csv",
+                  "hotmaps_task_2.7_load_profile_industry_iron_and_steel_yearlong_2018.csv",
+                  "hotmaps_task_2.7_load_profile_industry_non_metalic_minerals_yearlong_2018.csv",
+                  "hotmaps_task_2.7_load_profile_industry_paper_yearlong_2018.csv")
+
+    path = os.path.dirname(
+           os.path.dirname(
+           os.path.dirname(
+           os.path.dirname(
+           os.path.dirname(os.path.abspath(__file__))))))
+    path = os.path.join(path, "data")
+
+    data = []
+    for file_name in file_names:
+        sub_path = os.path.join(path, file_name)
+        # determine delimiter of csv file
+        with open(sub_path, 'r') as csv_file:
+            delimiter = csv.Sniffer().sniff(csv_file.readline()).delimiter
+        # TODO encoding standard; maybe agree on delimiter
+        raw_data = pd.read_csv(sub_path, sep=delimiter, usecols=("NUTS0_code", "process", "hour", "load"))
+        data.append(raw_data)
+
+    return data
+
+
+def ad_residential_heating_profile_local():
+    """
+    Loads residential heating profiles from csv file.
+
+    :return: Dataframe containing the data of the csv file.
+    :rtype: pandas dataframe.
+    """
+
+    path = os.path.dirname(
+        os.path.dirname(
+        os.path.dirname(
+        os.path.dirname(
+        os.path.dirname(os.path.abspath(__file__))))))
+    path = os.path.join(path, "data")
+    path1 = os.path.join(path, "hotmaps_task_2.7_load_profile_residential_heating_yearlong_2010_part1.csv")
+    path2 = os.path.join(path, "hotmaps_task_2.7_load_profile_residential_heating_yearlong_2010_part2.csv")
+
+    # determine delimiter of csv file
+    with open(path1, 'r') as csv_file:
+        delimiter = csv.Sniffer().sniff(csv_file.readline()).delimiter
+    data = pd.read_csv(path1, sep=delimiter, usecols=("NUTS2_code", "process", "hour", "load"))
+    with open(path2, 'r') as csv_file:
+        delimiter = csv.Sniffer().sniff(csv_file.readline()).delimiter
+    data2 = pd.read_csv(path2, sep=delimiter, usecols=("NUTS2_code", "process", "hour", "load"))
+
+    data = data.append(data2)
+
+    return data

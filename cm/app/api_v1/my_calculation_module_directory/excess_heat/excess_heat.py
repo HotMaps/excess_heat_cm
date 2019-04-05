@@ -3,6 +3,7 @@ from .read_data import ad_industrial_database_dict
 from .read_data import ad_TUW23
 from .read_data import ad_industry_profiles_dict
 from .read_data import ad_residential_heating_profile_dict
+from .read_data import ad_industry_profiles_local, ad_residential_heating_profile_local
 from .CM1 import find_neighbours, create_normalized_profiles, \
                 cost_of_connection, cost_of_heat_exchanger_source, cost_of_heat_exchanger_sink
 
@@ -25,8 +26,10 @@ def excess_heat(sources, sinks, source_profiles, sink_profiles, search_radius, i
     heat_sinks = ad_TUW23(sinks, nuts2_id)
 
     # load heating profiles for sources and sinks
-    industry_profiles = ad_industry_profiles_dict(source_profiles)
-    residential_heating_profile = ad_residential_heating_profile_dict(sink_profiles)
+    # industry_profiles = ad_industry_profiles_dict(source_profiles)
+    # residential_heating_profile = ad_residential_heating_profile_dict(sink_profiles)
+    industry_profiles = ad_industry_profiles_local()
+    residential_heating_profile = ad_residential_heating_profile_local()
 
     # normalize loaded profiles
     normalized_heat_profiles = dict()
