@@ -162,10 +162,7 @@ def ad_industry_profiles_local():
                   "hotmaps_task_2.7_load_profile_industry_paper_yearlong_2018.csv")
 
     path = os.path.dirname(
-           os.path.dirname(
-           os.path.dirname(
-           os.path.dirname(
-           os.path.dirname(os.path.abspath(__file__))))))
+           os.path.dirname(os.path.abspath(__file__)))
     path = os.path.join(path, "data")
 
     data = []
@@ -190,10 +187,7 @@ def ad_residential_heating_profile_local():
     """
 
     path = os.path.dirname(
-        os.path.dirname(
-        os.path.dirname(
-        os.path.dirname(
-        os.path.dirname(os.path.abspath(__file__))))))
+        os.path.dirname(os.path.abspath(__file__)))
     path = os.path.join(path, "data")
     path1 = os.path.join(path, "hotmaps_task_2.7_load_profile_residential_heating_yearlong_2010_part1.csv")
     path2 = os.path.join(path, "hotmaps_task_2.7_load_profile_residential_heating_yearlong_2010_part2.csv")
