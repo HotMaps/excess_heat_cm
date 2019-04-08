@@ -11,6 +11,7 @@ from .visualisation import create_transmission_line_shp
 
 from .graphs import NetworkGraph
 
+import time as tm
 
 def excess_heat(sources, sinks, search_radius, investment_period,
                 transmission_line_threshold, nuts2_id, output_transmission_lines):
@@ -20,16 +21,18 @@ def excess_heat(sources, sinks, search_radius, investment_period,
                                 "Glass": "non_metalic_minerals",
                                 "Non-metallic mineral products": "non_metalic_minerals", "Paper and printing": "paper",
                                 "Non-ferrous metals": "iron_and_steel", "Other non-classified": "food_and_tobacco"}
-
+    time = tm.time()
     # load heat source and heat sink data
     heat_sources = ad_industrial_database_dict(sources)
     heat_sinks = ad_TUW23(sinks, nuts2_id)
-
+    print(tm.time() - time)
     # load heating profiles for sources and sinks
     # industry_profiles = ad_industry_profiles_dict(source_profiles)
     # residential_heating_profile = ad_residential_heating_profile_dict(sink_profiles)
-    industry_profiles = ad_industry_profiles_local()
-    residential_heating_profile = ad_residential_heating_profile_local()
+    industry_profiles = ad_industry_profiles_local(nuts2_id[:2])
+    print(tm.time() - time)
+    residential_heating_profile = ad_residential_heating_profile_local(nuts2_id)
+    print(tm.time() - time)
 
     # normalize loaded profiles
     normalized_heat_profiles = dict()

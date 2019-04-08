@@ -147,7 +147,7 @@ def ad_residential_heating_profile_dict(dict):
 
 
 
-def ad_industry_profiles_local():
+def ad_industry_profiles_local(nuts0_id):
     """
     Loads industry profiles of different subcategories from different csv files.
 
@@ -173,12 +173,13 @@ def ad_industry_profiles_local():
             delimiter = csv.Sniffer().sniff(csv_file.readline()).delimiter
         # TODO encoding standard; maybe agree on delimiter
         raw_data = pd.read_csv(sub_path, sep=delimiter, usecols=("NUTS0_code", "process", "hour", "load"))
+        raw_data = raw_data[raw_data.NUTS0_code == nuts0_id]
         data.append(raw_data)
 
     return data
 
 
-def ad_residential_heating_profile_local():
+def ad_residential_heating_profile_local(nuts2_id):
     """
     Loads residential heating profiles from csv file.
 
@@ -201,5 +202,6 @@ def ad_residential_heating_profile_local():
     data2 = pd.read_csv(path2, sep=delimiter, usecols=("NUTS2_code", "process", "hour", "load"))
 
     data = data.append(data2)
+    data = data[data.NUTS2_code == nuts2_id]
 
     return data
