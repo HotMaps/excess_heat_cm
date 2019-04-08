@@ -13,7 +13,7 @@ from .excess_heat.excess_heat import excess_heat
 
 def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
          output_raster2, output_shp1, output_shp2,
-         sources, source_profiles, sink_profiles, search_radius, investment_period, transmission_line_threshold, nuts2_id, output_transmission_lines,
+         sources, search_radius, investment_period, transmission_line_threshold, nuts2_id, output_transmission_lines,
          in_orig=None, only_return_areas=False, ):
     # The CM can be run for the following ranges of pixel and Dh thresholds:
     if pix_threshold < 1:
@@ -63,7 +63,7 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
     rm_file(output_raster2, output_raster2[:-4] + '.tfw')
 
     total_cost_scalar, total_flow_scalar, total_cost_per_flow = \
-        excess_heat(sources, output_shp2, source_profiles, sink_profiles, search_radius, investment_period, transmission_line_threshold, nuts2_id, output_transmission_lines)
+        excess_heat(sources, output_shp2, search_radius, investment_period, transmission_line_threshold, nuts2_id, output_transmission_lines)
     return total_potential, total_heat_demand, graphics, total_cost_scalar, total_flow_scalar, total_cost_per_flow
     
     

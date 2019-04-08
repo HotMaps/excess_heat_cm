@@ -38,14 +38,14 @@ def calculation(output_directory, inputs_raster_selection, inputs_vector_selecti
 
     industrial_sites = inputs_vector_selection["industrial_database"]
 
-    lp_chemical = inputs_vector_selection["load_profile_industry_chemicals_and_petrochemicals_yearlong_2018"]
-    lp_food = inputs_vector_selection["load_profile_industry_food_and_tobacco_yearlong_2018"]
-    lp_iron = inputs_vector_selection["load_profile_industry_iron_and_steel_yearlong_2018"]
-    lp_non_metalic = inputs_vector_selection["load_profile_industry_non_metalic_minerals_yearlong_2018"]
-    lp_paper = inputs_vector_selection["load_profile_industry_paper_yearlong_2018"]
-    industry_profiles = [lp_chemical, lp_food, lp_iron, lp_non_metalic, lp_paper]
+    #lp_chemical = inputs_vector_selection["load_profile_industry_chemicals_and_petrochemicals_yearlong_2018"]
+    #lp_food = inputs_vector_selection["load_profile_industry_food_and_tobacco_yearlong_2018"]
+    #lp_iron = inputs_vector_selection["load_profile_industry_iron_and_steel_yearlong_2018"]
+    #lp_non_metalic = inputs_vector_selection["load_profile_industry_non_metalic_minerals_yearlong_2018"]
+    #lp_paper = inputs_vector_selection["load_profile_industry_paper_yearlong_2018"]
+    #industry_profiles = [lp_chemical, lp_food, lp_iron, lp_non_metalic, lp_paper]
 
-    sink_profiles = inputs_vector_selection["load_profile_residential_heating_yearlong_2010"]
+    #sink_profiles = inputs_vector_selection["load_profile_residential_heating_yearlong_2010"]
 
     output_raster1 = generate_output_file_tif(output_directory)
     output_raster2 = generate_output_file_tif(output_directory)
@@ -63,8 +63,6 @@ def calculation(output_directory, inputs_raster_selection, inputs_vector_selecti
                                                             output_shp1,
                                                             output_shp2,
                                                             industrial_sites,
-                                                            industry_profiles,
-                                                            sink_profiles,
                                                             search_radius,
                                                             investment_period,
                                                             transmission_line_threshold,

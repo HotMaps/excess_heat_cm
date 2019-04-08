@@ -39,23 +39,23 @@ class TestAPI(unittest.TestCase):
         inputs_parameter_selection = {}
         inputs_vector_selection = {}
 
-        with open('tests/data/data_hotmaps_task_2.7_load_profile_industry_chemicals_and_petrochemicals_yearlong_2018_dk.json', 'r') as file:
-            inputs_vector_selection["load_profile_industry_chemicals_and_petrochemicals_yearlong_2018"] = json_lib.load(file)
+        #with open('tests/data/data_hotmaps_task_2.7_load_profile_industry_chemicals_and_petrochemicals_yearlong_2018_dk.json', 'r') as file:
+        #    inputs_vector_selection["load_profile_industry_chemicals_and_petrochemicals_yearlong_2018"] = json_lib.load(file)
 
-        with open('tests/data/data_hotmaps_task_2.7_load_profile_industry_food_and_tobacco_yearlong_2018_dk.json', 'r') as file:
-            inputs_vector_selection["load_profile_industry_food_and_tobacco_yearlong_2018"] = json_lib.load(file)
+        #with open('tests/data/data_hotmaps_task_2.7_load_profile_industry_food_and_tobacco_yearlong_2018_dk.json', 'r') as file:
+        #    inputs_vector_selection["load_profile_industry_food_and_tobacco_yearlong_2018"] = json_lib.load(file)
 
-        with open('tests/data/data_hotmaps_task_2.7_load_profile_industry_iron_and_steel_yearlong_2018_dk.json', 'r') as file:
-            inputs_vector_selection["load_profile_industry_iron_and_steel_yearlong_2018"] = json_lib.load(file)
+        #with open('tests/data/data_hotmaps_task_2.7_load_profile_industry_iron_and_steel_yearlong_2018_dk.json', 'r') as file:
+        #    inputs_vector_selection["load_profile_industry_iron_and_steel_yearlong_2018"] = json_lib.load(file)
 
-        with open('tests/data/data_hotmaps_task_2.7_load_profile_industry_non_metalic_minerals_yearlong_2018_dk.json', 'r') as file:
-            inputs_vector_selection["load_profile_industry_non_metalic_minerals_yearlong_2018"] = json_lib.load(file)
+        #with open('tests/data/data_hotmaps_task_2.7_load_profile_industry_non_metalic_minerals_yearlong_2018_dk.json', 'r') as file:
+        #    inputs_vector_selection["load_profile_industry_non_metalic_minerals_yearlong_2018"] = json_lib.load(file)
 
-        with open('tests/data/data_hotmaps_task_2.7_load_profile_industry_paper_yearlong_2018_dk.json', 'r') as file:
-            inputs_vector_selection["load_profile_industry_paper_yearlong_2018"] = json_lib.load(file)
+        #with open('tests/data/data_hotmaps_task_2.7_load_profile_industry_paper_yearlong_2018_dk.json', 'r') as file:
+        #    inputs_vector_selection["load_profile_industry_paper_yearlong_2018"] = json_lib.load(file)
 
-        with open('tests/data/data_hotmaps_task_2.7_load_profile_residential_heating_yearlong_2010_dk05.json', 'r') as file:
-            inputs_vector_selection["load_profile_residential_heating_yearlong_2010"] = json_lib.load(file)
+        #with open('tests/data/data_hotmaps_task_2.7_load_profile_residential_heating_yearlong_2010_dk05.json', 'r') as file:
+        #    inputs_vector_selection["load_profile_residential_heating_yearlong_2010"] = json_lib.load(file)
 
         with open('tests/data/industrial_Database_dk.json', 'r') as file:
             inputs_vector_selection["industrial_database"] = json_lib.load(file)

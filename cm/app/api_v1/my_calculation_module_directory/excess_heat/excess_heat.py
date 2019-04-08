@@ -12,7 +12,7 @@ from .visualisation import create_transmission_line_shp
 from .graphs import NetworkGraph
 
 
-def excess_heat(sources, sinks, source_profiles, sink_profiles, search_radius, investment_period,
+def excess_heat(sources, sinks, search_radius, investment_period,
                 transmission_line_threshold, nuts2_id, output_transmission_lines):
 
     industrial_subsector_map = {"Iron and steel": "iron_and_steel", "Refineries": "chemicals_and_petrochemicals",
