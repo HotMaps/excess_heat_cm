@@ -75,7 +75,7 @@ SIGNATURE = {
         "heat_tot_curr_density_tif",
     ],
     "vectors_needed": [
-        "industrial_database",
+
     ],
     "type_layer_needed": [
         "heat",

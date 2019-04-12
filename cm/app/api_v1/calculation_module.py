@@ -14,7 +14,7 @@ from .my_calculation_module_directory import run_cm
 #TODO: CM provider must "not change input_raster_selection,output_raster  1 raster input => 1 raster output"
 #TODO: CM provider can "add all the parameters he needs to run his CM
 #TODO: CM provider can "return as many indicators as he wants"
-def calculation(output_directory, inputs_raster_selection, inputs_vector_selection, inputs_parameter_selection):
+def calculation(output_directory, inputs_raster_selection, input_vector_selection, inputs_parameter_selection):
     """ def calculation()"""
     '''
     inputs:
@@ -34,9 +34,9 @@ def calculation(output_directory, inputs_raster_selection, inputs_vector_selecti
     investment_period = float(inputs_parameter_selection["investment_period"])
     transmission_line_threshold = float(inputs_parameter_selection["transmission_line_threshold"])
 
-    nuts2_id = "DK05"
+    nuts2_id = ["DK05"]
 
-    industrial_sites = inputs_vector_selection["industrial_database"]
+    #industrial_sites = inputs_vector_selection["industrial_database"]
 
     #lp_chemical = inputs_vector_selection["load_profile_industry_chemicals_and_petrochemicals_yearlong_2018"]
     #lp_food = inputs_vector_selection["load_profile_industry_food_and_tobacco_yearlong_2018"]
@@ -62,7 +62,6 @@ def calculation(output_directory, inputs_raster_selection, inputs_vector_selecti
                                                             output_raster2,
                                                             output_shp1,
                                                             output_shp2,
-                                                            industrial_sites,
                                                             search_radius,
                                                             investment_period,
                                                             transmission_line_threshold,

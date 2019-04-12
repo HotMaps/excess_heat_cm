@@ -7,7 +7,7 @@ from .test_client import TestClient
 
 import json as json_lib
 
-UPLOAD_DIRECTORY = '/var/hotmaps/cm_files_uploaded'
+UPLOAD_DIRECTORY = 'home/david/var/hotmaps/cm_files_uploaded'
 
 if not os.path.exists(UPLOAD_DIRECTORY):
     os.makedirs(UPLOAD_DIRECTORY)
@@ -57,8 +57,8 @@ class TestAPI(unittest.TestCase):
         #with open('tests/data/data_hotmaps_task_2.7_load_profile_residential_heating_yearlong_2010_dk05.json', 'r') as file:
         #    inputs_vector_selection["load_profile_residential_heating_yearlong_2010"] = json_lib.load(file)
 
-        with open('tests/data/industrial_Database_dk.json', 'r') as file:
-            inputs_vector_selection["industrial_database"] = json_lib.load(file)
+        #with open('tests/data/industrial_Database_dk.json', 'r') as file:
+        #    inputs_vector_selection["industrial_database"] = json_lib.load(file)
 
         inputs_parameter_selection["search_radius"] = 20
         inputs_parameter_selection["investment_period"] = 10

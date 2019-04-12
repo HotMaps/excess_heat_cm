@@ -6,9 +6,21 @@ import csv
 
 from pyproj import Proj, transform
 from shapely.geometry import Point, Polygon, MultiPolygon
+from shapely.wkb import loads
 import numpy as np
 
-from .sql import extract_coordinates_from_wkb_point
+
+def extract_coordinates_from_wkb_point(point):
+    """
+    Function extracting the coordinates from a well known byte hexadecimal string.
+
+    :param point: Well known byte hexadecimal string describing a point.
+    :type point: string
+    :return: x and y coordinate of point.
+    :rtype: touple of floats.
+    """
+    geometry = loads(point, hex=True)
+    return geometry.x, geometry.y
 
 
 def ad_industrial_database_dict(dict):
@@ -146,8 +158,7 @@ def ad_residential_heating_profile_dict(dict):
     return data
 
 
-
-def ad_industry_profiles_local(nuts0_id):
+def ad_industry_profiles_local(nuts0_ids):
     """
     Loads industry profiles of different subcategories from different csv files.
 
@@ -171,15 +182,15 @@ def ad_industry_profiles_local(nuts0_id):
         # determine delimiter of csv file
         with open(sub_path, 'r') as csv_file:
             delimiter = csv.Sniffer().sniff(csv_file.readline()).delimiter
-        # TODO encoding standard; maybe agree on delimiter
+
         raw_data = pd.read_csv(sub_path, sep=delimiter, usecols=("NUTS0_code", "process", "hour", "load"))
-        raw_data = raw_data[raw_data.NUTS0_code == nuts0_id]
+        raw_data = raw_data[raw_data["NUTS0_code"].isin(nuts0_ids)]
         data.append(raw_data)
 
     return data
 
 
-def ad_residential_heating_profile_local(nuts2_id):
+def ad_residential_heating_profile_local(nuts2_ids):
     """
     Loads residential heating profiles from csv file.
 
@@ -202,6 +213,66 @@ def ad_residential_heating_profile_local(nuts2_id):
     data2 = pd.read_csv(path2, sep=delimiter, usecols=("NUTS2_code", "process", "hour", "load"))
 
     data = data.append(data2)
-    data = data[data.NUTS2_code == nuts2_id]
+    data = data[data["NUTS2_code"].isin(nuts2_ids)]
+
+    return data
+
+
+def ad_industrial_database_local(nuts0_ids):
+    """
+    loads data of heat sources given by a csv file.
+
+    :return: dataframe containing the data of the csv file.
+    :rtype: pandas dataframe.
+    """
+
+    country_to_nuts0 = {"Austria": "AT", "Belgium": "BE", "Bulgaria": "BG", "Cyprus": "CY", "Czech Republic": "CZ",
+                    "Germany": "DE", "Denmark": "DK", "Estonia": "EE", "Finland": "FI", "France": "FR",
+                    "Greece": "EL", "Hungary": "HU", "Croatia": "HR", "Ireland": "IE", "Italy": "IT",
+                    "Lithuania": "LT", "Luxembourg": "LU", "Latvia": "LV", "Malta": "MT", "Netherland": "Nl",
+                    "Netherlands": "Nl",
+                    "Poland": "PL", "Portugal": "PT", "Romania": "RO", "Spain": "ES", "Sweden": "SE",
+                    "Slovenia": "SI", "Slovakia": "SK", "United Kingdom": "UK", "Albania": "AL", "Montenegro": "ME",
+                    "North Macedonia": "MK", "Serbia": "RS", "Turkey": "TR", "Switzerland": "CH", "Iceland": "IS",
+                    "Liechtenstein": "LI", "Norway": "NO"}
+    path = os.path.dirname(
+           os.path.dirname(os.path.abspath(__file__)))
+    path = os.path.join(os.path.join(path, "data"), "Industrial_Database.csv")
+
+    # determine delimiter of csv file
+    with open(path, 'r') as csv_file:
+        delimiter = csv.Sniffer().sniff(csv_file.readline()).delimiter
+
+    raw_data = pd.read_csv(path, sep=delimiter, usecols=("geom", "Subsector", "Excess_Heat_100-200C",
+                                                         "Excess_Heat_200-500C", "Excess_Heat_500C", "Country"))
+
+    # dataframe for processed data
+    data = pd.DataFrame(columns=("ellipsoid", "Lon", "Lat", "Nuts0_ID", "Subsector", "Excess_heat", "Temperature"))
+    for i, site in raw_data.iterrows():
+        # check if site location is available
+        if not pd.isna(site["geom"]):
+            # extract ellipsoid model and (lon, lat) from the "geom" column
+            ellipsoid, coordinate = site["geom"].split(";")
+            m = re.search("[-+]?[0-9]*\.?[0-9]+.[-+]?[0-9]*\.?[0-9]+", coordinate)
+            m = m.group(0)
+            lon, lat = m.split(" ")
+            lon = float(lon)
+            lat = float(lat)
+
+            nuts0 = country_to_nuts0[site["Country"]]
+
+            # check if heat at specific temperature range is available
+            # TODO deal with units; hard coded temp ranges?
+            if not pd.isna(site["Excess_Heat_100-200C"]) and site["Excess_Heat_100-200C"] != "" and site["Excess_Heat_100-200C"] != 0:
+                data.loc[data.shape[0]] = (ellipsoid, lon, lat, nuts0, site["Subsector"],
+                                           site["Excess_Heat_100-200C"] * 1000, 150)
+            if not pd.isna(site["Excess_Heat_200-500C"]) and site["Excess_Heat_200-500C"] != "" and site["Excess_Heat_200-500C"] != 0:
+                data.loc[data.shape[0]] = (ellipsoid, lon, lat, nuts0,
+                                           site["Subsector"], site["Excess_Heat_200-500C"] * 1000, 350)
+            if not pd.isna(site["Excess_Heat_500C"]) and site["Excess_Heat_500C"] != "" and site["Excess_Heat_500C"] != 0:
+                data.loc[data.shape[0]] = (ellipsoid, lon, lat, nuts0,
+                                           site["Subsector"], site["Excess_Heat_500C"] * 1000, 500)
+
+    data = data[data["Nuts0_ID"].isin(nuts0_ids)]
 
     return data
