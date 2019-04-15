@@ -27,7 +27,8 @@ def generate_output_file_with_extension(output_directory,extension):
     return output_raster_path
 
 def validateJSON(value):
-    #print (message + 'type', type(value))
+    print ('type', value)
+
     response = ast.literal_eval(json.dumps(value))
 
     return response

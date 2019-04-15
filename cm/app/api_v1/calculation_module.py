@@ -14,7 +14,7 @@ from .my_calculation_module_directory import run_cm
 #TODO: CM provider must "not change input_raster_selection,output_raster  1 raster input => 1 raster output"
 #TODO: CM provider can "add all the parameters he needs to run his CM
 #TODO: CM provider can "return as many indicators as he wants"
-def calculation(output_directory, inputs_raster_selection, input_vector_selection, inputs_parameter_selection):
+def calculation(output_directory, inputs_raster_selection, input_vector_selection, inputs_parameter_selection,nuts):
     """ def calculation()"""
     '''
     inputs:
@@ -34,7 +34,8 @@ def calculation(output_directory, inputs_raster_selection, input_vector_selectio
     investment_period = float(inputs_parameter_selection["investment_period"])
     transmission_line_threshold = float(inputs_parameter_selection["transmission_line_threshold"])
 
-    nuts2_id = ["DK05"]
+    nuts2_id = nuts
+    print ('type nuts',type(nuts2_id))
 
     #industrial_sites = inputs_vector_selection["industrial_database"]
 
@@ -73,18 +74,32 @@ def calculation(output_directory, inputs_raster_selection, input_vector_selectio
     result['name'] = 'CM Excess Heat'
     result["raster_layers"]=[{"name": "district heating coherent areas","path": output_raster1, "type": "custom", "symbology": [{"red":250,"green":159,"blue":181,"opacity":0.8,"value":"1","label":"DH Areas"}]}]
     result["vector_layers"]=[{"name": "shapefile of coherent areas with their potential","path": output_shp2}, {"name": "Transmission lines as shapefile","path": output_transmission_lines}]
-    result['indicator'] = [{"unit": "GWh", "name": "Total heat demand in GWh within the selected zone","value": total_heat_demand},
-                          {"unit": "GWh", "name": "Total district heating potential in GWh within the selected zone","value": total_potential},
-                           {"unit": "%",
-                            "name": "Potential share of district heating from total demand in selected zone",
-                            "value": 100 * round(total_potential / total_heat_demand, 4)},
-                           {"unit": "Euro", "name": "Cost of network",
-                            "value": total_cost_scalar},
-                           {"unit": "GWh", "name": "Total annual flow of heat in the network",
-                            "value": total_flow_scalar},
-                           {"unit": "ct/kWh/a", "name": "Cost of heat for selected investment period",
-                            "value": total_cost_per_flow}
-                           ]
+
+    if str(total_cost_per_flow) == "-inf" or "nan":
+        result['indicator'] = [{"unit": "GWh", "name": "Total heat demand in GWh within the selected zone","value": str(total_heat_demand)},
+                              {"unit": "GWh", "name": "Total district heating potential in GWh within the selected zone","value": str(total_potential)},
+                               {"unit": "%",
+                                "name": "Potential share of district heating from total demand in selected zone",
+                                "value": str(100 * round(total_potential / total_heat_demand, 4))},
+                               {"unit": "Euro", "name": "Cost of network",
+                                "value": str(total_cost_scalar)},
+                               {"unit": "GWh", "name": "Total annual flow of heat in the network",
+                                "value": str(total_flow_scalar)},
+                               {"unit": "ct/kWh/a", "name": "Cost of heat for selected investment period",
+                                "value": str(total_cost_per_flow)}
+                               ]
+    else:
+        result['indicator'] = [{"unit": "GWh", "name": "Total heat demand in GWh within the selected zone","value": str(total_heat_demand)},
+                               {"unit": "GWh", "name": "Total district heating potential in GWh within the selected zone","value": str(total_potential)},
+                               {"unit": "%",
+                                "name": "Potential share of district heating from total demand in selected zone",
+                                "value": str(100 * round(total_potential / total_heat_demand, 4))},
+                               {"unit": "Euro", "name": "Cost of network",
+                                "value": str(total_cost_scalar)},
+                               {"unit": "GWh", "name": "Total annual flow of heat in the network",
+                                "value": str(total_flow_scalar)},
+                               ]
+
     result['graphics'] = graphics
     return result
 

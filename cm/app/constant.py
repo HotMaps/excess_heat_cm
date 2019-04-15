@@ -5,15 +5,15 @@ CELERY_BROKER_URL_LOCAL = 'amqp://localhost/'
 
 
 CM_REGISTER_Q = 'rpc_queue_CM_register'
-CM_NAME = 'Excess heat'
+CM_NAME = 'Excess_heat'
 RPC_CM_ALIVE= 'rpc_queue_CM_ALIVE'
 RPC_Q = 'rpc_queue_CM_compute' # Do no change this value
 CM_ID = 4
 PORT_LOCAL = int('500' + str(CM_ID))
 PORT_DOCKER = 80
 #TODO***********************************************************************
-CELERY_BROKER_URL = CELERY_BROKER_URL_DOCKER
-PORT = PORT_DOCKER
+CELERY_BROKER_URL = CELERY_BROKER_URL_LOCAL
+PORT = PORT_LOCAL
 #TODO***********************************************************************
 
 TRANFER_PROTOCOLE ='http://'
