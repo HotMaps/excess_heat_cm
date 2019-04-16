@@ -32,7 +32,7 @@ class TestAPI(unittest.TestCase):
     def test_compute(self):
         raster_file_path = 'tests/data/heat_tot_curr_density_pilot_aera_1_aalborg.tif'
         # simulate copy from HTAPI to CM
-        save_path = UPLOAD_DIRECTORY+"/raster_for_test.tif"
+        save_path = UPLOAD_DIRECTORY+"/heat_tot_curr_density_pilot_aera_1_aalborg.tif"
         copyfile(raster_file_path, save_path)
 
         inputs_raster_selection = {}

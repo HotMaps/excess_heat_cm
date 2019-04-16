@@ -140,7 +140,7 @@ def compute():
 
 
     inputs_vector_selection = helper.validateJSON(data["inputs_vector_selection"])
-    print ('inputs_vector_selection', inputs_vector_selection)
+    #print ('inputs_vector_selection', inputs_vector_selection)
     LOGGER.info('inputs_vector_selection', inputs_vector_selection)
 
     output_directory = UPLOAD_DIRECTORY
