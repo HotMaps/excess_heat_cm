@@ -3,7 +3,7 @@ from .read_data import ad_industrial_database_dict
 from .read_data import ad_TUW23
 from .read_data import ad_industry_profiles_dict
 from .read_data import ad_residential_heating_profile_dict
-from .read_data import ad_industry_profiles_local, ad_residential_heating_profile_local
+from .read_data import ad_industry_profiles_local, ad_residential_heating_profile_local, ad_industrial_database_local
 from .CM1 import find_neighbours, create_normalized_profiles, \
                 cost_of_connection, cost_of_heat_exchanger_source, cost_of_heat_exchanger_sink
 
@@ -11,11 +11,10 @@ from .visualisation import create_transmission_line_shp
 
 from .graphs import NetworkGraph
 
-
 np.seterr(divide='ignore', invalid='ignore')
 
 
-def excess_heat(sources, sinks, search_radius, investment_period,
+def excess_heat(sinks, search_radius, investment_period,
                 transmission_line_threshold, nuts2_id, output_transmission_lines):
 
     industrial_subsector_map = {"Iron and steel": "iron_and_steel", "Refineries": "chemicals_and_petrochemicals",
@@ -24,15 +23,19 @@ def excess_heat(sources, sinks, search_radius, investment_period,
                                 "Non-metallic mineral products": "non_metalic_minerals", "Paper and printing": "paper",
                                 "Non-ferrous metals": "iron_and_steel", "Other non-classified": "food_and_tobacco"}
 
+    nuts0_id = []
+    for id in nuts2_id:
+        nuts0_id.append(id[:2])
+
     # load heat source and heat sink data
-    heat_sources = ad_industrial_database_dict(sources)
-    heat_sinks = ad_TUW23(sinks, nuts2_id)
+    # heat_sources = ad_industrial_database_dict(sources)
+    heat_sources = ad_industrial_database_local(nuts0_id)
+    heat_sinks = ad_TUW23(sinks, nuts2_id[0])
     # load heating profiles for sources and sinks
     # industry_profiles = ad_industry_profiles_dict(source_profiles)
     # residential_heating_profile = ad_residential_heating_profile_dict(sink_profiles)
-    industry_profiles = ad_industry_profiles_local(nuts2_id[:2])
-    residential_heating_profile = ad_residential_heating_profile_local(nuts2_id)
-
+    industry_profiles = ad_industry_profiles_local(nuts0_id)
+    residential_heating_profile = ad_residential_heating_profile_local([nuts2_id[0]])
 
     # normalize loaded profiles
     normalized_heat_profiles = dict()
