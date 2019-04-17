@@ -75,30 +75,21 @@ def calculation(output_directory, inputs_raster_selection, input_vector_selectio
     result["raster_layers"]=[{"name": "district heating coherent areas","path": output_raster1, "type": "custom", "symbology": [{"red":250,"green":159,"blue":181,"opacity":0.8,"value":"1","label":"DH Areas"}]}]
     result["vector_layers"]=[{"name": "shapefile of coherent areas with their potential","path": output_shp2}, {"name": "Transmission lines as shapefile","path": output_transmission_lines}]
 
-    if str(total_cost_per_flow) == "-inf" or "nan":
-        result['indicator'] = [{"unit": "GWh", "name": "Total heat demand in GWh within the selected zone","value": str(total_heat_demand)},
-                              {"unit": "GWh", "name": "Total district heating potential in GWh within the selected zone","value": str(total_potential)},
-                               {"unit": "%",
-                                "name": "Potential share of district heating from total demand in selected zone",
-                                "value": str(100 * round(total_potential / total_heat_demand, 4))},
-                               {"unit": "Euro", "name": "Cost of network",
-                                "value": str(total_cost_scalar)},
-                               {"unit": "GWh", "name": "Total annual flow of heat in the network",
-                                "value": str(total_flow_scalar)},
-                               {"unit": "ct/kWh/a", "name": "Cost of heat for selected investment period",
-                                "value": str(total_cost_per_flow)}
-                               ]
-    else:
-        result['indicator'] = [{"unit": "GWh", "name": "Total heat demand in GWh within the selected zone","value": str(total_heat_demand)},
-                               {"unit": "GWh", "name": "Total district heating potential in GWh within the selected zone","value": str(total_potential)},
-                               {"unit": "%",
-                                "name": "Potential share of district heating from total demand in selected zone",
-                                "value": str(100 * round(total_potential / total_heat_demand, 4))},
-                               {"unit": "Euro", "name": "Cost of network",
-                                "value": str(total_cost_scalar)},
-                               {"unit": "GWh", "name": "Total annual flow of heat in the network",
-                                "value": str(total_flow_scalar)},
-                               ]
+    result['indicator'] = [{"unit": "GWh", "name": "Total heat demand in GWh within the selected zone","value": str(total_heat_demand)},
+                          {"unit": "GWh", "name": "Total district heating potential in GWh within the selected zone","value": str(total_potential)},
+                           {"unit": "%",
+                            "name": "Potential share of district heating from total demand in selected zone",
+                            "value": str(100 * round(total_potential / total_heat_demand, 4))},
+                           {"unit": "Euro", "name": "Cost of network",
+                            "value": str(total_cost_scalar)},
+                           {"unit": "GWh", "name": "Total annual flow of heat in the network",
+                            "value": str(total_flow_scalar)},
+                           ]
+
+    """" 
+        #TODO: This indicator can return -infinity which won't work within the architecture
+         {"unit": "ct/kWh/a", "name": "Cost of heat for selected investment period",
+           "value": float(total_cost_per_flow)}"""
 
     result['graphics'] = graphics
     return result
