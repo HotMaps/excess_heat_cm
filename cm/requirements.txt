@@ -20,4 +20,4 @@ scipy
 pandas
 igraph
 pyomo
-numpy
+numpy==1.12.0
