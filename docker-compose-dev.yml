@@ -6,13 +6,17 @@ services:
       dockerfile: Dockerfile
     restart: always
     expose:
-      - 80
+      - 5001
     external_links:
-         - rabbit
+      - rabbit
+    networks:
+      - hotmaps-toolbox-service_cm-net
+    volumes:
+      - /var/tmp:/var/tmp
 
-
-
-
+networks:
+  hotmaps-toolbox-service_cm-net:
+    external: true
 
 
 
