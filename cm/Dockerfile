@@ -4,7 +4,7 @@
 #
 
 
-FROM geographica/gdal2:latest
+FROM consbio/python3.6-gdal2
 
 
 MAINTAINER lesly Houndole <lesly.houndole@crem.ch>
@@ -70,10 +70,29 @@ RUN ls
 
 RUN apt-get update
 RUN apt-get install -y software-properties-common vim
-RUN add-apt-repository ppa:jonathonf/python-3.6
 RUN apt-get update
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install -y \
+    build-essential \
+    software-properties-common \
+    wget \
+    gdal-bin \
+    ca-certificates \
+    curl \
+    gcc \
+    git \
+    libpq-dev \
+    libgeos-dev \
+    libgdal-dev \
+    python-gdal \
+    make \
+    python-pip \
+    ssh \
+    && apt-get autoremove \
+    && apt-get clean
 
-RUN apt-get install -y build-essential python3.6 python3.6-dev python3-pip python3.6-venv
+
 
 RUN wget https://bootstrap.pypa.io/get-pip.py
 RUN python3.6 get-pip.py

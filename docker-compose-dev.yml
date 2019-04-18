@@ -6,7 +6,7 @@ services:
       dockerfile: Dockerfile
     restart: always
     expose:
-      - 5001
+      - 80
     external_links:
       - rabbit
     networks:
