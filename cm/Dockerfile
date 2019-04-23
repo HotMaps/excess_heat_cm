@@ -4,7 +4,7 @@
 #
 
 
-FROM consbio/python3.6-gdal2
+FROM geographica/gdal2:latest
 
 
 MAINTAINER lesly Houndole <lesly.houndole@crem.ch>
@@ -68,38 +68,19 @@ WORKDIR /cm
 
 RUN ls
 
-RUN apt-get update
-RUN apt-get install -y software-properties-common vim
-RUN apt-get update
 RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y \
     build-essential \
     software-properties-common \
-    wget \
-    gdal-bin \
-    ca-certificates \
-    curl \
-    gcc \
-    git \
-    libpq-dev \
-    libgeos-dev \
-    libgdal-dev \
-    python-gdal \
-    make \
-    python-pip \
-    ssh \
-    && apt-get autoremove \
-    && apt-get clean
-
-
+    wget
 
 RUN wget https://bootstrap.pypa.io/get-pip.py
-RUN python3.6 get-pip.py
+RUN python3 get-pip.py
 
 
-RUN pip3.6 install -r requirements.txt
-RUN pip3.6 install gunicorn
+RUN pip3 install -r requirements.txt
+RUN pip3 install gunicorn
 
 
 
