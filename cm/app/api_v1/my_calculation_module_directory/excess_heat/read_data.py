@@ -180,7 +180,7 @@ def ad_industry_profiles_local(nuts0_ids):
     for file_name in file_names:
         sub_path = os.path.join(path, file_name)
         # determine delimiter of csv file
-        with open(sub_path, 'r') as csv_file:
+        with open(sub_path, 'r', encoding='utf-8') as csv_file:
             delimiter = csv.Sniffer().sniff(csv_file.readline()).delimiter
 
         raw_data = pd.read_csv(sub_path, sep=delimiter, usecols=("NUTS0_code", "process", "hour", "load"))
@@ -205,10 +205,10 @@ def ad_residential_heating_profile_local(nuts2_ids):
     path2 = os.path.join(path, "hotmaps_task_2.7_load_profile_residential_heating_yearlong_2010_part2.csv")
 
     # determine delimiter of csv file
-    with open(path1, 'r') as csv_file:
+    with open(path1, 'r', encoding='utf-8') as csv_file:
         delimiter = csv.Sniffer().sniff(csv_file.readline()).delimiter
     data = pd.read_csv(path1, sep=delimiter, usecols=("NUTS2_code", "process", "hour", "load"))
-    with open(path2, 'r') as csv_file:
+    with open(path2, 'r', encoding='utf-8') as csv_file:
         delimiter = csv.Sniffer().sniff(csv_file.readline()).delimiter
     data2 = pd.read_csv(path2, sep=delimiter, usecols=("NUTS2_code", "process", "hour", "load"))
 
@@ -240,7 +240,7 @@ def ad_industrial_database_local(nuts0_ids):
     path = os.path.join(os.path.join(path, "data"), "Industrial_Database.csv")
 
     # determine delimiter of csv file
-    with open(path, 'r') as csv_file:
+    with open(path, 'r', encoding='utf-8') as csv_file:
         delimiter = csv.Sniffer().sniff(csv_file.readline()).delimiter
 
     raw_data = pd.read_csv(path, sep=delimiter, usecols=("geom", "Subsector", "Excess_Heat_100-200C",
