@@ -63,7 +63,7 @@ class TestAPI(unittest.TestCase):
         inputs_parameter_selection["search_radius"] = 20
         inputs_parameter_selection["investment_period"] = 10
         inputs_parameter_selection["transmission_line_threshold"] = 2
-
+        nuts = ['FR13']
 
         inputs_parameter_selection["pix_threshold"] = 100
         inputs_parameter_selection["DH_threshold"] = 30
@@ -73,7 +73,8 @@ class TestAPI(unittest.TestCase):
         # register the calculation module a
         payload = {"inputs_raster_selection": inputs_raster_selection,
                    "inputs_parameter_selection": inputs_parameter_selection,
-                   "inputs_vector_selection": inputs_vector_selection}
+                   "inputs_vector_selection": inputs_vector_selection,
+                   "nuts": nuts}
 
 
         rv, json = self.client.post('computation-module/compute/', data=payload)
