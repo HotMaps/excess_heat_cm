@@ -63,7 +63,7 @@ class TestAPI(unittest.TestCase):
         inputs_parameter_selection["search_radius"] = 20
         inputs_parameter_selection["investment_period"] = 10
         inputs_parameter_selection["transmission_line_threshold"] = 2
-        nuts = ['FR13']
+        nuts = ['DK05']
 
         inputs_parameter_selection["pix_threshold"] = 100
         inputs_parameter_selection["DH_threshold"] = 30

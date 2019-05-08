@@ -155,7 +155,7 @@ def excess_heat(sinks, search_radius, investment_period,
         coordiantes.append(coordiantes_of_line)
 
     temp = len(cost_per_connection) * [100]
-    create_transmission_line_shp(coordiantes, temp, np.array(np.sum(connection_flows, axis=1)),
+    create_transmission_line_shp(coordiantes, np.array(np.sum(connection_flows, axis=1)),  temp, connection_costs, connection_lengths,
                                  output_transmission_lines)
 
     # drop egdes with 0 flow and above threshold

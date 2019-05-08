@@ -6,10 +6,10 @@ output_driver = "ESRI Shapefile"
 schema = {
                 "geometry": "LineString",
                 "properties": OrderedDict([
-                    ("Annual flow in MWh", "float"),
-                    ("Temperature in °C", "float"),
-                    ("Cost in Euro", "float"),
-                    ("Length in km", "float")
+                    ("Annual flow", "str"),
+                    ("Temperature", "str"),
+                    ("Cost", "str"),
+                    ("Length", "str")
                 ])
                 }
 
@@ -23,10 +23,10 @@ def create_transmission_line_shp(transmission_lines, flows, temperatures, costs,
                     "coordinates": transmission_line
                 },
                 "properties": OrderedDict([
-                    ("Annual flow in MWh", flow),
-                    ("Temperature in °C", temperature),
-                    ("Cost in Euro", cost),
-                    ("Length in km", length)
+                    ("Annual flow", str(flow) + " MWh"),
+                    ("Temperature", str(temperature) + " C"),
+                    ("Cost", str(cost) + " Euro"),
+                    ("Length", str(length) + " km")
                 ])
             }
             shp.write(line)
