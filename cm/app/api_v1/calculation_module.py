@@ -68,12 +68,17 @@ def calculation(output_directory, inputs_raster_selection, input_vector_selectio
                                                             transmission_line_threshold,
                                                             nuts2_id, output_transmission_lines)
 
-    output_shp2 = create_zip_shapefiles(output_directory, output_shp2)
     output_transmission_lines = create_zip_shapefiles(output_directory, output_transmission_lines)
     result = dict()
+
+    # if graphics is not None:
+    if total_potential > 0:
+        output_shp2 = create_zip_shapefiles(output_directory, output_shp2)
+        result["raster_layers"]=[{"name": "district heating coherent areas","path": output_raster1, "type": "custom", "symbology": [{"red":250,"green":159,"blue":181,"opacity":0.8,"value":"1","label":"DH Areas"}]}]
+        result["vector_layers"]=[{"name": "shapefile of coherent areas with their potential","path": output_shp2}, {"name": "Transmission lines as shapefile","path": output_transmission_lines}]
+
     result['name'] = 'CM Excess Heat'
-    result["raster_layers"]=[{"name": "district heating coherent areas","path": output_raster1, "type": "custom", "symbology": [{"red":250,"green":159,"blue":181,"opacity":0.8,"value":"1","label":"DH Areas"}]}]
-    result["vector_layers"]=[{"name": "shapefile of coherent areas with their potential","path": output_shp2}, {"name": "Transmission lines as shapefile","path": output_transmission_lines}]
+
 
     result['indicator'] = [{"unit": "GWh", "name": "Total heat demand in GWh within the selected zone","value": str(total_heat_demand)},
                           {"unit": "GWh", "name": "Total district heating potential in GWh within the selected zone","value": str(total_potential)},
