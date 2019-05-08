@@ -60,7 +60,7 @@ INPUTS_CALCULATION_MODULE = [
      'input_type': 'input',
      'input_parameter_name': 'transmission_line_threshold',
      'input_value': 0.5,
-     'input_unit': 'ct/kwWh',
+     'input_unit': 'ct/kWh',
      'input_min': 0,
      'input_max': 20,
      'cm_id': CM_ID
