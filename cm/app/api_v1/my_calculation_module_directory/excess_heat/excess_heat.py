@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 from .read_data import ad_industrial_database_dict
 from .read_data import ad_TUW23
 from .read_data import ad_industry_profiles_dict
@@ -34,6 +35,9 @@ def excess_heat(sinks, search_radius, investment_period,
     heat_sources = ad_industrial_database_local(nuts0_id)
 
     heat_sinks = ad_TUW23(sinks, nuts2_id[0])
+    # escape main routine if dh_potential cm did not produce shp file
+    if not isinstance(heat_sinks, pd.DataFrame):
+        return 0, 0, 0
     # load heating profiles for sources and sinks
     # industry_profiles = ad_industry_profiles_dict(source_profiles)
     # residential_heating_profile = ad_residential_heating_profile_dict(sink_profiles)
