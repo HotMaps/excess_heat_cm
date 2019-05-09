@@ -6,7 +6,7 @@ output_driver = "ESRI Shapefile"
 schema = {
                 "geometry": "LineString",
                 "properties": OrderedDict([
-                    ("AnnualFlow", "str"),
+                    ("Flow", "str"),
                     ("Temp", "str"),
                     ("Cost", "str"),
                     ("Length", "str")
@@ -23,7 +23,7 @@ def create_transmission_line_shp(transmission_lines, flows, temperatures, costs,
                     "coordinates": transmission_line
                 },
                 "properties": OrderedDict([
-                    ("AnnualFlow", str(flow) + " MWh"),
+                    ("Flow", str(flow) + " MWh/a"),
                     ("Temp", str(temperature) + " C"),
                     ("Cost", str(cost) + " Euro"),
                     ("Length", str(length) + " km")
