@@ -82,7 +82,6 @@ def ad_TUW23(out_shp_label, nuts2_id):
     :return: Dataframe containing the potential heat sinks and a correspondence id for each coherent aera.
     :rtype: pandas Dataframe
     """
-    start = time.perf_counter()
     try:
         coherent_areas = fiona.open(out_shp_label)
     except IOError:

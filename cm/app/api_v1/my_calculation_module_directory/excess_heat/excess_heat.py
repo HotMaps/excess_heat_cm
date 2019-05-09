@@ -105,46 +105,54 @@ def excess_heat(sinks, search_radius, investment_period,
     network.reduce_to_minimum_spanning_tree("distance")
 
     # compute max flow for every hour
-    source_flows = []
-    sink_flows = []
-    connection_flows = []
-    for heat_source_capacities, heat_sink_capacities in zip(heat_source_profiles, heat_sink_profiles):
-        source_flow, sink_flow, connection_flow = network.maximum_flow(heat_source_capacities, heat_sink_capacities)
-        source_flows.append(source_flow)
-        sink_flows.append(sink_flow)
-        connection_flows.append(connection_flow)
+    def compute_flow(network, heat_source_profiles, heat_sink_profiles):
+        source_flows = []
+        sink_flows = []
+        connection_flows = []
+        for heat_source_capacities, heat_sink_capacities in zip(heat_source_profiles, heat_sink_profiles):
+            source_flow, sink_flow, connection_flow = network.maximum_flow(heat_source_capacities, heat_sink_capacities)
+            source_flows.append(source_flow)
+            sink_flows.append(sink_flow)
+            connection_flows.append(connection_flow)
 
-    source_flows = np.abs(np.array(source_flows))
-    sink_flows = np.abs(np.array(sink_flows))
-    connection_flows = np.abs(np.array(connection_flows))
-    source_flows = source_flows.transpose()
-    sink_flows = sink_flows.transpose()
-    connection_flows = connection_flows.transpose()
+        source_flows = np.abs(np.array(source_flows))
+        sink_flows = np.abs(np.array(sink_flows))
+        connection_flows = np.abs(np.array(connection_flows))
+        source_flows = source_flows.transpose()
+        sink_flows = sink_flows.transpose()
+        connection_flows = connection_flows.transpose()
 
-    # compute costs of every heat exchanger and transmission line
-    heat_exchanger_source_costs = []
-    for flow in source_flows:
-        heat_exchanger_source_costs.append(cost_of_heat_exchanger_source(flow))
-    heat_exchanger_sink_costs = []
-    for flow in sink_flows:
-        heat_exchanger_sink_costs.append(cost_of_heat_exchanger_sink(flow))
-    connection_lengths = network.get_edge_attribute("distance")
-    connection_costs = []
-    for flow, length in zip(connection_flows, connection_lengths):
-        connection_costs.append(cost_of_connection(length, flow))
-    cost_per_connection = np.array(connection_costs)/np.array(np.sum(connection_flows, axis=1))
+        # compute costs of every heat exchanger and transmission line
+        heat_exchanger_source_costs = []
+        for flow in source_flows:
+            heat_exchanger_source_costs.append(cost_of_heat_exchanger_source(flow))
+        heat_exchanger_sink_costs = []
+        for flow in sink_flows:
+            heat_exchanger_sink_costs.append(cost_of_heat_exchanger_sink(flow))
+        connection_lengths = network.get_edge_attribute("distance")
+        connection_costs = []
+        for flow, length in zip(connection_flows, connection_lengths):
+            connection_costs.append(cost_of_connection(length, flow))
+        cost_per_connection = np.array(connection_costs)/np.array(np.sum(connection_flows, axis=1))
 
-    # compute total costs and flow of network
-    heat_exchanger_source_cost_total = np.sum(heat_exchanger_source_costs)
-    heat_exchanger_sink_cost_total = np.sum(heat_exchanger_sink_costs)
-    connection_cost_total = np.sum(connection_costs)
-    # Euro
-    total_cost_scalar = (heat_exchanger_sink_cost_total + heat_exchanger_source_cost_total + connection_cost_total)
-    # GWh
-    total_flow_scalar = np.sum(source_flows)/1000
+        # compute total costs and flow of network
+        heat_exchanger_source_cost_total = np.sum(heat_exchanger_source_costs)
+        heat_exchanger_sink_cost_total = np.sum(heat_exchanger_sink_costs)
+        connection_cost_total = np.sum(connection_costs)
+        # Euro
+        total_cost_scalar = (heat_exchanger_sink_cost_total + heat_exchanger_source_cost_total + connection_cost_total)
+        # GWh
+        total_flow_scalar = np.sum(source_flows)/1000
 
-    # ct/kWh
-    total_cost_per_flow = total_cost_scalar/total_flow_scalar/investment_period/1e6*1e2
+        # ct/kWh
+        total_cost_per_flow = total_cost_scalar/total_flow_scalar/investment_period/1e6*1e2
+
+        return source_flows, sink_flows, connection_flows, connection_costs, connection_lengths, cost_per_connection, total_cost_scalar, total_flow_scalar, total_cost_per_flow
+
+    source_flows, sink_flows, connection_flows, connection_costs, connection_lengths, cost_per_connection,\
+    total_cost_scalar, total_flow_scalar, total_cost_per_flow = compute_flow(network, heat_source_profiles, heat_sink_profiles)
+
+
 
     coordiantes = []
     for edge in network.return_edge_source_target_vertices():
