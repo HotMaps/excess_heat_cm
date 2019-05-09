@@ -137,7 +137,7 @@ def excess_heat(sinks, search_radius, investment_period,
         connection_costs = []
         for flow, length in zip(connection_flows, connection_lengths):
             connection_costs.append(cost_of_connection(length, flow))
-        cost_per_connection = np.array(connection_costs)/np.array(np.sum(connection_flows, axis=1))
+        cost_per_connection = np.array(connection_costs)/np.array(np.sum(connection_flows, axis=1)) / investment_period
 
         # compute total costs and flow of network
         heat_exchanger_source_cost_total = np.sum(heat_exchanger_source_costs)
