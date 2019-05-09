@@ -182,6 +182,10 @@ def excess_heat(sinks, search_radius, investment_period,
     create_transmission_line_shp(coordiantes, np.array(np.sum(connection_flows, axis=1)),  temp, connection_costs, connection_lengths,
                                  output_transmission_lines)
 
-
+    if total_flow_scalar == 0 and total_cost_scalar == 0:
+        total_cost_per_flow = 0
+    else:
+        if total_flow_scalar == 0:
+            total_cost_per_flow = 100000
 
     return total_cost_scalar, total_flow_scalar, total_cost_per_flow

@@ -89,6 +89,8 @@ def calculation(output_directory, inputs_raster_selection, input_vector_selectio
                             "value": str(total_cost_scalar)},
                            {"unit": "GWh", "name": "Total annual flow of heat in the network",
                             "value": str(total_flow_scalar)},
+                           {"unit": "ct/kWh/a", "name": "Cost per flow in investment period",
+                            "value": str(total_cost_per_flow)},
                            ]
 
     """" 
