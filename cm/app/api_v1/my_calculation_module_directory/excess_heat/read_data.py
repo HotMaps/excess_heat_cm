@@ -4,11 +4,10 @@ import fiona
 import os
 import csv
 
-from pyproj import Proj, transform
+from pyproj import Proj, Transformer
 from shapely.geometry import Point, Polygon, MultiPolygon
 from shapely.wkb import loads
 import numpy as np
-
 
 def extract_coordinates_from_wkb_point(point):
     """
@@ -83,16 +82,21 @@ def ad_TUW23(out_shp_label, nuts2_id):
     :return: Dataframe containing the potential heat sinks and a correspondence id for each coherent aera.
     :rtype: pandas Dataframe
     """
-    coherent_areas = fiona.open(out_shp_label)
+    start = time.perf_counter()
+    try:
+        coherent_areas = fiona.open(out_shp_label)
+    except IOError:
+        return -1
     inProj = Proj(init='epsg:3035')
     outProj = Proj(init='epsg:4326')
+    transformer = Transformer.from_proj(inProj, outProj)
 
     coherent_areas_transformed = []
     for coherent_area in coherent_areas:
         coordinates = []
         if coherent_area["geometry"]["type"] == "Polygon":
             for coordinate in coherent_area["geometry"]["coordinates"][0]:
-                coordinates.append(transform(inProj, outProj, *coordinate))
+                coordinates.append(transformer.transform(*coordinate))
             poly = Polygon(coordinates)
             poly.heat_dem = 1000*float(re.findall("\d+\.\d+", coherent_area["properties"]["Potential"])[0])
             coherent_areas_transformed.append(poly)
@@ -101,7 +105,7 @@ def ad_TUW23(out_shp_label, nuts2_id):
             for polygon in coherent_area["geometry"]["coordinates"][0]:
                 coordinates = []
                 for coordinate in polygon:
-                    coordinates.append(transform(inProj, outProj, *coordinate))
+                    coordinates.append(transformer.transform(*coordinate))
                 multipolygon_polygons.append(Polygon(coordinates))
             multi_poly = MultiPolygon(multipolygon_polygons)
             multi_poly.heat_dem = 1000*float(re.findall("\d+\.\d+", coherent_area["properties"]["Potential"])[0])

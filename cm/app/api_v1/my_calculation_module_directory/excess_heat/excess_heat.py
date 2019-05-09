@@ -11,6 +11,7 @@ from .visualisation import create_transmission_line_shp
 
 from .graphs import NetworkGraph
 
+
 np.seterr(divide='ignore', invalid='ignore')
 
 
@@ -27,9 +28,11 @@ def excess_heat(sinks, search_radius, investment_period,
     for id in nuts2_id:
         nuts0_id.append(id[:2])
 
+
     # load heat source and heat sink data
     # heat_sources = ad_industrial_database_dict(sources)
     heat_sources = ad_industrial_database_local(nuts0_id)
+
     heat_sinks = ad_TUW23(sinks, nuts2_id[0])
     # load heating profiles for sources and sinks
     # industry_profiles = ad_industry_profiles_dict(source_profiles)
