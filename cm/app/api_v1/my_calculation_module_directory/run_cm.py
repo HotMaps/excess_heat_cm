@@ -31,32 +31,7 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
     DHPot, labels = DHP.DHPotential(DH_Regions, heat_density_map)
     total_potential = np.around(np.sum(DHPot),2)
     total_heat_demand = np.around(total_heat_demand, 2)
-    graphics  = [
-            {
-                    "type": "bar",
-                    "xLabel": "DH Area Label",
-                    "yLabel": "Potential (GWh/year)",
-                    "data": {
-                            "labels": [str(x) for x in range(1, 1+len(DHPot))],
-                            "datasets": [{
-                                    "label": "Potential in coherent areas",
-                                    "backgroundColor": ["#3e95cd"]*len(DHPot),
-                                    "data": list(np.around(DHPot,2))
-                                    }]
-                    }
-                },{
-                    "type": "bar",
-                    "xLabel": "",
-                    "yLabel": "Demand / Potential (GWh/year)",
-                    "data": {
-                            "labels": ["Annual heat demand", "DH potential"],
-                            "datasets": [{
-                                    "label": "Heat Demand Vs. DH Potential (GWh/year)",
-                                    "backgroundColor": ["#fe7c60", "#3e95cd"],
-                                    "data": [total_heat_demand, total_potential]
-                                    }]
-                    }
-                }]
+
     CM19.main(output_raster1, geo_transform, 'int8', DH_Regions)
     CM19.main(output_raster2, geo_transform, 'int32', labels)
     polygonize(output_raster1, output_raster2, output_shp1, output_shp2, DHPot)
@@ -64,6 +39,35 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
 
     total_excess_heat_available, total_excess_heat_connected, total_flow_scalar, total_cost_scalar, annual_cost_of_network, levelised_cost_of_heat_supply = \
         excess_heat(output_shp2, search_radius, investment_period, discount_rate, cost_factor, operational_costs, transmission_line_threshold, nuts2_id, output_transmission_lines)
+
+
+    graphics  = [
+        {
+                "type": "bar",
+                "xLabel": "DH Area Label",
+                "yLabel": "Potential (GWh/year)",
+                "data": {
+                        "labels": [str(x) for x in range(1, 1+len(DHPot))],
+                        "datasets": [{
+                                "label": "Potential in coherent areas",
+                                "backgroundColor": ["#3e95cd"]*len(DHPot),
+                                "data": list(np.around(DHPot,2))
+                                }]
+                }
+            },{
+                "type": "bar",
+                "xLabel": "",
+                "yLabel": "Demand / Potential (GWh/year)",
+                "data": {
+                        "labels": ["Annual heat demand", "DH potential", "Total excess heat available",
+                                   "Total excess heat from connected sites", "Excess heat used"],
+                        "datasets": [{
+                                "label": "Heat Demand Vs. DH Potential (GWh/year)",
+                                "backgroundColor": ["#fe7c60", "#3e95cd"],
+                                "data": [total_heat_demand, total_potential, total_excess_heat_available, total_excess_heat_connected, total_flow_scalar]
+                                }]
+                }
+            }]
     return total_potential, total_heat_demand, graphics, total_excess_heat_available, total_excess_heat_connected, total_flow_scalar, total_cost_scalar, annual_cost_of_network, levelised_cost_of_heat_supply
     
     
