@@ -40,7 +40,7 @@ def calculation(output_directory, inputs_raster_selection, input_vector_selectio
     transmission_line_threshold = float(inputs_parameter_selection["transmission_line_threshold"])
 
     nuts2_id = nuts
-    print ('type nuts',type(nuts2_id))
+    print('type nuts',type(nuts2_id))
 
     #industrial_sites = inputs_vector_selection["industrial_database"]
 
@@ -83,11 +83,11 @@ def calculation(output_directory, inputs_raster_selection, input_vector_selectio
         result["raster_layers"]=[{"name": "district heating coherent areas","path": output_raster1, "type": "custom", "symbology": [{"red":250,"green":159,"blue":181,"opacity":0.8,"value":"1","label":"DH Areas"}]}]
         result["vector_layers"]=[{"name": "shapefile of coherent areas with their potential","path": output_shp2}, {"name": "Transmission lines as shapefile","path": output_transmission_lines}]
 
-    result['name'] = 'CM Excess Heat'
+    result['name'] = 'CM Excess heat transport potential'
 
     round_to_n = lambda x, n: round(x, -int(floor(log10(x))) + (n - 1))
     result['indicator'] = [{"unit": "GWh", "name": "Total heat demand in GWh within the selected zone","value": str(total_heat_demand)},
-                          {"unit": "GWh", "name": "Total district heating potential in GWh within the selected zone","value": str(total_potential)},
+                           {"unit": "GWh", "name": "Total district heating potential in GWh within the selected zone","value": str(total_potential)},
                            {"unit": "%",
                             "name": "Potential share of district heating from total demand in selected zone",
                             "value": str(100 * round(total_potential / total_heat_demand, 4))},
