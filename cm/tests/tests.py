@@ -62,6 +62,9 @@ class TestAPI(unittest.TestCase):
 
         inputs_parameter_selection["search_radius"] = 20
         inputs_parameter_selection["investment_period"] = 10
+        inputs_parameter_selection["discount_rate"] = 3
+        inputs_parameter_selection["cost_factor"] = 1
+        inputs_parameter_selection["operational_costs"] = 2
         inputs_parameter_selection["transmission_line_threshold"] = 2
         nuts = ['DK05']
 

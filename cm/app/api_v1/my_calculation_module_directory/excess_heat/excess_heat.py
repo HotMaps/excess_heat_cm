@@ -16,7 +16,7 @@ from .graphs import NetworkGraph
 np.seterr(divide='ignore', invalid='ignore')
 
 
-def excess_heat(sinks, search_radius, investment_period,
+def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_factor, operational_costs,
                 transmission_line_threshold, nuts2_id, output_transmission_lines):
 
     industrial_subsector_map = {"Iron and steel": "iron_and_steel", "Refineries": "chemicals_and_petrochemicals",

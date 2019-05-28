@@ -32,6 +32,10 @@ def calculation(output_directory, inputs_raster_selection, input_vector_selectio
 
     search_radius = float(inputs_parameter_selection["search_radius"])
     investment_period = float(inputs_parameter_selection["investment_period"])
+    discount_rate = float(inputs_parameter_selection["discount_rate"])
+    cost_factor = float(inputs_parameter_selection["cost_factor"])
+    operational_costs = float(inputs_parameter_selection["operational_costs"])
+
     transmission_line_threshold = float(inputs_parameter_selection["transmission_line_threshold"])
 
     nuts2_id = nuts
@@ -65,6 +69,7 @@ def calculation(output_directory, inputs_raster_selection, input_vector_selectio
                                                             output_shp2,
                                                             search_radius,
                                                             investment_period,
+                                                            discount_rate, cost_factor, operational_costs,
                                                             transmission_line_threshold,
                                                             nuts2_id, output_transmission_lines)
 
