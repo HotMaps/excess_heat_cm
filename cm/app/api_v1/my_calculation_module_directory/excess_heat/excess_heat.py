@@ -6,7 +6,7 @@ from .read_data import ad_industry_profiles_dict
 from .read_data import ad_residential_heating_profile_dict
 from .read_data import ad_industry_profiles_local, ad_residential_heating_profile_local, ad_industrial_database_local
 from .CM1 import find_neighbours, create_normalized_profiles, \
-                cost_of_connection, cost_of_heat_exchanger_source, cost_of_heat_exchanger_sink
+                cost_of_connection, cost_of_heat_exchanger_source, cost_of_heat_exchanger_sink, cost_after_discount
 
 from .visualisation import create_transmission_line_shp
 
@@ -170,6 +170,8 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
         source_flows, sink_flows, connection_flows, connection_costs, connection_lengths, cost_per_connection,\
         total_cost_scalar, total_flow_scalar, total_cost_per_flow = compute_flow(network, heat_source_profiles, heat_sink_profiles)
 
+
+    # generate output graphics and indicators
     coordiantes = []
     for edge in network.return_edge_source_target_vertices():
         coordiantes_of_line = []
@@ -180,16 +182,23 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
                 coordiantes_of_line.append((heat_sinks.iloc[point[1]]["Lon"], heat_sinks.iloc[point[1]]["Lat"]))
 
         coordiantes.append(coordiantes_of_line)
-
     temp = len(cost_per_connection) * [100]
-
     create_transmission_line_shp(coordiantes, np.array(np.sum(connection_flows, axis=1)),  temp, connection_costs, connection_lengths,
                                  output_transmission_lines)
 
-    if total_flow_scalar == 0 and total_cost_scalar == 0:
-        total_cost_per_flow = 0
+    total_excess_heat_available = heat_sources["Excess_heat"].sum() / 1000  # GWh
+    total_excess_heat_connected = 0
+    for i, source_flow in enumerate(source_flows):
+        if np.sum(source_flow) > 0:
+            total_excess_heat_connected += heat_sources.iloc[i]["Excess_heat"]
+    total_excess_heat_connected /= 1000  # GWh
+    cost_with_discount = cost_after_discount(total_cost_scalar, discount_rate/100, investment_period)
+    annual_cost_of_network = cost_with_discount / investment_period + operational_costs/100 * total_cost_scalar
+    levelised_cost_of_heat_supply = annual_cost_of_network / total_flow_scalar / 1e6 * 1e2  # ct/kWh
+    if total_flow_scalar == 0 and levelised_cost_of_heat_supply == 0:
+        levelised_cost_of_heat_supply = 0
     else:
         if total_flow_scalar == 0:
-            total_cost_per_flow = 100000
+            levelised_cost_of_heat_supply = 0
 
-    return total_cost_scalar, total_flow_scalar, total_cost_per_flow
+    return total_excess_heat_available, total_excess_heat_connected, total_flow_scalar, total_cost_scalar, annual_cost_of_network, levelised_cost_of_heat_supply

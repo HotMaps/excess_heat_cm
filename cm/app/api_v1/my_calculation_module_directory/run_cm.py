@@ -62,9 +62,9 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
     polygonize(output_raster1, output_raster2, output_shp1, output_shp2, DHPot)
     rm_file(output_raster2, output_raster2[:-4] + '.tfw')
 
-    total_cost_scalar, total_flow_scalar, total_cost_per_flow = \
+    total_excess_heat_available, total_excess_heat_connected, total_flow_scalar, total_cost_scalar, annual_cost_of_network, levelised_cost_of_heat_supply = \
         excess_heat(output_shp2, search_radius, investment_period, discount_rate, cost_factor, operational_costs, transmission_line_threshold, nuts2_id, output_transmission_lines)
-    return total_potential, total_heat_demand, graphics, total_cost_scalar, total_flow_scalar, total_cost_per_flow
+    return total_potential, total_heat_demand, graphics, total_excess_heat_available, total_excess_heat_connected, total_flow_scalar, total_cost_scalar, annual_cost_of_network, levelised_cost_of_heat_supply
     
     
 

@@ -1,4 +1,5 @@
 from osgeo import gdal
+from math import log10, floor
 import os
 import sys
 
@@ -59,7 +60,7 @@ def calculation(output_directory, inputs_raster_selection, input_vector_selectio
     output_transmission_lines = generate_output_file_shp(output_directory)
 
 
-    total_potential, total_heat_demand, graphics, total_cost_scalar, total_flow_scalar, total_cost_per_flow = \
+    total_potential, total_heat_demand, graphics, total_excess_heat_available, total_excess_heat_connected, total_flow_scalar, total_cost_scalar, annual_cost_of_network, levelised_cost_of_heat_supply= \
                                                     run_cm.main(input_raster_selection,
                                                             pix_threshold,
                                                             DH_threshold,
@@ -84,18 +85,24 @@ def calculation(output_directory, inputs_raster_selection, input_vector_selectio
 
     result['name'] = 'CM Excess Heat'
 
-
+    round_to_n = lambda x, n: round(x, -int(floor(log10(x))) + (n - 1))
     result['indicator'] = [{"unit": "GWh", "name": "Total heat demand in GWh within the selected zone","value": str(total_heat_demand)},
                           {"unit": "GWh", "name": "Total district heating potential in GWh within the selected zone","value": str(total_potential)},
                            {"unit": "%",
                             "name": "Potential share of district heating from total demand in selected zone",
                             "value": str(100 * round(total_potential / total_heat_demand, 4))},
+                           {"unit": "GWh", "name": "Excess heat available in selected area",
+                            "value": str(round_to_n(total_excess_heat_available, 3))},
+                           {"unit": "GWh", "name": "Excess heat of sizes connected to the network",
+                            "value": str(round_to_n(total_excess_heat_connected, 3))},
+                           {"unit": "GWh", "name": "Excess heat used",
+                            "value": str(round_to_n(total_flow_scalar, 3))},
                            {"unit": "Euro", "name": "Cost of network",
-                            "value": str(total_cost_scalar)},
-                           {"unit": "GWh", "name": "Total annual flow of heat in the network",
-                            "value": str(total_flow_scalar)},
-                           {"unit": "ct/kWh/a", "name": "Cost per flow in investment period",
-                            "value": str(total_cost_per_flow)},
+                            "value": str(round_to_n(total_cost_scalar, 3))},
+                           {"unit": "Euro/year", "name": "Annual costs of network",
+                            "value": str(round_to_n(annual_cost_of_network, 3))},
+                           {"unit": "ct/kWh/a", "name": "Levelised cost of heat supply",
+                            "value": str(round_to_n(levelised_cost_of_heat_supply, 3))},
                            ]
 
     """" 
