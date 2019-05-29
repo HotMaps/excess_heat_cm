@@ -66,7 +66,7 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
                            "Total excess heat from connected sites", "Excess heat used"],
                 "datasets": [{
                     "label": "Heat Demand Vs. Excess heat (GWh/year)",
-                    "backgroundColor": ["#fe7c60", "#3e95cd"],
+                    "backgroundColor": ["#fe7c60", "#3e95cd", "#fe7c60", "#fe7c60", "#fe7c60"],
                     "data": [total_heat_demand, total_potential, total_excess_heat_available,
                              total_excess_heat_connected, total_flow_scalar]
                     }]
@@ -81,11 +81,9 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
                            "October", "November", "December"],
                 "datasets": [{
                     "label": "Excess heat",
-                    "backgroundColor": ["#ff4000"],
                     "data": excess_heat_profile_monthly
                     },
                     {"label": "Heat demand",
-                     "backgroundColor": ["#00bfff"],
                      "data": heat_demand_profile_monthly}
                     ]
             }
@@ -98,11 +96,9 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
                 "labels": [str(x) for x in range(1, 25)],
                 "datasets": [{
                     "label": "Excess heat",
-                    "backgroundColor": ["#ff4000"],
                     "data": excess_heat_profile_daily
                     },
                     {"label": "Heat demand",
-                     "backgroundColor": ["#00bfff"],
                      "data": heat_demand_profile_daily}
                     ]
             }

@@ -200,14 +200,17 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
         if total_flow_scalar == 0:
             levelised_cost_of_heat_supply = 0
 
+    heat_source_profiles = heat_source_profiles.transpose()
+    heat_sink_profiles = heat_sink_profiles.transpose()
+
     excess_heat_profile = np.zeros(8760)
-    for source_flow in source_flows:
+    for i, source_flow in enumerate(source_flows):
         if np.sum(source_flow) > 0:
-            excess_heat_profile = excess_heat_profile + source_flow
+            excess_heat_profile = excess_heat_profile + heat_source_profiles[i]
 
     heat_demand_profile = np.zeros(8760)
-    for sink_flow in sink_flows:
-        heat_demand_profile = heat_demand_profile + sink_flow
+    for i, sink_flow in enumerate(sink_flows):
+        heat_demand_profile = heat_demand_profile + heat_sink_profiles[i]
 
     excess_heat_profile_monthly = excess_heat_profile.reshape((12, 730))
     heat_demand_profile_monthly = heat_demand_profile.reshape((12, 730))
@@ -216,17 +219,30 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
     heat_demand_profile_daily = heat_demand_profile.reshape((365, 24))
 
     # sum for every month
-    excess_heat_profile_monthly = np.sum(excess_heat_profile_monthly, axis=1)
-    heat_demand_profile_monthly = np.sum(heat_demand_profile_monthly, axis=1)
+    excess_heat_profile_monthly = np.mean(excess_heat_profile_monthly, axis=1)
+    heat_demand_profile_monthly = np.mean(heat_demand_profile_monthly, axis=1)
 
     # sum for every day hour
-    excess_heat_profile_daily = np.sum(excess_heat_profile_daily, axis=0)
-    heat_demand_profile_daily = np.sum(heat_demand_profile_daily, axis=0)
+    excess_heat_profile_daily = np.mean(excess_heat_profile_daily, axis=0)
+    heat_demand_profile_daily = np.mean(heat_demand_profile_daily, axis=0)
 
     excess_heat_profile_monthly = excess_heat_profile_monthly.tolist()
     heat_demand_profile_monthly = heat_demand_profile_monthly.tolist()
     excess_heat_profile_daily = excess_heat_profile_daily.tolist()
     heat_demand_profile_daily = heat_demand_profile_daily.tolist()
+
+    if total_excess_heat_available < 0:
+        total_excess_heat_available = 0
+    if total_excess_heat_connected < 0:
+        total_excess_heat_connected = 0
+    if total_flow_scalar < 0:
+        total_flow_scalar = 0
+    if total_cost_scalar < 0:
+        total_flow_scalar = 0
+    if annual_cost_of_network < 0:
+        annual_cost_of_network = 0
+    if levelised_cost_of_heat_supply < 0:
+        levelised_cost_of_heat_supply = 0
 
     return total_excess_heat_available, total_excess_heat_connected, total_flow_scalar, total_cost_scalar,\
         annual_cost_of_network, levelised_cost_of_heat_supply, excess_heat_profile_monthly,\
