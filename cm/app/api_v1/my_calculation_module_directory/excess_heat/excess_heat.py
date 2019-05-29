@@ -27,9 +27,8 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
                                 "Non-ferrous metals": "iron_and_steel", "Other non-classified": "food_and_tobacco"}
 
     nuts0_id = []
-    for id in nuts2_id:
-        nuts0_id.append(id[:2])
-
+    for id_ in nuts2_id:
+        nuts0_id.append(id_[:2])
 
     # load heat source and heat sink data
     # heat_sources = ad_industrial_database_dict(sources)
@@ -38,7 +37,7 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
     heat_sinks = ad_TUW23(sinks, nuts2_id[0])
     # escape main routine if dh_potential cm did not produce shp file
     if not isinstance(heat_sinks, pd.DataFrame):
-        return 0, 0, 0
+        return 0, 0, 0, 0, 0, 0, [0] * 12, [0] * 12, [0] * 24, [0] * 24
     # load heating profiles for sources and sinks
     # industry_profiles = ad_industry_profiles_dict(source_profiles)
     # residential_heating_profile = ad_residential_heating_profile_dict(sink_profiles)
@@ -110,7 +109,8 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
     network.reduce_to_minimum_spanning_tree("distance")
 
     # compute max flow for every hour
-    def compute_flow(network, heat_source_profiles, heat_sink_profiles):
+    last_flows = [-1]
+    while True:
         source_flows = []
         sink_flows = []
         connection_flows = []
@@ -126,41 +126,15 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
         source_flows = source_flows.transpose()
         sink_flows = sink_flows.transpose()
         connection_flows = connection_flows.transpose()
-
-        # compute costs of every heat exchanger and transmission line
-        heat_exchanger_source_costs = []
-        for flow in source_flows:
-            heat_exchanger_source_costs.append(cost_of_heat_exchanger_source(flow))
-        heat_exchanger_sink_costs = []
-        for flow in sink_flows:
-            heat_exchanger_sink_costs.append(cost_of_heat_exchanger_sink(flow))
         connection_lengths = network.get_edge_attribute("distance")
+
         connection_costs = []
         for flow, length in zip(connection_flows, connection_lengths):
             connection_costs.append(cost_of_connection(length, flow))
-        cost_per_connection = np.array(connection_costs)/np.array(np.sum(connection_flows, axis=1)) / investment_period
+        cost_per_connection = np.array(connection_costs)/np.array(np.sum(connection_flows, axis=1)) / \
+            investment_period * cost_factor
 
-        # compute total costs and flow of network
-        heat_exchanger_source_cost_total = np.sum(heat_exchanger_source_costs)
-        heat_exchanger_sink_cost_total = np.sum(heat_exchanger_sink_costs)
-        connection_cost_total = np.sum(connection_costs)
-        # Euro
-        total_cost_scalar = (heat_exchanger_sink_cost_total + heat_exchanger_source_cost_total + connection_cost_total)
-        # GWh
-        total_flow_scalar = np.sum(source_flows)/1000
-
-        # ct/kWh
-        total_cost_per_flow = total_cost_scalar/total_flow_scalar/investment_period/1e6*1e2
-
-        return source_flows, sink_flows, connection_flows, connection_costs, connection_lengths, cost_per_connection, total_cost_scalar, total_flow_scalar, total_cost_per_flow
-
-
-    source_flows, sink_flows, connection_flows, connection_costs, connection_lengths, cost_per_connection,\
-    total_cost_scalar, total_flow_scalar, total_cost_per_flow = compute_flow(network, heat_source_profiles, heat_sink_profiles)
-    last_flows = [-1]
-    while np.sum(source_flows) != np.sum(last_flows):
-        last_flows = source_flows
-        # drop egdes with 0 flow and above threshold
+        # drop edges with 0 flow and above threshold
         edges = network.return_edge_source_target_vertices()
         for costs, edge in zip(cost_per_connection, edges):
             if costs < 0:
@@ -168,62 +142,69 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
         for costs, edge in zip(cost_per_connection, edges):
             if costs > transmission_line_threshold:
                 network.delete_edges([edge])
-        source_flows, sink_flows, connection_flows, connection_costs, connection_lengths, cost_per_connection,\
-        total_cost_scalar, total_flow_scalar, total_cost_per_flow = compute_flow(network, heat_source_profiles, heat_sink_profiles)
 
-    # generate output graphics and indicators
-    coordiantes = []
-    for edge in network.return_edge_source_target_vertices():
-        coordiantes_of_line = []
-        for point in edge:
-            if point[0] == "source":
-                coordiantes_of_line.append((heat_sources.iloc[point[1]]["Lon"], heat_sources.iloc[point[1]]["Lat"]))
-            else:
-                coordiantes_of_line.append((heat_sinks.iloc[point[1]]["Lon"], heat_sinks.iloc[point[1]]["Lat"]))
+        # stop if flow does not change anymore
+        if np.sum(source_flows) == np.sum(last_flows):
+            break
+        last_flows = source_flows
 
-        coordiantes.append(coordiantes_of_line)
-    temp = len(cost_per_connection) * [100]
-    create_transmission_line_shp(coordiantes, np.array(np.sum(connection_flows, axis=1)),  temp, connection_costs, connection_lengths,
-                                 output_transmission_lines)
+    # generate indicators
+    heat_exchanger_source_costs = []
+    for flow in source_flows:
+        heat_exchanger_source_costs.append(cost_of_heat_exchanger_source(flow))
+    heat_exchanger_sink_costs = []
+    for flow in sink_flows:
+        heat_exchanger_sink_costs.append(cost_of_heat_exchanger_sink(flow))
+
+    heat_exchanger_source_cost_total = np.sum(heat_exchanger_source_costs) * cost_factor
+    heat_exchanger_sink_cost_total = np.sum(heat_exchanger_sink_costs) * cost_factor
+
+    connection_cost_total = np.sum(connection_costs)
+    # Euro
+    total_cost_scalar = (heat_exchanger_sink_cost_total + heat_exchanger_source_cost_total + connection_cost_total)
+    # GWh
+    total_flow_scalar = np.sum(source_flows) / 1000
 
     total_excess_heat_available = heat_sources["Excess_heat"].sum() / 1000  # GWh
     total_excess_heat_connected = 0
     for i, source_flow in enumerate(source_flows):
+        # only consider sources which deliver heat
         if np.sum(source_flow) > 0:
             total_excess_heat_connected += heat_sources.iloc[i]["Excess_heat"]
     total_excess_heat_connected /= 1000  # GWh
     cost_with_discount = cost_after_discount(total_cost_scalar, discount_rate/100, investment_period)
     annual_cost_of_network = cost_with_discount / investment_period + operational_costs/100 * total_cost_scalar
     levelised_cost_of_heat_supply = annual_cost_of_network / total_flow_scalar / 1e6 * 1e2  # ct/kWh
+    # check for zero divisions
     if total_flow_scalar == 0 and levelised_cost_of_heat_supply == 0:
         levelised_cost_of_heat_supply = 0
     else:
         if total_flow_scalar == 0:
             levelised_cost_of_heat_supply = 0
 
+    # prepare hourly profiles for visualisation
     heat_source_profiles = heat_source_profiles.transpose()
     heat_sink_profiles = heat_sink_profiles.transpose()
-
     excess_heat_profile = np.zeros(8760)
     for i, source_flow in enumerate(source_flows):
+        # only consider sources which deliver heat
         if np.sum(source_flow) > 0:
             excess_heat_profile = excess_heat_profile + heat_source_profiles[i]
-
     heat_demand_profile = np.zeros(8760)
     for i, sink_flow in enumerate(sink_flows):
         heat_demand_profile = heat_demand_profile + heat_sink_profiles[i]
 
+    # reshape to monthly format
     excess_heat_profile_monthly = excess_heat_profile.reshape((12, 730))
     heat_demand_profile_monthly = heat_demand_profile.reshape((12, 730))
-
-    excess_heat_profile_daily = excess_heat_profile.reshape((365, 24))
-    heat_demand_profile_daily = heat_demand_profile.reshape((365, 24))
-
     # sum for every month
     excess_heat_profile_monthly = np.mean(excess_heat_profile_monthly, axis=1)
     heat_demand_profile_monthly = np.mean(heat_demand_profile_monthly, axis=1)
 
-    # sum for every day hour
+    # reshape to daily format
+    excess_heat_profile_daily = excess_heat_profile.reshape((365, 24))
+    heat_demand_profile_daily = heat_demand_profile.reshape((365, 24))
+    # sum for every hour of day
     excess_heat_profile_daily = np.mean(excess_heat_profile_daily, axis=0)
     heat_demand_profile_daily = np.mean(heat_demand_profile_daily, axis=0)
 
@@ -232,12 +213,14 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
     excess_heat_profile_daily = excess_heat_profile_daily.tolist()
     heat_demand_profile_daily = heat_demand_profile_daily.tolist()
 
-    round_to_n = lambda x: round(x, -int(floor(log10(x))) + (3 - 1))
-    excess_heat_profile_monthly = list(map(round_to_n, excess_heat_profile_monthly))
-    heat_demand_profile_monthly = list(map(round_to_n, heat_demand_profile_monthly))
-    excess_heat_profile_daily = list(map(round_to_n, excess_heat_profile_daily))
-    heat_demand_profile_daily = list(map(round_to_n, heat_demand_profile_daily))
+    # round to 3 significant digits
+    round_to_3 = lambda x: round(x, -int(floor(log10(x))) + (3 - 1))
+    excess_heat_profile_monthly = list(map(round_to_3, excess_heat_profile_monthly))
+    heat_demand_profile_monthly = list(map(round_to_3, heat_demand_profile_monthly))
+    excess_heat_profile_daily = list(map(round_to_3, excess_heat_profile_daily))
+    heat_demand_profile_daily = list(map(round_to_3, heat_demand_profile_daily))
 
+    # catch any negative value
     if total_excess_heat_available < 0:
         total_excess_heat_available = 0
     if total_excess_heat_connected < 0:
@@ -250,6 +233,21 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
         annual_cost_of_network = 0
     if levelised_cost_of_heat_supply < 0:
         levelised_cost_of_heat_supply = 0
+
+    # generate graphics
+    coordinates = []
+    for edge in network.return_edge_source_target_vertices():
+        coordinates_of_line = []
+        for point in edge:
+            if point[0] == "source":
+                coordinates_of_line.append((heat_sources.iloc[point[1]]["Lon"], heat_sources.iloc[point[1]]["Lat"]))
+            else:
+                coordinates_of_line.append((heat_sinks.iloc[point[1]]["Lon"], heat_sinks.iloc[point[1]]["Lat"]))
+
+        coordinates.append(coordinates_of_line)
+    temp = len(cost_per_connection) * [100]
+    create_transmission_line_shp(coordinates, np.array(np.sum(connection_flows, axis=1)),  temp, connection_costs,
+                                 connection_lengths, output_transmission_lines)
 
     return total_excess_heat_available, total_excess_heat_connected, total_flow_scalar, total_cost_scalar,\
         annual_cost_of_network, levelised_cost_of_heat_supply, excess_heat_profile_monthly,\
