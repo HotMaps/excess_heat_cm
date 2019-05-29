@@ -66,7 +66,7 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
                            "Total excess heat from connected sites", "Excess heat used"],
                 "datasets": [{
                     "label": "Heat Demand Vs. Excess heat (GWh/year)",
-                    "backgroundColor": ["#fe7c60", "#3e95cd", "#fe7c60", "#fe7c60", "#fe7c60"],
+                    "backgroundColor": ["#3e95cd", "#3e95cd", "#fe7c60", "#fe7c60", "#fe7c60"],
                     "data": [total_heat_demand, total_potential, total_excess_heat_available,
                              total_excess_heat_connected, total_flow_scalar]
                     }]
