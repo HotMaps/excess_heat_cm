@@ -2,6 +2,7 @@ import os
 import time
 import sys
 import numpy as np
+from math import floor, log10
 
 from .dh_potential.CM_TUW4.polygonize import polygonize
 from .dh_potential.CM_TUW0.rem_mk_dir import rm_mk_dir, rm_file
@@ -43,6 +44,7 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
         excess_heat(output_shp2, search_radius, investment_period, discount_rate, cost_factor, operational_costs,
                     transmission_line_threshold, nuts2_id, output_transmission_lines)
 
+    round_to_n = lambda x, n: round(x, -int(floor(log10(x))) + (n - 1))
     graphics = [
         {
             "type": "bar",
@@ -60,16 +62,17 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
         {
             "type": "bar",
             "xLabel": "",
-            "yLabel": "Demand / Potential (GWh/year)",
+            "yLabel": "Energy per year (GWh/year)",
             "data": {
                 "labels": ["Annual heat demand", "DH potential", "Total excess heat available",
                            "Total excess heat from connected sites", "Excess heat used"],
                 "datasets": [{
-                    "label": "Heat Demand Vs. Excess heat (GWh/year)",
+                    "label": "Heat Demand and Excess heat",
                     "backgroundColor": ["#3e95cd", "#3e95cd", "#fe7c60", "#fe7c60", "#fe7c60"],
-                    "data": [total_heat_demand, total_potential, total_excess_heat_available,
-                             total_excess_heat_connected, total_flow_scalar]
-                    }]
+                    "data": [total_heat_demand, total_potential, round_to_n(total_excess_heat_available, 3),
+                             round_to_n(total_excess_heat_connected, 3), round_to_n(total_flow_scalar, 3)]
+                    },
+                ]
             }
         },
         {
@@ -80,15 +83,17 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
                 "labels": ["January", "February", "March", "April", "May", "June", "July", "August", "September",
                            "October", "November", "December"],
                 "datasets": [{
+                    "label": "Heat demand",
+                    "borderColor": "#3e95cd",
+                    "backgroundColor": "rgba(62, 149, 205, 0.1)",
+                    "data": heat_demand_profile_monthly
+                    },
+                    {
                     "label": "Excess heat",
                     "borderColor": "#fe7c60",
                     "backgroundColor": "rgba(254, 124, 96, 0.1)",
                     "data": excess_heat_profile_monthly
-                    },
-                    {"label": "Heat demand",
-                     "borderColor": "#3e95cd",
-                     "backgroundColor": "rgba(62, 149, 205, 0.1)",
-                     "data": heat_demand_profile_monthly}
+                    }
                     ]
             }
         },
@@ -99,15 +104,16 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
             "data": {
                 "labels": [str(x) for x in range(1, 25)],
                 "datasets": [{
+                    "label": "Heat demand",
+                    "borderColor": "#3e95cd",
+                    "backgroundColor": "rgba(62, 149, 205, 0.1)",
+                    "data": heat_demand_profile_daily},
+                    {
                     "label": "Excess heat",
                     "borderColor": "#fe7c60",
                     "backgroundColor": "rgba(254, 124, 96, 0.1)",
                     "data": excess_heat_profile_daily
-                    },
-                    {"label": "Heat demand",
-                     "borderColor": "#3e95cd",
-                     "backgroundColor": "rgba(62, 149, 205, 0.1)",
-                     "data": heat_demand_profile_daily}
+                    }
                     ]
             }
         }
