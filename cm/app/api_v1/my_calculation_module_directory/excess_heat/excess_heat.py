@@ -201,4 +201,16 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
         if total_flow_scalar == 0:
             levelised_cost_of_heat_supply = 0
 
-    return total_excess_heat_available, total_excess_heat_connected, total_flow_scalar, total_cost_scalar, annual_cost_of_network, levelised_cost_of_heat_supply
+    excess_heat_profile = np.zeros(8760)
+    for source_flow in source_flows:
+        if np.sum(source_flow) > 0:
+            excess_heat_profile = excess_heat_profile + source_flow
+
+    heat_demand_profile = np.zeros(8760)
+    for i, sink_flow in enumerate(sink_flows):
+        heat_demand_profile = heat_demand_profile + heat_sinks.iloc[i]["Heat_demand"]
+
+    excess_heat_profile = excess_heat_profile.tolist()
+    heat_demand_profile = heat_demand_profile.tolist()
+
+    return total_excess_heat_available, total_excess_heat_connected, total_flow_scalar, total_cost_scalar, annual_cost_of_network, levelised_cost_of_heat_supply, excess_heat_profile, heat_demand_profile

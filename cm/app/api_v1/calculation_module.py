@@ -60,7 +60,7 @@ def calculation(output_directory, inputs_raster_selection, input_vector_selectio
     output_transmission_lines = generate_output_file_shp(output_directory)
 
 
-    total_potential, total_heat_demand, graphics, total_excess_heat_available, total_excess_heat_connected, total_flow_scalar, total_cost_scalar, annual_cost_of_network, levelised_cost_of_heat_supply= \
+    total_potential, total_heat_demand, graphics, total_excess_heat_available, total_excess_heat_connected, total_flow_scalar, total_cost_scalar, annual_cost_of_network, levelised_cost_of_heat_supply = \
                                                     run_cm.main(input_raster_selection,
                                                             pix_threshold,
                                                             DH_threshold,
