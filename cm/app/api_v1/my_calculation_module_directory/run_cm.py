@@ -37,7 +37,8 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
     polygonize(output_raster1, output_raster2, output_shp1, output_shp2, DHPot)
     rm_file(output_raster2, output_raster2[:-4] + '.tfw')
 
-    total_excess_heat_available, total_excess_heat_connected, total_flow_scalar, total_cost_scalar, annual_cost_of_network, levelised_cost_of_heat_supply, excess_heat_profile, heat_demand_profile = \
+    total_excess_heat_available, total_excess_heat_connected, total_flow_scalar, total_cost_scalar, annual_cost_of_network, levelised_cost_of_heat_supply, excess_heat_profile_monthly,\
+           heat_demand_profile_monthly, excess_heat_profile_daily, heat_demand_profile_daily = \
         excess_heat(output_shp2, search_radius, investment_period, discount_rate, cost_factor, operational_costs, transmission_line_threshold, nuts2_id, output_transmission_lines)
 
     graphics = [
@@ -66,26 +67,44 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
                                 "data": [total_heat_demand, total_potential, total_excess_heat_available, total_excess_heat_connected, total_flow_scalar]
                                 }]
                 }
-            }, {
+            },
+            {
              "type": "line",
-                "xLabel": "",
+                "xLabel": "Month",
                 "yLabel": "Demand / Excess in MW",
                 "data": {
-                        "labels": [str(x) for x in range(8760)],
+                        "labels": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
                         "datasets": [{
                                 "label": "Excess heat",
                                 "backgroundColor": ["#ff4000"],
-                                "data": excess_heat_profile
+                                "data": excess_heat_profile_monthly
                                 },
                                 {"label": "Heat demand",
-                                "backgroundColor": ["#00bfff"],
-                                "data": heat_demand_profile}
+                                 "backgroundColor": ["#00bfff"],
+                                 "data": heat_demand_profile_monthly}
                         ]
                 }
-        }]
+        },
+        {
+             "type": "line",
+                "xLabel": "Day hour",
+                "yLabel": "Demand / Excess in MW",
+                "data": {
+                        "labels": [str(x) for x in range(1, 25)],
+                        "datasets": [{
+                                "label": "Excess heat",
+                                "backgroundColor": ["#ff4000"],
+                                "data": excess_heat_profile_daily
+                                },
+                                {"label": "Heat demand",
+                                 "backgroundColor": ["#00bfff"],
+                                 "data": heat_demand_profile_daily}
+                        ]
+                }
+        }
+    ]
     return total_potential, total_heat_demand, graphics, total_excess_heat_available, total_excess_heat_connected, total_flow_scalar, total_cost_scalar, annual_cost_of_network, levelised_cost_of_heat_supply
-    
-    
+
 
 if __name__ == "__main__":
     start = time.time()

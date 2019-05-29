@@ -207,10 +207,28 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
             excess_heat_profile = excess_heat_profile + source_flow
 
     heat_demand_profile = np.zeros(8760)
-    for i, sink_flow in enumerate(sink_flows):
-        heat_demand_profile = heat_demand_profile + heat_sinks.iloc[i]["Heat_demand"]
+    for sink_flow in sink_flows:
+        heat_demand_profile = heat_demand_profile + sink_flow
 
-    excess_heat_profile = excess_heat_profile.tolist()
-    heat_demand_profile = heat_demand_profile.tolist()
+    excess_heat_profile_monthly = excess_heat_profile.reshape((12, 730))
+    heat_demand_profile_monthly = heat_demand_profile.reshape((12, 730))
 
-    return total_excess_heat_available, total_excess_heat_connected, total_flow_scalar, total_cost_scalar, annual_cost_of_network, levelised_cost_of_heat_supply, excess_heat_profile, heat_demand_profile
+    excess_heat_profile_daily = excess_heat_profile.reshape((365, 24))
+    heat_demand_profile_daily = heat_demand_profile.reshape((365, 24))
+
+    # sum for every month
+    excess_heat_profile_monthly = np.sum(excess_heat_profile_monthly, axis=1)
+    heat_demand_profile_monthly = np.sum(heat_demand_profile_monthly, axis=1)
+
+    # sum for every dayhour
+    excess_heat_profile_daily = np.sum(excess_heat_profile_daily, axis=0)
+    heat_demand_profile_daily = np.sum(heat_demand_profile_daily, axis=0)
+
+    excess_heat_profile_monthly = excess_heat_profile_monthly.tolist()
+    heat_demand_profile_monthly = heat_demand_profile_monthly.tolist()
+    excess_heat_profile_daily = excess_heat_profile_daily.tolist()
+    heat_demand_profile_daily = heat_demand_profile_daily.tolist()
+
+    return total_excess_heat_available, total_excess_heat_connected, total_flow_scalar, total_cost_scalar,\
+           annual_cost_of_network, levelised_cost_of_heat_supply, excess_heat_profile_monthly,\
+           heat_demand_profile_monthly, excess_heat_profile_daily, heat_demand_profile_daily
