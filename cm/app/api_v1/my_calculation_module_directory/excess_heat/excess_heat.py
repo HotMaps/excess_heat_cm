@@ -156,7 +156,7 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
 
     source_flows, sink_flows, connection_flows, connection_costs, connection_lengths, cost_per_connection,\
     total_cost_scalar, total_flow_scalar, total_cost_per_flow = compute_flow(network, heat_source_profiles, heat_sink_profiles)
-    last_flows = [0]
+    last_flows = [-1]
     while np.sum(source_flows) != np.sum(last_flows):
         last_flows = source_flows
         # drop egdes with 0 flow and above threshold
@@ -169,7 +169,6 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
                 network.delete_edges([edge])
         source_flows, sink_flows, connection_flows, connection_costs, connection_lengths, cost_per_connection,\
         total_cost_scalar, total_flow_scalar, total_cost_per_flow = compute_flow(network, heat_source_profiles, heat_sink_profiles)
-
 
     # generate output graphics and indicators
     coordiantes = []
@@ -220,7 +219,7 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
     excess_heat_profile_monthly = np.sum(excess_heat_profile_monthly, axis=1)
     heat_demand_profile_monthly = np.sum(heat_demand_profile_monthly, axis=1)
 
-    # sum for every dayhour
+    # sum for every day hour
     excess_heat_profile_daily = np.sum(excess_heat_profile_daily, axis=0)
     heat_demand_profile_daily = np.sum(heat_demand_profile_daily, axis=0)
 
