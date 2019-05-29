@@ -81,9 +81,13 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
                            "October", "November", "December"],
                 "datasets": [{
                     "label": "Excess heat",
+                    "borderColor": "#fe7c60",
+                    "backgroundColor": "rgba(254, 124, 96, 0.1)",
                     "data": excess_heat_profile_monthly
                     },
                     {"label": "Heat demand",
+                     "borderColor": "#3e95cd",
+                     "backgroundColor": "rgba(62, 149, 205, 0.1)",
                      "data": heat_demand_profile_monthly}
                     ]
             }
@@ -96,9 +100,13 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
                 "labels": [str(x) for x in range(1, 25)],
                 "datasets": [{
                     "label": "Excess heat",
+                    "borderColor": "#fe7c60",
+                    "backgroundColor": "rgba(254, 124, 96, 0.1)",
                     "data": excess_heat_profile_daily
                     },
                     {"label": "Heat demand",
+                     "borderColor": "#3e95cd",
+                     "backgroundColor": "rgba(62, 149, 205, 0.1)",
                      "data": heat_demand_profile_daily}
                     ]
             }

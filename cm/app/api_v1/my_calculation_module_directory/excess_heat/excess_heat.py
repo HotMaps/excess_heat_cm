@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from math import floor, log10
 from .read_data import ad_industrial_database_dict
 from .read_data import ad_TUW23
 from .read_data import ad_industry_profiles_dict
@@ -230,6 +231,12 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
     heat_demand_profile_monthly = heat_demand_profile_monthly.tolist()
     excess_heat_profile_daily = excess_heat_profile_daily.tolist()
     heat_demand_profile_daily = heat_demand_profile_daily.tolist()
+
+    round_to_n = lambda x: round(x, -int(floor(log10(x))) + (3 - 1))
+    excess_heat_profile_monthly = list(map(round_to_n, excess_heat_profile_monthly))
+    heat_demand_profile_monthly = list(map(round_to_n, heat_demand_profile_monthly))
+    excess_heat_profile_daily = list(map(round_to_n, excess_heat_profile_daily))
+    heat_demand_profile_daily = list(map(round_to_n, heat_demand_profile_daily))
 
     if total_excess_heat_available < 0:
         total_excess_heat_available = 0
