@@ -59,20 +59,20 @@ def calculation(output_directory, inputs_raster_selection, input_vector_selectio
     output_shp2 = generate_output_file_shp(output_directory)
     output_transmission_lines = generate_output_file_shp(output_directory)
 
-
-    total_potential, total_heat_demand, graphics, total_excess_heat_available, total_excess_heat_connected, total_flow_scalar, total_cost_scalar, annual_cost_of_network, levelised_cost_of_heat_supply = \
-                                                    run_cm.main(input_raster_selection,
-                                                            pix_threshold,
-                                                            DH_threshold,
-                                                            output_raster1,
-                                                            output_raster2,
-                                                            output_shp1,
-                                                            output_shp2,
-                                                            search_radius,
-                                                            investment_period,
-                                                            discount_rate, cost_factor, operational_costs,
-                                                            transmission_line_threshold,
-                                                            nuts2_id, output_transmission_lines)
+    total_potential, total_heat_demand, graphics, total_excess_heat_available, total_excess_heat_connected,\
+        total_flow_scalar, total_cost_scalar, annual_cost_of_network, levelised_cost_of_heat_supply = \
+        run_cm.main(input_raster_selection,
+                    pix_threshold,
+                    DH_threshold,
+                    output_raster1,
+                    output_raster2,
+                    output_shp1,
+                    output_shp2,
+                    search_radius,
+                    investment_period,
+                    discount_rate, cost_factor, operational_costs,
+                    transmission_line_threshold,
+                    nuts2_id, output_transmission_lines)
 
     output_transmission_lines = create_zip_shapefiles(output_directory, output_transmission_lines)
     result = dict()
@@ -80,14 +80,19 @@ def calculation(output_directory, inputs_raster_selection, input_vector_selectio
     # if graphics is not None:
     if total_potential > 0:
         output_shp2 = create_zip_shapefiles(output_directory, output_shp2)
-        result["raster_layers"]=[{"name": "district heating coherent areas","path": output_raster1, "type": "custom", "symbology": [{"red":250,"green":159,"blue":181,"opacity":0.8,"value":"1","label":"DH Areas"}]}]
-        result["vector_layers"]=[{"name": "shapefile of coherent areas with their potential","path": output_shp2}, {"name": "Transmission lines as shapefile","path": output_transmission_lines}]
+        result["raster_layers"] = [{"name": "district heating coherent areas", "path": output_raster1, "type": "custom",
+                                    "symbology": [{"red": 250, "green": 159, "blue": 181, "opacity": 0.8, "value": "1",
+                                                   "label": "DH Areas"}]}]
+        result["vector_layers"] = [{"name": "shapefile of coherent areas with their potential", "path": output_shp2},
+                                   {"name": "Transmission lines as shapefile", "path": output_transmission_lines}]
 
     result['name'] = 'CM Excess heat transport potential'
 
     round_to_n = lambda x, n: round(x, -int(floor(log10(x))) + (n - 1))
-    result['indicator'] = [{"unit": "GWh", "name": "Total heat demand in GWh within the selected zone","value": str(total_heat_demand)},
-                           {"unit": "GWh", "name": "Total district heating potential in GWh within the selected zone","value": str(total_potential)},
+    result['indicator'] = [{"unit": "GWh", "name": "Total heat demand in GWh within the selected zone",
+                            "value": str(total_heat_demand)},
+                           {"unit": "GWh", "name": "Total district heating potential in GWh within the selected zone",
+                            "value": str(total_potential)},
                            {"unit": "%",
                             "name": "Potential share of district heating from total demand in selected zone",
                             "value": str(100 * round(total_potential / total_heat_demand, 4))},
@@ -101,14 +106,9 @@ def calculation(output_directory, inputs_raster_selection, input_vector_selectio
                             "value": str(round_to_n(total_cost_scalar, 3))},
                            {"unit": "Euro/year", "name": "Annual costs of network",
                             "value": str(round_to_n(annual_cost_of_network, 3))},
-                           {"unit": "ct/kWh/a", "name": "Levelised cost of heat supply",
+                           {"unit": "ct/kWh/a", "name": "Levelized cost of heat supply",
                             "value": str(round_to_n(levelised_cost_of_heat_supply, 3))},
                            ]
-
-    """" 
-        #TODO: This indicator can return -infinity which won't work within the architecture
-         {"unit": "ct/kWh/a", "name": "Cost of heat for selected investment period",
-           "value": float(total_cost_per_flow)}"""
 
     result['graphics'] = graphics
     return result

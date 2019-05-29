@@ -229,5 +229,5 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
     heat_demand_profile_daily = heat_demand_profile_daily.tolist()
 
     return total_excess_heat_available, total_excess_heat_connected, total_flow_scalar, total_cost_scalar,\
-           annual_cost_of_network, levelised_cost_of_heat_supply, excess_heat_profile_monthly,\
-           heat_demand_profile_monthly, excess_heat_profile_daily, heat_demand_profile_daily
+        annual_cost_of_network, levelised_cost_of_heat_supply, excess_heat_profile_monthly,\
+        heat_demand_profile_monthly, excess_heat_profile_daily, heat_demand_profile_daily
