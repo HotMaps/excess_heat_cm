@@ -85,7 +85,7 @@ def approximate_distance(coordinate_1, coordinate_2):
     """
 
     return ((coordinate_2[0] - coordinate_1[0]) ** 2 + (coordinate_2[1] - coordinate_1[1]) ** 2)**0.5 /\
-           360 * 6378.137 * 2 * np.pi
+        360 * 6378.137 * 2 * np.pi
 
 
 def find_neighbours(sites1, sites2, lon1_header, lat1_header, lon2_header, lat2_header, temp1_header, temp2_header,
@@ -148,15 +148,15 @@ def find_neighbours(sites1, sites2, lon1_header, lat1_header, lon2_header, lat2_
             temp2 = site2[temp2_ind]
             # check if source and sink are close enough
             if small_angle_approximation is False:
-                distance = orthodrome_distance(coordinate1, coordinate2)
+                dist = orthodrome_distance(coordinate1, coordinate2)
             else:
-                distance = approximate_distance(coordinate1, coordinate2)
-            if distance <= max_distance:
+                dist = approximate_distance(coordinate1, coordinate2)
+            if dist <= max_distance:
                 if temp_check(temp1, network_temp, site1_condition) and \
                         temp_check(temp2, network_temp, site2_condition) and \
                         temp_check(temp1, temp2, site1_site2_condition):
                     connections[-1].append(i)
-                    distances[-1].append(distance)
+                    distances[-1].append(dist)
 
     return connections, distances
 

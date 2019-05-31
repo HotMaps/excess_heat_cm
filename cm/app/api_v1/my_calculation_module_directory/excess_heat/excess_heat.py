@@ -1,10 +1,10 @@
 import numpy as np
 import pandas as pd
 from math import floor, log10
-from .read_data import ad_industrial_database_dict
+# from .read_data import ad_industrial_database_dict
 from .read_data import ad_TUW23
-from .read_data import ad_industry_profiles_dict
-from .read_data import ad_residential_heating_profile_dict
+# from .read_data import ad_industry_profiles_dict
+# from .read_data import ad_residential_heating_profile_dict
 from .read_data import ad_industry_profiles_local, ad_residential_heating_profile_local, ad_industrial_database_local
 from .CM1 import find_neighbours, create_normalized_profiles, \
                 cost_of_connection, cost_of_heat_exchanger_source, cost_of_heat_exchanger_sink, cost_after_discount

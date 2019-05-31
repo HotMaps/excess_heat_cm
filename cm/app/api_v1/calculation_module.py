@@ -11,11 +11,13 @@ from .my_calculation_module_directory import run_cm
 
 """ Entry point of the calculation module function"""
 
-#TODO: CM provider must "change this code"
-#TODO: CM provider must "not change input_raster_selection,output_raster  1 raster input => 1 raster output"
-#TODO: CM provider can "add all the parameters he needs to run his CM
-#TODO: CM provider can "return as many indicators as he wants"
-def calculation(output_directory, inputs_raster_selection, input_vector_selection, inputs_parameter_selection,nuts):
+# TODO: CM provider must "change this code"
+# TODO: CM provider must "not change input_raster_selection,output_raster  1 raster input => 1 raster output"
+# TODO: CM provider can "add all the parameters he needs to run his CM
+# TODO: CM provider can "return as many indicators as he wants"
+
+
+def calculation(output_directory, inputs_raster_selection, input_vector_selection, inputs_parameter_selection, nuts):
     """ def calculation()"""
     '''
     inputs:
@@ -40,18 +42,18 @@ def calculation(output_directory, inputs_raster_selection, input_vector_selectio
     transmission_line_threshold = float(inputs_parameter_selection["transmission_line_threshold"])
 
     nuts2_id = nuts
-    print('type nuts',type(nuts2_id))
+    print('type nuts', type(nuts2_id))
 
-    #industrial_sites = inputs_vector_selection["industrial_database"]
+    # industrial_sites = inputs_vector_selection["industrial_database"]
 
-    #lp_chemical = inputs_vector_selection["load_profile_industry_chemicals_and_petrochemicals_yearlong_2018"]
-    #lp_food = inputs_vector_selection["load_profile_industry_food_and_tobacco_yearlong_2018"]
-    #lp_iron = inputs_vector_selection["load_profile_industry_iron_and_steel_yearlong_2018"]
-    #lp_non_metalic = inputs_vector_selection["load_profile_industry_non_metalic_minerals_yearlong_2018"]
-    #lp_paper = inputs_vector_selection["load_profile_industry_paper_yearlong_2018"]
-    #industry_profiles = [lp_chemical, lp_food, lp_iron, lp_non_metalic, lp_paper]
+    # lp_chemical = inputs_vector_selection["load_profile_industry_chemicals_and_petrochemicals_yearlong_2018"]
+    # lp_food = inputs_vector_selection["load_profile_industry_food_and_tobacco_yearlong_2018"]
+    # lp_iron = inputs_vector_selection["load_profile_industry_iron_and_steel_yearlong_2018"]
+    # lp_non_metalic = inputs_vector_selection["load_profile_industry_non_metalic_minerals_yearlong_2018"]
+    # lp_paper = inputs_vector_selection["load_profile_industry_paper_yearlong_2018"]
+    # industry_profiles = [lp_chemical, lp_food, lp_iron, lp_non_metalic, lp_paper]
 
-    #sink_profiles = inputs_vector_selection["load_profile_residential_heating_yearlong_2010"]
+    # sink_profiles = inputs_vector_selection["load_profile_residential_heating_yearlong_2010"]
 
     output_raster1 = generate_output_file_tif(output_directory)
     output_raster2 = generate_output_file_tif(output_directory)
