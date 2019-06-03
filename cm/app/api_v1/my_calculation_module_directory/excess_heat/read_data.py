@@ -9,6 +9,7 @@ from shapely.geometry import Point, Polygon, MultiPolygon
 from shapely.wkb import loads
 import numpy as np
 
+
 def extract_coordinates_from_wkb_point(point):
     """
     Function extracting the coordinates from a well known byte hexadecimal string.
@@ -22,7 +23,7 @@ def extract_coordinates_from_wkb_point(point):
     return geometry.x, geometry.y
 
 
-def ad_industrial_database_dict(dict):
+def ad_industrial_database_dict(dictionary):
     country_to_nuts0 = {"Austria": "AT", "Belgium": "BE", "Bulgaria": "BG", "Cyprus": "CY", "Czech Republic": "CZ",
                         "Germany": "DE", "Denmark": "DK", "Estonia": "EE", "Finland": "FI", "France": "FR",
                         "Greece": "EL", "Hungary": "HU", "Croatia": "HR", "Ireland": "IE", "Italy": "IT",
@@ -32,7 +33,7 @@ def ad_industrial_database_dict(dict):
                         "Slovenia": "SI", "Slovakia": "SK", "United Kingdom": "UK", "Albania": "AL", "Montenegro": "ME",
                         "North Macedonia": "MK", "Serbia": "RS", "Turkey": "TR", "Switzerland": "CH", "Iceland": "IS",
                         "Liechtenstein": "LI", "Norway": "NO"}
-    raw_data = pd.DataFrame(dict["industrial_database"])
+    raw_data = pd.DataFrame(dictionary["industrial_database"])
     raw_data = raw_data.loc[:, ("geom", "subsector",  "country", "excess_heat_100_200c", "excess_heat_200_500c",
                                 "excess_heat_500c")]
     raw_data["Lon"] = ""
@@ -55,10 +56,8 @@ def ad_industrial_database_dict(dict):
     raw_data["excess_heat_200_500c"] = pd.to_numeric(raw_data["excess_heat_200_500c"])
     raw_data["excess_heat_500c"] = pd.to_numeric(raw_data["excess_heat_500c"])
 
-
     for i, site in raw_data.iterrows():
         # check if heat at specific temperature range is available
-        # TODO deal with units; hard coded temp ranges?
         if not pd.isna(site["excess_heat_100_200c"]) and site["excess_heat_100_200c"] != "" and site["excess_heat_100_200c"] != 0:
             data.loc[data.shape[0]] = (site["Lon"], site["Lat"], site["Nuts0"], site["subsector"],
                                        1000*site["excess_heat_100_200c"], 150)
@@ -138,12 +137,14 @@ def ad_TUW23(out_shp_label, nuts2_id):
 
 
 def ad_industry_profiles_dict(dicts):
-    dict_names = ["load_profile_industry_chemicals_and_petrochemicals_yearlong_2018", "load_profile_industry_food_and_tobacco_yearlong_2018",
-                  "load_profile_industry_iron_and_steel_yearlong_2018", "load_profile_industry_non_metalic_minerals_yearlong_2018",
+    dict_names = ["load_profile_industry_chemicals_and_petrochemicals_yearlong_2018",
+                  "load_profile_industry_food_and_tobacco_yearlong_2018",
+                  "load_profile_industry_iron_and_steel_yearlong_2018",
+                  "load_profile_industry_non_metalic_minerals_yearlong_2018",
                   "load_profile_industry_paper_yearlong_2018"]
     data = []
-    for name, dict in zip(dict_names, dicts):
-        raw_data = pd.DataFrame(dict[name])
+    for name, dictionary in zip(dict_names, dicts):
+        raw_data = pd.DataFrame(dictionary[name])
         raw_data = raw_data.loc[:, ("NUTS0_code", "process", "hour", "load")]
         raw_data["load"] = pd.to_numeric(raw_data["load"])
         raw_data["hour"] = pd.to_numeric(raw_data["hour"])
@@ -152,9 +153,9 @@ def ad_industry_profiles_dict(dicts):
     return data
 
 
-def ad_residential_heating_profile_dict(dict):
+def ad_residential_heating_profile_dict(dictionary):
 
-    data = pd.DataFrame(dict["load_profile_residential_heating_yearlong_2010"])
+    data = pd.DataFrame(dictionary["load_profile_residential_heating_yearlong_2010"])
     data = data.loc[:, ("NUTS2_code", "process", "hour", "load")]
     data["load"] = pd.to_numeric(data["load"])
     data["hour"] = pd.to_numeric(data["hour"])
@@ -230,14 +231,14 @@ def ad_industrial_database_local(nuts0_ids):
     """
 
     country_to_nuts0 = {"Austria": "AT", "Belgium": "BE", "Bulgaria": "BG", "Cyprus": "CY", "Czech Republic": "CZ",
-                    "Germany": "DE", "Denmark": "DK", "Estonia": "EE", "Finland": "FI", "France": "FR",
-                    "Greece": "EL", "Hungary": "HU", "Croatia": "HR", "Ireland": "IE", "Italy": "IT",
-                    "Lithuania": "LT", "Luxembourg": "LU", "Latvia": "LV", "Malta": "MT", "Netherland": "Nl",
-                    "Netherlands": "Nl",
-                    "Poland": "PL", "Portugal": "PT", "Romania": "RO", "Spain": "ES", "Sweden": "SE",
-                    "Slovenia": "SI", "Slovakia": "SK", "United Kingdom": "UK", "Albania": "AL", "Montenegro": "ME",
-                    "North Macedonia": "MK", "Serbia": "RS", "Turkey": "TR", "Switzerland": "CH", "Iceland": "IS",
-                    "Liechtenstein": "LI", "Norway": "NO"}
+                        "Germany": "DE", "Denmark": "DK", "Estonia": "EE", "Finland": "FI", "France": "FR",
+                        "Greece": "EL", "Hungary": "HU", "Croatia": "HR", "Ireland": "IE", "Italy": "IT",
+                        "Lithuania": "LT", "Luxembourg": "LU", "Latvia": "LV", "Malta": "MT", "Netherland": "Nl",
+                        "Netherlands": "Nl",
+                        "Poland": "PL", "Portugal": "PT", "Romania": "RO", "Spain": "ES", "Sweden": "SE",
+                        "Slovenia": "SI", "Slovakia": "SK", "United Kingdom": "UK", "Albania": "AL", "Montenegro": "ME",
+                        "North Macedonia": "MK", "Serbia": "RS", "Turkey": "TR", "Switzerland": "CH", "Iceland": "IS",
+                        "Liechtenstein": "LI", "Norway": "NO"}
     path = os.path.dirname(
            os.path.dirname(os.path.abspath(__file__)))
     path = os.path.join(os.path.join(path, "data"), "Industrial_Database.csv")

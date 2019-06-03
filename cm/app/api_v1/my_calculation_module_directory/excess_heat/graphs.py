@@ -224,9 +224,8 @@ class NetworkGraph:
         self.max_flow_graph = g
 
         self.max_flow_graph.vs["color"] = ["red"] * self.number_of_sources + ["blue"] * self.number_of_sinks + \
-                                                ["red"] * len(self.connecting_node_of_source_correspondence) + \
-                                                ["blue"] * len(self.connecting_node_of_sink_correspondence) + ["red"] +\
-                                                ["blue"]
+            ["red"] * len(self.connecting_node_of_source_correspondence) + \
+            ["blue"] * len(self.connecting_node_of_sink_correspondence) + ["red"] + ["blue"]
 
     def return_adjacency_lists(self):
         """
@@ -494,8 +493,6 @@ class NetworkGraph:
                 sink_correspondence_coordinates[correspondence] = coordinate
         sink_correspondence_coordinates = [sink_correspondence_coordinates[k] for k in sink_correspondence_coordinates]
 
-
-        # TODO automate proper layout and scaling of plot
         plot(self.correspondence_graph, layout=source_coordinates + sink_coordinates +
              source_correspondence_coordinates + sink_correspondence_coordinates, bbox=(8000, 8000), vertex_size=5,
              edge_width=2)
@@ -536,7 +533,6 @@ class NetworkGraph:
         infinite_source_coordinate = [(mean_x, y_min - 0.2 * delta_y)]
         infinite_sink_coordinate = [(mean_x, y_max + 0.2*delta_y)]
 
-        # TODO automate proper layout and scaling of plot
         plot(self.max_flow_graph, layout=source_coordinates + sink_coordinates +
              source_correspondence_coordinates + sink_correspondence_coordinates + infinite_source_coordinate +
              infinite_sink_coordinate, bbox=(1000, 1000), vertex_size=5,

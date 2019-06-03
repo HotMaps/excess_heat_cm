@@ -19,7 +19,8 @@ round_to_n = lambda x, n: round(x, -int(floor(log10(x))) + (n - 1))
 
 def create_transmission_line_shp(transmission_lines, flows, temperatures, costs, lengths, file):
     with fiona.open(file,  "w", crs=from_epsg(4326), driver=output_driver, schema=schema) as shp:
-        for transmission_line, flow, temperature, cost, length in zip(transmission_lines, flows, temperatures, costs, lengths):
+        for transmission_line, flow, temperature, cost, length in zip(transmission_lines, flows, temperatures, costs,
+                                                                      lengths):
             line = {
                 "geometry": {
                     "type": "LineString",
@@ -33,12 +34,3 @@ def create_transmission_line_shp(transmission_lines, flows, temperatures, costs,
                 ])
             }
             shp.write(line)
-
-
-if __name__ == "__main__":
-    transmissions = [((0,0), (1,1)), ((1,1), (2,1))]
-    flows = [2, 3]
-    temperatures = [100, 200]
-    costs = [100000, 200000]
-    lengths = [4, 5]
-    create_transmission_line_shp(transmissions, flows, temperatures, costs, lengths, "./test.shp")
