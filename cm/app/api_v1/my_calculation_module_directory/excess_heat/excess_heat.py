@@ -208,6 +208,10 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
     excess_heat_profile_daily = np.mean(excess_heat_profile_daily, axis=0)
     heat_demand_profile_daily = np.mean(heat_demand_profile_daily, axis=0)
 
+    excess_heat_profile_monthly = np.abs(excess_heat_profile_monthly)
+    heat_demand_profile_monthly = np.abs(heat_demand_profile_monthly)
+    excess_heat_profile_daily = np.abs(excess_heat_profile_daily)
+    heat_demand_profile_daily = np.abs(heat_demand_profile_daily)
     excess_heat_profile_monthly = excess_heat_profile_monthly.tolist()
     heat_demand_profile_monthly = heat_demand_profile_monthly.tolist()
     excess_heat_profile_daily = excess_heat_profile_daily.tolist()
