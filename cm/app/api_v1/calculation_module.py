@@ -90,7 +90,19 @@ def calculation(output_directory, inputs_raster_selection, input_vector_selectio
 
     result['name'] = 'CM Excess heat transport potential'
 
-    round_to_n = lambda x, n: round(x, -int(floor(log10(x))) + (n - 1))
+    def round_to_n(x, n):
+        length = 0
+        if x > 1:
+            while x > 1:
+                x /= 10
+                length += 1
+        else:
+            while x < 1:
+                x *= 10
+                length -= 1
+
+        return round(x, n) * 10 ** length
+
     result['indicator'] = [{"unit": "GWh", "name": "Total heat demand in GWh within the selected zone",
                             "value": str(total_heat_demand)},
                            {"unit": "GWh", "name": "Total district heating potential in GWh within the selected zone",

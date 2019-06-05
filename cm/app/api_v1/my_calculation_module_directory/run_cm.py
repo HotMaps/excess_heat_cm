@@ -44,7 +44,19 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
         excess_heat(output_shp2, search_radius, investment_period, discount_rate, cost_factor, operational_costs,
                     transmission_line_threshold, nuts2_id, output_transmission_lines)
 
-    round_to_n = lambda x, n: round(x, -int(floor(log10(x))) + (n - 1))
+    def round_to_n(x, n):
+        length = 0
+        if x > 1:
+            while x > 1:
+                x /= 10
+                length += 1
+        else:
+            while x < 1:
+                x *= 10
+                length -= 1
+
+        return round(x, n) * 10 ** length
+
     graphics = [
         {
             "type": "bar",
@@ -85,13 +97,13 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
                 "datasets": [{
                     "label": "Heat demand",
                     "borderColor": "#3e95cd",
-                    "backgroundColor": "rgba(62, 149, 205, 0.1)",
+                    "backgroundColor": "rgba(62, 149, 205, 0.35)",
                     "data": heat_demand_profile_monthly
                     },
                     {
                     "label": "Excess heat",
                     "borderColor": "#fe7c60",
-                    "backgroundColor": "rgba(254, 124, 96, 0.1)",
+                    "backgroundColor": "rgba(254, 124, 96, 0.35)",
                     "data": excess_heat_profile_monthly
                     }
                     ]
@@ -106,12 +118,12 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
                 "datasets": [{
                     "label": "Heat demand",
                     "borderColor": "#3e95cd",
-                    "backgroundColor": "rgba(62, 149, 205, 0.1)",
+                    "backgroundColor": "rgba(62, 149, 205, 0.35)",
                     "data": heat_demand_profile_daily},
                     {
                     "label": "Excess heat",
                     "borderColor": "#fe7c60",
-                    "backgroundColor": "rgba(254, 124, 96, 0.1)",
+                    "backgroundColor": "rgba(254, 124, 96, 0.35)",
                     "data": excess_heat_profile_daily
                     }
                     ]

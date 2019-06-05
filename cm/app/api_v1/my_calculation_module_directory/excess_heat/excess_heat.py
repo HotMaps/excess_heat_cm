@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from math import floor, log10
+from itertools import repeat
 # from .read_data import ad_industrial_database_dict
 from .read_data import ad_TUW23
 # from .read_data import ad_industry_profiles_dict
@@ -15,6 +15,20 @@ from .graphs import NetworkGraph
 
 
 np.seterr(divide='ignore', invalid='ignore')
+
+
+def round_to_n(x, n):
+    length = 0
+    if x > 1:
+        while x > 1:
+            x /= 10
+            length += 1
+    else:
+        while x < 1:
+            x *= 10
+            length -= 1
+
+    return round(x, n) * 10 ** length
 
 
 def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_factor, operational_costs,
@@ -218,11 +232,10 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
     heat_demand_profile_daily = heat_demand_profile_daily.tolist()
 
     # round to 3 significant digits
-    round_to_3 = lambda x: round(x, -int(floor(log10(x))) + (3 - 1))
-    excess_heat_profile_monthly = list(map(round_to_3, excess_heat_profile_monthly))
-    heat_demand_profile_monthly = list(map(round_to_3, heat_demand_profile_monthly))
-    excess_heat_profile_daily = list(map(round_to_3, excess_heat_profile_daily))
-    heat_demand_profile_daily = list(map(round_to_3, heat_demand_profile_daily))
+    excess_heat_profile_monthly = list(map(round_to_n, excess_heat_profile_monthly, repeat(3)))
+    heat_demand_profile_monthly = list(map(round_to_n, heat_demand_profile_monthly, repeat(3)))
+    excess_heat_profile_daily = list(map(round_to_n, excess_heat_profile_daily, repeat(3)))
+    heat_demand_profile_daily = list(map(round_to_n, heat_demand_profile_daily, repeat(3)))
 
     # catch any negative value
     if total_excess_heat_available < 0:

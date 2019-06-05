@@ -14,7 +14,19 @@ schema = {
                 ])
                 }
 
-round_to_n = lambda x, n: round(x, -int(floor(log10(x))) + (n - 1))
+
+def round_to_n(x, n):
+    length = 0
+    if x > 1:
+        while x > 1:
+            x /= 10
+            length += 1
+    else:
+        while x < 1:
+            x *= 10
+            length -= 1
+
+    return round(x, n) * 10 ** length
 
 
 def create_transmission_line_shp(transmission_lines, flows, temperatures, costs, lengths, file):
