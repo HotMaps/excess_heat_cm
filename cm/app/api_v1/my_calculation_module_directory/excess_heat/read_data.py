@@ -110,7 +110,7 @@ def ad_TUW23(out_shp_label, nuts2_id):
             coherent_areas_transformed.append(multi_poly)
 
     data = []
-    delta = 0.015
+    delta = 0.12
     for i, coherent_area in enumerate(coherent_areas_transformed):
         entry_points = []
         (minx, miny, maxx, maxy) = coherent_area.bounds
@@ -222,7 +222,7 @@ def ad_residential_heating_profile_local(nuts2_ids):
     return data
 
 
-def ad_industrial_database_local(nuts0_ids):
+def ad_industrial_database_local(nuts2_ids):
     """
     loads data of heat sources given by a csv file.
 
@@ -248,10 +248,10 @@ def ad_industrial_database_local(nuts0_ids):
         delimiter = csv.Sniffer().sniff(csv_file.readline()).delimiter
 
     raw_data = pd.read_csv(path, sep=delimiter, usecols=("geom", "Subsector", "Excess_Heat_100-200C",
-                                                         "Excess_Heat_200-500C", "Excess_Heat_500C", "Country"))
+                                                         "Excess_Heat_200-500C", "Excess_Heat_500C", "Country", "Nuts2_ID"))
 
     # dataframe for processed data
-    data = pd.DataFrame(columns=("ellipsoid", "Lon", "Lat", "Nuts0_ID", "Subsector", "Excess_heat", "Temperature"))
+    data = pd.DataFrame(columns=("ellipsoid", "Lon", "Lat", "Nuts0_ID", "Subsector", "Excess_heat", "Temperature", "Nuts2_ID"))
     for i, site in raw_data.iterrows():
         # check if site location is available
         if not pd.isna(site["geom"]):
@@ -269,14 +269,14 @@ def ad_industrial_database_local(nuts0_ids):
             # TODO deal with units; hard coded temp ranges?
             if not pd.isna(site["Excess_Heat_100-200C"]) and site["Excess_Heat_100-200C"] != "" and site["Excess_Heat_100-200C"] != 0:
                 data.loc[data.shape[0]] = (ellipsoid, lon, lat, nuts0, site["Subsector"],
-                                           site["Excess_Heat_100-200C"] * 1000, 150)
+                                           site["Excess_Heat_100-200C"] * 1000, 150, site["Nuts2_ID"])
             if not pd.isna(site["Excess_Heat_200-500C"]) and site["Excess_Heat_200-500C"] != "" and site["Excess_Heat_200-500C"] != 0:
                 data.loc[data.shape[0]] = (ellipsoid, lon, lat, nuts0,
-                                           site["Subsector"], site["Excess_Heat_200-500C"] * 1000, 350)
+                                           site["Subsector"], site["Excess_Heat_200-500C"] * 1000, 350, site["Nuts2_ID"])
             if not pd.isna(site["Excess_Heat_500C"]) and site["Excess_Heat_500C"] != "" and site["Excess_Heat_500C"] != 0:
                 data.loc[data.shape[0]] = (ellipsoid, lon, lat, nuts0,
-                                           site["Subsector"], site["Excess_Heat_500C"] * 1000, 500)
+                                           site["Subsector"], site["Excess_Heat_500C"] * 1000, 500, site["Nuts2_ID"])
 
-    data = data[data["Nuts0_ID"].isin(nuts0_ids)]
+    data = data[data["Nuts2_ID"].isin(nuts2_ids)]
 
     return data

@@ -46,7 +46,7 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
 
     # load heat source and heat sink data
     # heat_sources = ad_industrial_database_dict(sources)
-    heat_sources = ad_industrial_database_local(nuts0_id)
+    heat_sources = ad_industrial_database_local(nuts2_id)
 
     heat_sinks = ad_TUW23(sinks, nuts2_id[0])
     # escape main routine if dh_potential cm did not produce shp file
