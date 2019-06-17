@@ -188,7 +188,10 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
     total_excess_heat_connected /= 1000  # GWh
     cost_with_discount = cost_after_discount(total_cost_scalar, discount_rate/100, investment_period)
     annual_cost_of_network = cost_with_discount / investment_period + operational_costs/100 * total_cost_scalar
-    levelised_cost_of_heat_supply = annual_cost_of_network / total_flow_scalar / 1e6 * 1e2  # ct/kWh
+    if total_flow_scalar > 0:
+        levelised_cost_of_heat_supply = annual_cost_of_network / total_flow_scalar / 1e6 * 1e2  # ct/kWh
+    else:
+        levelised_cost_of_heat_supply = 0
     # check for zero divisions
     if total_flow_scalar == 0 and levelised_cost_of_heat_supply == 0:
         levelised_cost_of_heat_supply = 0
