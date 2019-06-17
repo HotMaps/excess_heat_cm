@@ -110,7 +110,7 @@ def ad_TUW23(out_shp_label, nuts2_id):
             coherent_areas_transformed.append(multi_poly)
 
     data = []
-    delta = 0.12
+    delta = 0.015
     for i, coherent_area in enumerate(coherent_areas_transformed):
         entry_points = []
         (minx, miny, maxx, maxy) = coherent_area.bounds
