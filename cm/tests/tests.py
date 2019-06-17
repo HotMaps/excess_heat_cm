@@ -65,7 +65,7 @@ class TestAPI(unittest.TestCase):
         inputs_parameter_selection["discount_rate"] = 3
         inputs_parameter_selection["cost_factor"] = 1
         inputs_parameter_selection["operational_costs"] = 2
-        inputs_parameter_selection["transmission_line_threshold"] = 2
+        inputs_parameter_selection["transmission_line_threshold"] = 0.01
         nuts = ['DK05']
 
         inputs_parameter_selection["pix_threshold"] = 100

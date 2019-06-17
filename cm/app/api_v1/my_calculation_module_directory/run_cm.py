@@ -50,6 +50,8 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
             while x > 1:
                 x /= 10
                 length += 1
+        elif x == 0:
+            return 0
         else:
             while x < 1:
                 x *= 10

@@ -23,6 +23,8 @@ def round_to_n(x, n):
         while x > 1:
             x /= 10
             length += 1
+    elif x == 0:
+        return 0
     else:
         while x < 1:
             x *= 10
@@ -181,6 +183,7 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
 
     total_excess_heat_available = heat_sources["Excess_heat"].sum() / 1000  # GWh
     total_excess_heat_connected = 0
+
     for i, source_flow in enumerate(source_flows):
         # only consider sources which deliver heat
         if np.sum(source_flow) > 0:
@@ -198,7 +201,6 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
     else:
         if total_flow_scalar == 0:
             levelised_cost_of_heat_supply = 0
-
     # prepare hourly profiles for visualisation
     heat_source_profiles = heat_source_profiles.transpose()
     heat_sink_profiles = heat_sink_profiles.transpose()
@@ -210,7 +212,6 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
     heat_demand_profile = np.zeros(8760)
     for i, sink_flow in enumerate(sink_flows):
         heat_demand_profile = heat_demand_profile + heat_sink_profiles[i]
-
     # reshape to monthly format
     excess_heat_profile_monthly = excess_heat_profile.reshape((12, 730))
     heat_demand_profile_monthly = heat_demand_profile.reshape((12, 730))

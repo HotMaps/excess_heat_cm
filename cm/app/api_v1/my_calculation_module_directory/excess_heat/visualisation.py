@@ -21,6 +21,8 @@ def round_to_n(x, n):
         while x > 1:
             x /= 10
             length += 1
+    elif x == 0:
+        return 0
     else:
         while x < 1:
             x *= 10

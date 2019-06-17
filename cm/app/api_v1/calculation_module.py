@@ -96,6 +96,8 @@ def calculation(output_directory, inputs_raster_selection, input_vector_selectio
             while x > 1:
                 x /= 10
                 length += 1
+        elif x == 0:
+            return 0
         else:
             while x < 1:
                 x *= 10
