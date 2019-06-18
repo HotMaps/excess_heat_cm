@@ -110,7 +110,7 @@ def ad_TUW23(out_shp_label, nuts2_id):
             coherent_areas_transformed.append(multi_poly)
 
     data = []
-    delta = 0.12
+    delta = 0.015
     for i, coherent_area in enumerate(coherent_areas_transformed):
         entry_points = []
         (minx, miny, maxx, maxy) = coherent_area.bounds
@@ -121,7 +121,7 @@ def ad_TUW23(out_shp_label, nuts2_id):
                 if coherent_area.buffer(0).contains(Point(x, y)):
                     entry_points.append((x, y))
         if len(entry_points) == 0:
-            entry_points.append((maxx, maxy))
+            entry_points.append(((maxx + minx) / 2, (maxy + miny) / 2))
         induvidual_heat_demand = coherent_area.heat_dem / len(entry_points)
         for entry_point in entry_points:
             data.append([*entry_point, induvidual_heat_demand, i])
