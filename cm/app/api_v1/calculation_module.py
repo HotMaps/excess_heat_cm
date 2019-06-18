@@ -2,7 +2,7 @@ from osgeo import gdal
 from math import log10, floor
 import os
 import sys
-
+from ..constant import CM_NAME
 from ..helper import generate_output_file_tif, create_zip_shapefiles, generate_output_file_shp
 import time
 """ Entry point of the calculation module function"""
@@ -88,7 +88,7 @@ def calculation(output_directory, inputs_raster_selection, input_vector_selectio
         result["vector_layers"] = [{"name": "shapefile of coherent areas with their potential", "path": output_shp2},
                                    {"name": "Transmission lines as shapefile", "path": output_transmission_lines}]
 
-    result['name'] = 'CM Excess heat transport potential'
+    result['name'] = CM_NAME
 
     def round_to_n(x, n):
         length = 0
