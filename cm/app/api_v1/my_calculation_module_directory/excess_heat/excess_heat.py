@@ -7,7 +7,7 @@ from .read_data import ad_TUW23
 # from .read_data import ad_residential_heating_profile_dict
 from .read_data import ad_industry_profiles_local, ad_residential_heating_profile_local, ad_industrial_database_local
 from .CM1 import find_neighbours, create_normalized_profiles, \
-                cost_of_connection, cost_of_heat_exchanger_source, cost_of_heat_exchanger_sink, cost_after_discount
+                cost_of_connection, cost_of_heat_exchanger_source, cost_of_heat_exchanger_sink, annuity_costs
 
 from .visualisation import create_transmission_line_shp
 
@@ -189,8 +189,8 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
         if np.sum(source_flow) > 0:
             total_excess_heat_connected += heat_sources.iloc[i]["Excess_heat"]
     total_excess_heat_connected /= 1000  # GWh
-    cost_with_discount = cost_after_discount(total_cost_scalar, discount_rate/100, investment_period)
-    annual_cost_of_network = cost_with_discount / investment_period + operational_costs/100 * total_cost_scalar
+    annuity = annuity_costs(total_cost_scalar, discount_rate/100, investment_period)
+    annual_cost_of_network = annuity + operational_costs/100 * total_cost_scalar
     if total_flow_scalar > 0:
         levelised_cost_of_heat_supply = annual_cost_of_network / total_flow_scalar / 1e6 * 1e2  # ct/kWh
     else:

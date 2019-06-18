@@ -264,5 +264,5 @@ def cost_of_heat_exchanger_sink(hourly_heat_flow, order=24):
         return capacity * (100000 + 90000)
 
 
-def cost_after_discount(cost, discount_rate, years):
-    return cost * (discount_rate + 1) ** years + ((discount_rate + 1) ** years - 1) / ((discount_rate + 1) - 1)
+def annuity_costs(cost, discount_rate, years):
+    return cost * (discount_rate + 1) ** years * discount_rate / ((discount_rate + 1) ** years - 1)
