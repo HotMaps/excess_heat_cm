@@ -3,8 +3,8 @@ import pandas as pd
 from itertools import repeat
 # from .read_data import ad_industrial_database_dict
 from .read_data import ad_TUW23
-# from .read_data import ad_industry_profiles_dict
-# from .read_data import ad_residential_heating_profile_dict
+from .read_data import ad_industry_profiles_dict
+from .read_data import ad_residential_heating_profile_dict
 from .read_data import ad_industry_profiles_local, ad_residential_heating_profile_local, ad_industrial_database_local
 from .CM1 import find_neighbours, create_normalized_profiles, \
                 cost_of_connection, cost_of_heat_exchanger_source, cost_of_heat_exchanger_sink, annuity_costs
@@ -34,7 +34,7 @@ def round_to_n(x, n):
 
 
 def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_factor, operational_costs,
-                transmission_line_threshold, nuts2_id, output_transmission_lines):
+                transmission_line_threshold, nuts2_id, output_transmission_lines, industry_profiles, sink_profiles):
 
     industrial_subsector_map = {"Iron and steel": "iron_and_steel", "Refineries": "chemicals_and_petrochemicals",
                                 "Chemical industry": "chemicals_and_petrochemicals", "Cement": "non_metalic_minerals",
@@ -57,8 +57,8 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
     # load heating profiles for sources and sinks
     # industry_profiles = ad_industry_profiles_dict(source_profiles)
     # residential_heating_profile = ad_residential_heating_profile_dict(sink_profiles)
-    industry_profiles = ad_industry_profiles_local(nuts0_id)
-    residential_heating_profile = ad_residential_heating_profile_local([nuts2_id[0]])
+    industry_profiles = ad_industry_profiles_dict(industry_profiles)
+    residential_heating_profile = ad_residential_heating_profile_dict(sink_profiles)
 
     # normalize loaded profiles
     normalized_heat_profiles = dict()
