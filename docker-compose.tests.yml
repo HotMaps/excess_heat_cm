@@ -2,7 +2,7 @@
 version: '3.2'
 
 services:
-  base_calculation_module:
+  excess_heat_cm:
     build:
       context: ./cm
       dockerfile: Dockerfile
