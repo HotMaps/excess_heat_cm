@@ -1,5 +1,4 @@
-{"load_profile_industry_non_metalic_minerals_yearlong_2018": [
-  {
+[  {
     "NUTS0_code": "DK",
     "process": "non_metalic_minerals",
     "year": "2018",
@@ -70080,4 +70079,3 @@
     "datetime": "12/31/2018 23:00"
   }
 ]
-}

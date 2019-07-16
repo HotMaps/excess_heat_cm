@@ -1,5 +1,4 @@
-{"industrial_database": [
-  {
+[  {
     "id": "285",
     "siteid": "285",
     "companyname": "STATOIL REFINING DENMARK A/S",
@@ -930,4 +929,3 @@
     "fk_time_id": "179862"
   }
 ]
-}

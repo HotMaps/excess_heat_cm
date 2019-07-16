@@ -1,5 +1,4 @@
-{"load_profile_industry_chemicals_and_petrochemicals_yearlong_2018": [
-  {
+[  {
     "NUTS0_code": "DK",
     "process": "chemicals_and_petrochemicals",
     "year": "2018",
@@ -70080,4 +70079,4 @@
     "datetime": "12/31/2018 23:00"
   }
 ]
-}
+

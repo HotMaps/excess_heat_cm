@@ -137,14 +137,9 @@ def ad_TUW23(out_shp_label, nuts2_id):
 
 
 def ad_industry_profiles_dict(dicts):
-    dict_names = ["load_profile_industry_chemicals_and_petrochemicals_yearlong_2018",
-                  "load_profile_industry_food_and_tobacco_yearlong_2018",
-                  "load_profile_industry_iron_and_steel_yearlong_2018",
-                  "load_profile_industry_non_metalic_minerals_yearlong_2018",
-                  "load_profile_industry_paper_yearlong_2018"]
     data = []
-    for name, dictionary in zip(dict_names, dicts):
-        raw_data = pd.DataFrame(dictionary[name])
+    for dictionary in dicts:
+        raw_data = pd.read_json(dictionary, orient='records')
         raw_data = raw_data.loc[:, ("NUTS0_code", "process", "hour", "load")]
         raw_data["load"] = pd.to_numeric(raw_data["load"])
         raw_data["hour"] = pd.to_numeric(raw_data["hour"])
@@ -155,7 +150,7 @@ def ad_industry_profiles_dict(dicts):
 
 def ad_residential_heating_profile_dict(dictionary):
 
-    data = pd.DataFrame(dictionary["load_profile_residential_heating_yearlong_2010"])
+    data = pd.read_json(dictionary, orient='records')
     data = data.loc[:, ("NUTS2_code", "process", "hour", "load")]
     data["load"] = pd.to_numeric(data["load"])
     data["hour"] = pd.to_numeric(data["hour"])

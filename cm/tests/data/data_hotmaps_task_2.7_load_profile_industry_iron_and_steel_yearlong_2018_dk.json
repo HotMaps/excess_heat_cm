@@ -1,5 +1,4 @@
-{"load_profile_industry_iron_and_steel_yearlong_2018": [
-  {
+[  {
     "NUTS0_code": "DK",
     "process": "iron_and_steel",
     "year": "2018",
@@ -70080,4 +70079,3 @@
     "datetime": "12/31/2018 23:00"
   }
 ]
-}
