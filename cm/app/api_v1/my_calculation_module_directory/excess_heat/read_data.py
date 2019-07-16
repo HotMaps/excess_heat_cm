@@ -140,7 +140,8 @@ def ad_industry_profiles_dict(dicts):
     data = []
     for dictionary in dicts:
         raw_data = pd.read_json(dictionary, orient='records')
-        raw_data = raw_data.loc[:, ("NUTS0_code", "process", "hour", "load")]
+        raw_data = raw_data.loc[:, ("nuts0_code", "process", "hour", "load")]
+        raw_data.rename(columns={"nuts0_code": "NUTS0_code"}, inplace=True)
         raw_data["load"] = pd.to_numeric(raw_data["load"])
         raw_data["hour"] = pd.to_numeric(raw_data["hour"])
         data.append(raw_data)
@@ -151,7 +152,8 @@ def ad_industry_profiles_dict(dicts):
 def ad_residential_heating_profile_dict(dictionary):
 
     data = pd.read_json(dictionary, orient='records')
-    data = data.loc[:, ("NUTS2_code", "process", "hour", "load")]
+    data = data.loc[:, ("nuts2_code", "process", "hour", "load")]
+    data.rename(columns={"nuts2_code": "NUTS2_code"}, inplace=True)
     data["load"] = pd.to_numeric(data["load"])
     data["hour"] = pd.to_numeric(data["hour"])
     return data
