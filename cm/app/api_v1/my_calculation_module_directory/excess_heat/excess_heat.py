@@ -118,11 +118,67 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
         heat_sinks, heat_sinks, "Lon", "Lat", "Lon", "Lat", "Temperature", "Temperature", search_radius,
         temperature, "true", "true", "true", small_angle_approximation=True)
 
+    cost_approximation_network = NetworkGraph(source_sink_connections, source_source_connections, sink_sink_connections,
+        range(len(source_source_connections)), heat_sinks["id"])
+    cost_approximation_network.add_edge_attribute("distance", source_sink_distances, source_source_distances, sink_sink_distances)
+    # reduce to minimum spanning tree
+    cost_approximation_network.reduce_to_minimum_spanning_tree("distance")
+
+    heat_source_capacities = heat_sources["Excess_heat"].tolist()
+    heat_sink_capacities = heat_sinks["Heat_demand"].tolist()
+
+    approximated_costs = []
+    approximated_flows = []
+    while cost_approximation_network.return_number_of_edges() > 0:
+        last_flows = [-1]
+        while True:
+            source_flow, sink_flow, connection_flow = cost_approximation_network.maximum_flow(heat_source_capacities, heat_sink_capacities)
+            connection_costs = []
+            connection_lengths = cost_approximation_network.get_edge_attribute("distance")
+
+            for flow, length in zip(connection_flow, connection_lengths):
+                connection_costs.append(cost_of_connection(length, flow/4000, order=1))
+            cost_per_connection = np.array(connection_costs)/np.array(np.sum(connection_flow)) / \
+                investment_period * cost_factor
+
+            heat_exchanger_source_costs = cost_of_heat_exchanger_source(source_flow/4000, order=1)
+            heat_exchanger_sink_costs = cost_of_heat_exchanger_sink(sink_flow/4000, order=1)
+
+            heat_exchanger_source_cost_total = np.sum(heat_exchanger_source_costs) * cost_factor
+            heat_exchanger_sink_cost_total = np.sum(heat_exchanger_sink_costs) * cost_factor
+
+            connection_cost_total = np.sum(connection_costs)
+            # Euro
+            total_cost_scalar = (heat_exchanger_sink_cost_total + heat_exchanger_source_cost_total + connection_cost_total)
+            # GWh
+            total_flow_scalar = np.sum(source_flow) / 1000
+
+            # drop edges with 0 flow and above threshold
+            edges = cost_approximation_network.return_edge_source_target_vertices()
+            for costs, edge in zip(cost_per_connection, edges):
+                if costs < 0:
+                    cost_approximation_network.delete_edges([edge])
+
+
+            # stop if flow does not change anymore
+            if np.sum(source_flow) == np.sum(last_flows):
+                break
+            last_flows = source_flow
+
+        approximated_costs.append(total_cost_scalar)
+        approximated_flows.append(total_flow_scalar)
+        most_expensive = list(cost_per_connection).index(max(cost_per_connection))
+        cost_approximation_network.delete_edges([edges[most_expensive]])
+
+
     network = NetworkGraph(source_sink_connections, source_source_connections, sink_sink_connections,
                            range(len(source_source_connections)), heat_sinks["id"])
     network.add_edge_attribute("distance", source_sink_distances, source_source_distances, sink_sink_distances)
     # reduce to minimum spanning tree
     network.reduce_to_minimum_spanning_tree("distance")
+
+
+
 
     # compute max flow for every hour
     last_flows = [-1]
@@ -241,6 +297,9 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
     excess_heat_profile_daily = list(map(round_to_n, excess_heat_profile_daily, repeat(3)))
     heat_demand_profile_daily = list(map(round_to_n, heat_demand_profile_daily, repeat(3)))
 
+    approximated_costs = list(map(round_to_n, approximated_costs, repeat(3)))
+    approximated_flows = list(map(round_to_n, approximated_flows, repeat(3)))
+
     # catch any negative value
     if total_excess_heat_available < 0:
         total_excess_heat_available = 0
@@ -272,4 +331,4 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
 
     return total_excess_heat_available, total_excess_heat_connected, total_flow_scalar, total_cost_scalar,\
         annual_cost_of_network, levelised_cost_of_heat_supply, excess_heat_profile_monthly,\
-        heat_demand_profile_monthly, excess_heat_profile_daily, heat_demand_profile_daily
+        heat_demand_profile_monthly, excess_heat_profile_daily, heat_demand_profile_daily, approximated_costs, approximated_flows
