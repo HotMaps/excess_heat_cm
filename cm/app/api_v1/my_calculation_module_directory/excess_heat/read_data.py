@@ -25,7 +25,6 @@ def extract_coordinates_from_wkb_point(point):
 
 
 def ad_industrial_database_dict(dictionary):
-    start = time.perf_counter()
     country_to_nuts0 = {"Austria": "AT", "Belgium": "BE", "Bulgaria": "BG", "Cyprus": "CY", "Czech Republic": "CZ",
                         "Germany": "DE", "Denmark": "DK", "Estonia": "EE", "Finland": "FI", "France": "FR",
                         "Greece": "EL", "Hungary": "HU", "Croatia": "HR", "Ireland": "IE", "Italy": "IT",
@@ -140,11 +139,20 @@ def ad_TUW23(out_shp_label, nuts2_id):
 
 
 def ad_industry_profiles_dict(dicts):
+    """
     data = []
     for dictionary in dicts:
         with open(dictionary, 'r') as file:
             raw_data = json_lib.load(file)
         raw_data = pd.DataFrame(raw_data)
+        raw_data = raw_data.loc[:, ("nuts0_code", "process", "hour", "load")]
+        raw_data.rename(columns={"nuts0_code": "NUTS0_code"}, inplace=True)
+        raw_data["load"] = pd.to_numeric(raw_data["load"])
+        raw_data["hour"] = pd.to_numeric(raw_data["hour"])
+        data.append(raw_data)"""
+    data = []
+    for dictionary in dicts:
+        raw_data = pd.read_json(dictionary, orient='records')
         raw_data = raw_data.loc[:, ("nuts0_code", "process", "hour", "load")]
         raw_data.rename(columns={"nuts0_code": "NUTS0_code"}, inplace=True)
         raw_data["load"] = pd.to_numeric(raw_data["load"])
@@ -155,6 +163,7 @@ def ad_industry_profiles_dict(dicts):
 
 
 def ad_residential_heating_profile_dict(dictionary):
+    """
     with open(dictionary, 'r') as file:
             data = json_lib.load(file)
     data = pd.DataFrame(data)
@@ -165,15 +174,12 @@ def ad_residential_heating_profile_dict(dictionary):
 
     """
     data = pd.read_json(dictionary, orient='records')
-    print(time.perf_counter()-start)
     data = data.loc[:, ("nuts2_code", "process", "hour", "load")]
-    print(time.perf_counter() - start)
     data.rename(columns={"nuts2_code": "NUTS2_code"}, inplace=True)
-    print(time.perf_counter() - start)
     data["load"] = pd.to_numeric(data["load"])
     data["hour"] = pd.to_numeric(data["hour"])
-    print(time.perf_counter() - start)
-    print(data)"""
+
+
     return data
 
 
