@@ -25,6 +25,7 @@ def extract_coordinates_from_wkb_point(point):
 
 
 def ad_industrial_database_dict(dictionary):
+    start = time.perf_counter()
     country_to_nuts0 = {"Austria": "AT", "Belgium": "BE", "Bulgaria": "BG", "Cyprus": "CY", "Czech Republic": "CZ",
                         "Germany": "DE", "Denmark": "DK", "Estonia": "EE", "Finland": "FI", "France": "FR",
                         "Greece": "EL", "Hungary": "HU", "Croatia": "HR", "Ireland": "IE", "Italy": "IT",
@@ -37,6 +38,7 @@ def ad_industrial_database_dict(dictionary):
     raw_data = pd.DataFrame(dictionary["industrial_database"])
     raw_data = raw_data.loc[:, ("geom", "subsector",  "country", "excess_heat_100_200c", "excess_heat_200_500c",
                                 "excess_heat_500c")]
+
     raw_data["Lon"] = ""
     raw_data["Lat"] = ""
     raw_data["Nuts0"] = ""
@@ -262,9 +264,10 @@ def ad_industrial_database_local(nuts2_ids):
 
     raw_data = pd.read_csv(path, sep=delimiter, usecols=("geom", "Subsector", "Excess_Heat_100-200C",
                                                          "Excess_Heat_200-500C", "Excess_Heat_500C", "Country", "Nuts2_ID"))
-
+    raw_data = raw_data[raw_data["Nuts2_ID"].isin(nuts2_ids)]
     # dataframe for processed data
     data = pd.DataFrame(columns=("ellipsoid", "Lon", "Lat", "Nuts0_ID", "Subsector", "Excess_heat", "Temperature", "Nuts2_ID"))
+
     for i, site in raw_data.iterrows():
         # check if site location is available
         if not pd.isna(site["geom"]):
@@ -289,7 +292,5 @@ def ad_industrial_database_local(nuts2_ids):
             if not pd.isna(site["Excess_Heat_500C"]) and site["Excess_Heat_500C"] != "" and site["Excess_Heat_500C"] != 0:
                 data.loc[data.shape[0]] = (ellipsoid, lon, lat, nuts0,
                                            site["Subsector"], site["Excess_Heat_500C"] * 1000, 500, site["Nuts2_ID"])
-
-    data = data[data["Nuts2_ID"].isin(nuts2_ids)]
 
     return data

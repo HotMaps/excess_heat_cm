@@ -48,11 +48,11 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
     # load heat source and heat sink data
     # heat_sources = ad_industrial_database_dict(sources)
     heat_sources = ad_industrial_database_local(nuts2_id)
-
     heat_sinks = ad_TUW23(sinks, nuts2_id[0])
+
     # escape main routine if dh_potential cm did not produce shp file
     if not isinstance(heat_sinks, pd.DataFrame):
-        return 0, 0, 0, 0, 0, 0, [0] * 12, [0] * 12, [0] * 24, [0] * 24
+        return 0, 0, 0, 0, 0, 0, [0] * 12, [0] * 12, [0] * 24, [0] * 24, [0], [0]
     # load heating profiles for sources and sinks
     # industry_profiles = ad_industry_profiles_dict(source_profiles)
     # residential_heating_profile = ad_residential_heating_profile_dict(sink_profiles)
