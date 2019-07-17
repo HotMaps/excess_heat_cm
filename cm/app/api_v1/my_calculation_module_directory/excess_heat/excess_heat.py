@@ -13,7 +13,6 @@ from .visualisation import create_transmission_line_shp
 
 from .graphs import NetworkGraph
 
-
 np.seterr(divide='ignore', invalid='ignore')
 
 
@@ -159,7 +158,6 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
                 if costs < 0:
                     cost_approximation_network.delete_edges([edge])
 
-
             # stop if flow does not change anymore
             if np.sum(source_flow) == np.sum(last_flows):
                 break
@@ -170,15 +168,11 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
         most_expensive = list(cost_per_connection).index(max(cost_per_connection))
         cost_approximation_network.delete_edges([edges[most_expensive]])
 
-
     network = NetworkGraph(source_sink_connections, source_source_connections, sink_sink_connections,
                            range(len(source_source_connections)), heat_sinks["id"])
     network.add_edge_attribute("distance", source_sink_distances, source_source_distances, sink_sink_distances)
     # reduce to minimum spanning tree
     network.reduce_to_minimum_spanning_tree("distance")
-
-
-
 
     # compute max flow for every hour
     last_flows = [-1]
