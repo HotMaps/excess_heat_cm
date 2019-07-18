@@ -56,8 +56,10 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
     # load heating profiles for sources and sinks
     # industry_profiles = ad_industry_profiles_dict(source_profiles)
     # residential_heating_profile = ad_residential_heating_profile_dict(sink_profiles)
-    industry_profiles = ad_industry_profiles_dict(industry_profiles)
-    residential_heating_profile = ad_residential_heating_profile_dict(sink_profiles)
+    #industry_profiles = ad_industry_profiles_dict(industry_profiles)
+    #residential_heating_profile = ad_residential_heating_profile_dict(sink_profiles)
+    industry_profiles = ad_industry_profiles_local(nuts0_id)
+    residential_heating_profile = ad_residential_heating_profile_local([nuts2_id[0]])
 
     # normalize loaded profiles
     normalized_heat_profiles = dict()
