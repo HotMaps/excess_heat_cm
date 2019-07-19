@@ -170,7 +170,20 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
         approximated_costs.append(total_cost_scalar)
         approximated_flows.append(total_flow_scalar)
         annuity = annuity_costs(total_cost_scalar, discount_rate / 100, investment_period)
-        approximated_annual_costs.append(annuity + operational_costs / 100 * total_cost_scalar)
+        annual_cost_of_network = annuity + operational_costs / 100 * total_cost_scalar
+
+        if total_flow_scalar > 0:
+            levelised_cost_of_heat_supply = annual_cost_of_network / total_flow_scalar / 1e6 * 1e2  # ct/kWh
+        else:
+            levelised_cost_of_heat_supply = 0
+        # check for zero divisions
+        if total_flow_scalar == 0 and levelised_cost_of_heat_supply == 0:
+            levelised_cost_of_heat_supply = 0
+        else:
+            if total_flow_scalar == 0:
+                levelised_cost_of_heat_supply = 0
+
+        approximated_annual_costs.append(levelised_cost_of_heat_supply)
         print(cost_per_connection)
         if len(cost_per_connection) > 0:
             thresholds.append(max(cost_per_connection))
@@ -181,6 +194,9 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
 
     approximated_costs.reverse()
     approximated_flows.reverse()
+    approximated_annual_costs.reverse()
+    print(approximated_costs)
+    print(approximated_flows)
     thresholds.reverse()
     thresholds_y = []
     threshold_radius = []
@@ -318,6 +334,7 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
 
     approximated_costs = list(map(round_to_n, approximated_costs, repeat(3)))
     approximated_flows = list(map(round_to_n, approximated_flows, repeat(3)))
+    approximated_annual_costs = list(map(round_to_n, approximated_annual_costs, repeat(3)))
     thresholds = list(map(round_to_n, thresholds, repeat(3)))
 
 
