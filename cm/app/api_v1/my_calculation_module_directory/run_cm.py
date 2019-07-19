@@ -40,7 +40,7 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
 
     total_excess_heat_available, total_excess_heat_connected, total_flow_scalar, total_cost_scalar,\
         annual_cost_of_network, levelised_cost_of_heat_supply, excess_heat_profile_monthly,\
-        heat_demand_profile_monthly, excess_heat_profile_daily, heat_demand_profile_daily, approximated_costs, approximated_flows = \
+        heat_demand_profile_monthly, excess_heat_profile_daily, heat_demand_profile_daily, approximated_costs, approximated_flows, thresholds, thresholds_y = \
         excess_heat(output_shp2, search_radius, investment_period, discount_rate, cost_factor, operational_costs,
                     transmission_line_threshold, nuts2_id, output_transmission_lines, industry_profiles, sink_profiles)
 
@@ -94,11 +94,17 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
             "xLabel": "Yearly flow in MW",
             "yLabel": "Total costs of Network in Euros",
             "data": {
-                "labels": [approximated_flows],
                 "datasets": [{
+                    "labels": [str(x) for x in approximated_flows],
                     "label": "Approximated cost to flow in the selected area for excess heat usage",
                     "borderColor": "#3e95cd",
                     "data": approximated_costs
+                    },
+                    {
+                        "labels": [str(x) for x in thresholds],
+                        "label": "Approximated cost to flow in the selected area for excess heat usage",
+                        "borderColor": "#3e95cd",
+                        "data": thresholds_y
                     }
                     ]
             }

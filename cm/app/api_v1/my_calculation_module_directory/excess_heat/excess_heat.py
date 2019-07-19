@@ -52,7 +52,7 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
 
     # escape main routine if dh_potential cm did not produce shp file
     if not isinstance(heat_sinks, pd.DataFrame):
-        return 0, 0, 0, 0, 0, 0, [0] * 12, [0] * 12, [0] * 24, [0] * 24, [0], [0]
+        return 0, 0, 0, 0, 0, 0, [0] * 12, [0] * 12, [0] * 24, [0] * 24, [0], [0], [0], [0]
     # load heating profiles for sources and sinks
     # industry_profiles = ad_industry_profiles_dict(source_profiles)
     # residential_heating_profile = ad_residential_heating_profile_dict(sink_profiles)
@@ -130,6 +130,7 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
 
     approximated_costs = []
     approximated_flows = []
+    thresholds = []
     while cost_approximation_network.return_number_of_edges() > 0:
         last_flows = [-1]
         while True:
@@ -168,10 +169,22 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
         approximated_costs.append(total_cost_scalar)
         approximated_flows.append(total_flow_scalar)
         if len(cost_per_connection) > 0:
+            thresholds.append(max(cost_per_connection))
             most_expensive = list(cost_per_connection).index(max(cost_per_connection))
             cost_approximation_network.delete_edges([edges[most_expensive]])
+    if len(thresholds) < len(approximated_costs):
+        thresholds.append(0)
+
     approximated_costs.reverse()
     approximated_flows.reverse()
+    thresholds.reverse()
+    thresholds_y = []
+    set_threshold = False
+    for threshold in thresholds:
+        if threshold < transmission_line_threshold or set_threshold is True:
+            thresholds_y.append("")
+        else:
+            thresholds_y.append(approximated_costs)
 
     network = NetworkGraph(source_sink_connections, source_source_connections, sink_sink_connections,
                            range(len(source_source_connections)), heat_sinks["id"])
@@ -298,6 +311,8 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
 
     approximated_costs = list(map(round_to_n, approximated_costs, repeat(3)))
     approximated_flows = list(map(round_to_n, approximated_flows, repeat(3)))
+    thresholds = list(map(round_to_n, thresholds, repeat(3)))
+
 
     # catch any negative value
     if total_excess_heat_available < 0:
@@ -330,4 +345,4 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
 
     return total_excess_heat_available, total_excess_heat_connected, total_flow_scalar, total_cost_scalar,\
         annual_cost_of_network, levelised_cost_of_heat_supply, excess_heat_profile_monthly,\
-        heat_demand_profile_monthly, excess_heat_profile_daily, heat_demand_profile_daily, approximated_costs, approximated_flows
+        heat_demand_profile_monthly, excess_heat_profile_daily, heat_demand_profile_daily, approximated_costs, approximated_flows, thresholds, thresholds_y
