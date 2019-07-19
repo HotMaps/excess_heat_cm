@@ -92,7 +92,7 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
         {
             "type": "line",
             "xLabel": "Yearly flow in MW",
-            "yLabel": "Total costs of Network in €",
+            "yLabel": "Total costs of Network in Euros",
             "data": {
                 "labels": [approximated_flows],
                 "datasets": [{
