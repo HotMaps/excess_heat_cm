@@ -171,6 +171,7 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
         approximated_flows.append(total_flow_scalar)
         annuity = annuity_costs(total_cost_scalar, discount_rate / 100, investment_period)
         approximated_annual_costs.append(annuity + operational_costs / 100 * total_cost_scalar)
+        print(cost_per_connection)
         if len(cost_per_connection) > 0:
             thresholds.append(max(cost_per_connection))
             most_expensive = list(cost_per_connection).index(max(cost_per_connection))
