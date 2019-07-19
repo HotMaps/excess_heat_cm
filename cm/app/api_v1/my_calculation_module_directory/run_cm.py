@@ -94,20 +94,33 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
             "xLabel": "Yearly flow in MW",
             "yLabel": "Total costs of Network in Euros",
             "data": {
-                "labels": [x for x in zip(approximated_flows, thresholds)],
+                "labels": [str(x) for x in zip(approximated_flows, thresholds)],
                 "datasets": [{
                     "label": "Approximated cost to flow in the selected area for excess heat usage",
                     "borderColor": "#3e95cd",
-                    "data": approximated_costs
-                    },
-                    {
-                        "label": "Set transmission line threshold",
-                        "borderColor": "#fe7c60",
-                        "data": thresholds_y
+                    "data": approximated_costs,
+                    "options": {
+                        "annotation": {
+                            "annotations": [
+                                {
+                                    "type": "line",
+                                    "mode": "vertical",
+                                    "scaleID": "x-axis-0",
+                                    "value":  [str(x) for x in zip(approximated_flows, thresholds)][5],
+                                    "borderColor": "red",
+                                    "label": {
+                                        "content": "TODAY",
+                                        "enabled": "true",
+                                        "position": "top"
                     }
+                                }
+
                     ]
             }
-        },
+                    }
+                }]
+
+        }},
         {
             "type": "line",
             "xLabel": "Month",
