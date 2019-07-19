@@ -90,37 +90,24 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
             }
         },
         {
-            "type": "line",
-            "xLabel": "Yearly flow in MW",
-            "yLabel": "Total costs of Network in Euros",
+            "type": "bar",
             "data": {
-                "labels": [str(x) for x in zip(approximated_flows, thresholds)],
+                "labels": ([str(x) for x in approximated_flows]),
                 "datasets": [{
-                    "label": "Approximated cost to flow in the selected area for excess heat usage",
-                    "borderColor": "#3e95cd",
+                    "label": "Cost of network in Euros",
                     "data": approximated_costs,
-                    "options": {
-                        "annotation": {
-                            "annotations": [
-                                {
-                                    "type": "line",
-                                    "mode": "vertical",
-                                    "scaleID": "x-axis-0",
-                                    "value":  [str(x) for x in zip(approximated_flows, thresholds)][5],
-                                    "borderColor": "red",
-                                    "label": {
-                                        "content": "TODAY",
-                                        "enabled": True,
-                                        "position": "top"
-                    }
-                                }
-
-                    ]
-            }
-                    }
-                }]
-
-        }},
+                    "yAxisID": "y-costs"
+                },
+                {
+                    "label": "Transmission line threshold in ct/kWh/a",
+                    "data": thresholds,
+                    "yAxisID": "y-threshold"
+                }
+                ]
+            },
+            "options": {
+                "yAxes": [{"id": "y-costs"}, {"id": "y-threshold"}]}
+        },
         {
             "type": "line",
             "xLabel": "Month",
