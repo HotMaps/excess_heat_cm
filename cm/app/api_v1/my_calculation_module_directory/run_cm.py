@@ -106,6 +106,7 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
                     }
 
                 ]
+            }
 
 
         },
