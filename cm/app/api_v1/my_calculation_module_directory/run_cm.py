@@ -107,7 +107,7 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
             },
             "options": {
                 "scales": {
-               #     "yAxes": [{"id": "y-costs"}, {"id": "y-threshold"}]
+                    "yAxes": [{"id": "y-costs"}, {"id": "y-threshold"}]
                 }
             }
         },
