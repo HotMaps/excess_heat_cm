@@ -91,6 +91,8 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
         },
         {
             "type": "line",
+            "xLabel": "Annual delivered excess heat in GWh",
+            "yLabel": "Cost in Euros",
             "data": {
                 "labels": [str(x) for x in approximated_flows],
                 "datasets": [{
@@ -100,7 +102,7 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
                 },
                 {
 
-                    "label": "levelized kost in ct/kWh/a",
+                    "label": "levelized cost in ct/kWh/a",
                     "data": approximated_annual_costs,
                     "borderColor": "#3e95cd",
                 },
