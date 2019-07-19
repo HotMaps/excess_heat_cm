@@ -169,8 +169,8 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
         approximated_flows.append(total_flow_scalar)
         most_expensive = list(cost_per_connection).index(max(cost_per_connection))
         cost_approximation_network.delete_edges([edges[most_expensive]])"""
-    approximated_costs = [0]
-    approximated_flows = [0]
+    approximated_costs = [0,1]
+    approximated_flows = [0,1]
     network = NetworkGraph(source_sink_connections, source_source_connections, sink_sink_connections,
                            range(len(source_source_connections)), heat_sinks["id"])
     network.add_edge_attribute("distance", source_sink_distances, source_source_distances, sink_sink_distances)
