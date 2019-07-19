@@ -110,7 +110,7 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
                                     "borderColor": "red",
                                     "label": {
                                         "content": "TODAY",
-                                        "enabled": "true",
+                                        "enabled": True,
                                         "position": "top"
                     }
                                 }
