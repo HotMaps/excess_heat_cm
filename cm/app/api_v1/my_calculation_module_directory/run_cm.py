@@ -92,7 +92,7 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
         {
             "type": "line",
             "data": {
-                "labels": ([str(x) for x in approximated_flows]),
+                "labels": [str(x) for x in approximated_flows],
                 "datasets": [{
                     "label": "Cost of network in Euros",
                     "data": approximated_costs,

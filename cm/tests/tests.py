@@ -67,12 +67,12 @@ class TestAPI(unittest.TestCase):
         #with open('tests/data/industrial_Database_dk.json', 'r') as file:
         #    inputs_vector_selection["industrial_database"] = json_lib.load(file)
 
-        inputs_parameter_selection["search_radius"] = 30
+        inputs_parameter_selection["search_radius"] = 25
         inputs_parameter_selection["investment_period"] = 10
         inputs_parameter_selection["discount_rate"] = 3
         inputs_parameter_selection["cost_factor"] = 1
         inputs_parameter_selection["operational_costs"] = 2
-        inputs_parameter_selection["transmission_line_threshold"] = 10
+        inputs_parameter_selection["transmission_line_threshold"] = 0.5
         nuts = ['PL22']
 
         inputs_parameter_selection["pix_threshold"] = 100
