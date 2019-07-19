@@ -99,6 +99,12 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
                     "borderColor": "#3e95cd",
                   #  "yAxisID": "y-costs"
                 },
+                {
+                    "label": "Annual costs",
+                    "data": approximated_annual_costs,
+                    "borderColor": "#3e95cd",
+                    #  "yAxisID": "y-costs"
+                },
                     """{
                         "label": "Set transmission line threshold",
                         "data": thresholds_y,
