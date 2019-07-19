@@ -96,12 +96,12 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
                 "datasets": [{
                     "label": "Cost of network in Euros",
                     "data": approximated_costs,
-                    "yAxisID": "y-costs"
+                    "yAxesGroup": "y-costs"
                 },
                 {
                     "label": "Transmission line threshold in ct/kWh/a",
                     "data": thresholds,
-                    "yAxisID": "y-threshold"
+                    "yAxesGroup": "y-threshold"
                 }
                 ]
             },
