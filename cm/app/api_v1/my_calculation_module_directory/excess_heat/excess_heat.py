@@ -130,6 +130,7 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
 
     approximated_costs = []
     approximated_flows = []
+    approximated_annual_costs = []
     thresholds = []
     while cost_approximation_network.return_number_of_edges() > 0:
         last_flows = [-1]
@@ -168,6 +169,8 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
 
         approximated_costs.append(total_cost_scalar)
         approximated_flows.append(total_flow_scalar)
+        annuity = annuity_costs(total_cost_scalar, discount_rate / 100, investment_period)
+        approximated_annual_costs.append(annuity + operational_costs / 100 * total_cost_scalar)
         if len(cost_per_connection) > 0:
             thresholds.append(max(cost_per_connection))
             most_expensive = list(cost_per_connection).index(max(cost_per_connection))
@@ -179,12 +182,15 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
     approximated_flows.reverse()
     thresholds.reverse()
     thresholds_y = []
+    threshold_radius = []
     set_threshold = False
     for threshold in thresholds:
         if threshold < transmission_line_threshold or set_threshold is True:
-            thresholds_y.append("")
+            thresholds_y.append(0)
+            threshold_radius.append(0)
         else:
             thresholds_y.append(approximated_costs)
+            threshold_radius.append(3)
 
     network = NetworkGraph(source_sink_connections, source_source_connections, sink_sink_connections,
                            range(len(source_source_connections)), heat_sinks["id"])
@@ -345,4 +351,4 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
 
     return total_excess_heat_available, total_excess_heat_connected, total_flow_scalar, total_cost_scalar,\
         annual_cost_of_network, levelised_cost_of_heat_supply, excess_heat_profile_monthly,\
-        heat_demand_profile_monthly, excess_heat_profile_daily, heat_demand_profile_daily, approximated_costs, approximated_flows, thresholds, thresholds_y
+        heat_demand_profile_monthly, excess_heat_profile_daily, heat_demand_profile_daily, approximated_costs, approximated_flows, thresholds, thresholds_y, threshold_radius, approximated_annual_costs
