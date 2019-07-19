@@ -100,10 +100,16 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
                 },
                 {
 
-                    "label": "Cost of network in Euros",
+                    "label": "levelized kost in ct/kWh/a",
                     "data": approximated_annual_costs,
                     "borderColor": "#3e95cd",
-                    }
+                },
+                {
+
+                    "label": "Transmission line threshold in ct/kWh/a",
+                    "data": thresholds,
+                    "borderColor": "#3e95cd",
+                }
 
                 ]
             }
