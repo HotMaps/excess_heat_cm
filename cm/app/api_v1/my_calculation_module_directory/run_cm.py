@@ -97,29 +97,16 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
                     "label": "Cost of network in Euros",
                     "data": approximated_costs,
                     "borderColor": "#3e95cd",
-                  #  "yAxisID": "y-costs"
                 },
-                    """{
-                        "label": "Set transmission line threshold",
-                        "data": thresholds_y,
-                        "borderColor": "#fe7c60",
-                        "pointRadius": threshold_radius,
-                        "showLine": False,
-                        #  "yAxisID": "y-costs"
-                    },
                 {
-                    "label": "Transmission line threshold in ct/kWh/a",
-                    "data": thresholds,
-                  #  "yAxisID": "y-threshold"
-                }"""
-                ]
-            },
 
-            #"options": {
-               # "scales": {
-               #     "yAxes": [{"id": "y-costs"}, {"id": "y-threshold"}]
-              #  }
-            #}
+                    "label": "Cost of network in Euros",
+                    "data": approximated_annual_costs,
+                    "borderColor": "#3e95cd",
+                    }
+
+                ]
+
 
         },
         {
