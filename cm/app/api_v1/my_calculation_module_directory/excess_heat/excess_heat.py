@@ -413,8 +413,8 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
 
         coordinates.append(coordinates_of_line)
     temp = len(cost_per_connection) * [100]
-    create_transmission_line_shp(coordinates, np.array(np.sum(connection_flows, axis=1)),  temp, np.abs(connection_costs),
-                                 np.abs(connection_lengths), output_transmission_lines)
+    create_transmission_line_shp(coordinates, np.array(np.sum(connection_flows, axis=1)),  temp,
+                                 np.abs(connection_costs), np.abs(connection_lengths), output_transmission_lines)
 
     return total_excess_heat_available, total_excess_heat_connected, total_flow_scalar, total_cost_scalar,\
         annual_cost_of_network, levelised_cost_of_heat_supply, excess_heat_profile_monthly,\

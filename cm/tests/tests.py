@@ -90,7 +90,6 @@ class TestAPI(unittest.TestCase):
                    "inputs_vector_selection": inputs_vector_selection,
                    "nuts": nuts}
 
-
         rv, json = self.client.post('computation-module/compute/', data=payload)
         has_indicators = False
 
