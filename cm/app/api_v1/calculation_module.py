@@ -1,10 +1,7 @@
 from osgeo import gdal
-from math import log10, floor
-import os
-import sys
 from ..constant import CM_NAME
 from ..helper import generate_output_file_tif, create_zip_shapefiles, generate_output_file_shp
-import time
+
 """ Entry point of the calculation module function"""
 
 from .my_calculation_module_directory import run_cm
@@ -67,17 +64,9 @@ def calculation(output_directory, inputs_raster_selection, inputs_vector_selecti
 
     total_potential, total_heat_demand, graphics, total_excess_heat_available, total_excess_heat_connected,\
         total_flow_scalar, total_cost_scalar, annual_cost_of_network, levelised_cost_of_heat_supply = \
-        run_cm.main(input_raster_selection,
-                    pix_threshold,
-                    DH_threshold,
-                    output_raster1,
-                    output_raster2,
-                    output_shp1,
-                    output_shp2,
-                    search_radius,
-                    investment_period,
-                    discount_rate, cost_factor, operational_costs,
-                    transmission_line_threshold, time_resolution, spatial_resolution,
+        run_cm.main(input_raster_selection, pix_threshold, DH_threshold, output_raster1, output_raster2,
+                    output_shp1, output_shp2, search_radius, investment_period, discount_rate, cost_factor,
+                    operational_costs, transmission_line_threshold, time_resolution, spatial_resolution,
                     nuts2_id, output_transmission_lines, industry_profiles, sink_profiles)
 
     output_transmission_lines = create_zip_shapefiles(output_directory, output_transmission_lines)

@@ -33,7 +33,8 @@ def round_to_n(x, n):
 
 
 def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_factor, operational_costs,
-                transmission_line_threshold, time_resolution, spatial_resolution, nuts2_id, output_transmission_lines, industry_profiles, sink_profiles):
+                transmission_line_threshold, time_resolution, spatial_resolution, nuts2_id, output_transmission_lines,
+                industry_profiles, sink_profiles):
 
     industrial_subsector_map = {"Iron and steel": "iron_and_steel", "Refineries": "chemicals_and_petrochemicals",
                                 "Chemical industry": "chemicals_and_petrochemicals", "Cement": "non_metalic_minerals",
@@ -41,12 +42,22 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
                                 "Non-metallic mineral products": "non_metalic_minerals", "Paper and printing": "paper",
                                 "Non-ferrous metals": "iron_and_steel", "Other non-classified": "food_and_tobacco"}
 
+    # if smaller than 730, 730 must be dividable by it
     time_resolution_map = {"hour": 1, "day": 10, "week": 146, "month": 730, "year": 8760}
+    # number of time units to be averaged
     convolution_map = {"hour": 6, "day": 1, "week": 1, "month": 1, "year": 1}
+    # factor for cost approximation network. Determines the peak performance compared to the yearly average
+    peak_performance_map = {"hour": 2, "day": 2, "week": 2, "month": 2, "year": 1}
 
+    # generate nuts 0 ids
     nuts0_id = []
     for id_ in nuts2_id:
         nuts0_id.append(id_[:2])
+
+    # set time_resolution settings
+    convolution = convolution_map[time_resolution]
+    peak_performance = peak_performance_map[time_resolution]
+    time_resolution = time_resolution_map[time_resolution]
 
     # load heat source and heat sink data
     # heat_sources = ad_industrial_database_dict(sources)
@@ -55,10 +66,9 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
 
     # escape main routine if dh_potential cm did not produce shp file
     if not isinstance(heat_sinks, pd.DataFrame):
-        return 0, 0, 0, 0, 0, 0, [0] * 12, [0] * 12, [0] * 24, [0] * 24, [0], [0], [0], [0]
+        return 0, 0, 0, 0, 0, 0, [0] * 12, [0] * 12, [0] * 24, [0] * 24, [0], [0], [0], [0], [0], [0], [0], [0]
+
     # load heating profiles for sources and sinks
-    # industry_profiles = ad_industry_profiles_dict(source_profiles)
-    # residential_heating_profile = ad_residential_heating_profile_dict(sink_profiles)
     # industry_profiles = ad_industry_profiles_dict(industry_profiles)
     # residential_heating_profile = ad_residential_heating_profile_dict(sink_profiles)
     industry_profiles = ad_industry_profiles_local(nuts0_id)
@@ -82,9 +92,6 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
                 heat_sources = heat_sources[((heat_sources.Nuts0_ID != missing_profile) |
                                              (heat_sources.Subsector != sub_sector))]
 
-    convolution = convolution_map[time_resolution]
-    time_resolution = time_resolution_map[time_resolution]
-
     # drop all sinks with unknown or invalid nuts id
     heat_sinks = heat_sinks[heat_sinks.Nuts2_ID != ""]
     heat_sinks = heat_sinks.dropna()
@@ -97,7 +104,9 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
     heat_source_profiles = []
     heat_source_coordinates = []
     for _, heat_source in heat_sources.iterrows():
-        reduced_profile = normalized_heat_profiles[industrial_subsector_map[heat_source["Subsector"]]][heat_source["Nuts0_ID"]].reshape(int(8760 / time_resolution), time_resolution)
+        reduced_profile = normalized_heat_profiles[
+            industrial_subsector_map[heat_source["Subsector"]]][heat_source["Nuts0_ID"]]\
+            .reshape(int(8760 / time_resolution), time_resolution)  # reshape profile to match time resolution setting
         reduced_profile = np.sum(reduced_profile, axis=1)
         heat_source_profiles.append(reduced_profile * float(heat_source["Excess_heat"]))
         heat_source_coordinates.append((heat_source["Lon"], heat_source["Lat"]))
@@ -108,7 +117,8 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
     heat_sink_profiles = []
     heat_sink_coordinates = []
     for _, heat_sink in heat_sinks.iterrows():
-        reduced_profile = normalized_heat_profiles["residential_heating"][heat_sink["Nuts2_ID"]].reshape(int(8760 / time_resolution), time_resolution)
+        reduced_profile = normalized_heat_profiles["residential_heating"][heat_sink["Nuts2_ID"]]\
+            .reshape(int(8760 / time_resolution), time_resolution)  # reshape profile to match time resolution setting
         reduced_profile = np.sum(reduced_profile, axis=1)
         heat_sink_profiles.append(reduced_profile * heat_sink["Heat_demand"])
         heat_sink_coordinates.append((heat_sink["Lon"], heat_sink["Lat"]))
@@ -127,40 +137,47 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
         heat_sinks, heat_sinks, "Lon", "Lat", "Lon", "Lat", "Temperature", "Temperature", search_radius,
         temperature, "true", "true", "true", small_angle_approximation=True)
 
+    # build cost approximation network
     cost_approximation_network = NetworkGraph(source_sink_connections, source_source_connections, sink_sink_connections,
                                               range(len(source_source_connections)), heat_sinks["id"])
-    cost_approximation_network.add_edge_attribute("distance", source_sink_distances, source_source_distances, sink_sink_distances)
+    cost_approximation_network.add_edge_attribute("distance", source_sink_distances, source_source_distances,
+                                                  sink_sink_distances)
     # reduce to minimum spanning tree
     cost_approximation_network.reduce_to_minimum_spanning_tree("distance")
-    
+
+    # take yearly total of sites as capacity for the cost approximation network
     heat_source_capacities = heat_sources["Excess_heat"].tolist()
     heat_sink_capacities = heat_sinks["Heat_demand"].tolist()
 
     approximated_costs = []
     approximated_flows = []
-    approximated_annual_costs = []
+    approximated_levelized_costs = []
     thresholds = []
+    # remove most expensive transmission line until no lines are left
     while cost_approximation_network.return_number_of_edges() > 0:
+        # recompute flow until its stable
         last_flows = [-1]
         while True:
-            source_flow, sink_flow, connection_flow = cost_approximation_network.maximum_flow(heat_source_capacities, heat_sink_capacities)
+            source_flow, sink_flow, connection_flow = cost_approximation_network.maximum_flow(heat_source_capacities,
+                                                                                              heat_sink_capacities)
             connection_costs = []
             connection_lengths = cost_approximation_network.get_edge_attribute("distance")
 
             for flow, length in zip(connection_flow, connection_lengths):
-                connection_costs.append(cost_of_connection(length, flow/4000, order=1))
+                connection_costs.append(cost_of_connection(length, flow / 8760 * peak_performance, order=1))
             cost_per_connection = np.array(connection_costs)/np.abs(np.array(connection_flow)) / \
                 investment_period * cost_factor
 
-            heat_exchanger_source_costs = cost_of_heat_exchanger_source(source_flow/4000, order=1)
-            heat_exchanger_sink_costs = cost_of_heat_exchanger_sink(sink_flow/4000, order=1)
+            heat_exchanger_source_costs = cost_of_heat_exchanger_source(source_flow / 8760 * peak_performance, order=1)
+            heat_exchanger_sink_costs = cost_of_heat_exchanger_sink(sink_flow / 8760 * peak_performance, order=1)
 
             heat_exchanger_source_cost_total = np.sum(heat_exchanger_source_costs) * cost_factor
             heat_exchanger_sink_cost_total = np.sum(heat_exchanger_sink_costs) * cost_factor
 
             connection_cost_total = np.sum(connection_costs)
             # Euro
-            total_cost_scalar = (heat_exchanger_sink_cost_total + heat_exchanger_source_cost_total + connection_cost_total)
+            total_cost_scalar = (heat_exchanger_sink_cost_total + heat_exchanger_source_cost_total +
+                                 connection_cost_total)
             # GWh
             total_flow_scalar = np.sum(source_flow) / 1000
 
@@ -179,7 +196,6 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
         approximated_flows.append(total_flow_scalar)
         annuity = annuity_costs(total_cost_scalar, discount_rate / 100, investment_period)
         annual_cost_of_network = annuity + operational_costs / 100 * total_cost_scalar
-
         if total_flow_scalar > 0:
             levelised_cost_of_heat_supply = annual_cost_of_network / total_flow_scalar / 1e6 * 1e2  # ct/kWh
         else:
@@ -191,7 +207,7 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
             if total_flow_scalar == 0:
                 levelised_cost_of_heat_supply = 0
 
-        approximated_annual_costs.append(levelised_cost_of_heat_supply)
+        approximated_levelized_costs.append(levelised_cost_of_heat_supply)
         if len(cost_per_connection) > 0:
             thresholds.append(max(cost_per_connection))
             most_expensive = list(cost_per_connection).index(max(cost_per_connection))
@@ -199,10 +215,6 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
 
     if len(thresholds) < len(approximated_costs):
         thresholds.append(0)
-
-    approximated_costs.reverse()
-    approximated_flows.reverse()
-    approximated_annual_costs.reverse()
 
     thresholds = np.array(thresholds) / 1000 * 100  # convert euro/MWh to ct/kWh
     thresholds = thresholds.tolist()
@@ -220,24 +232,28 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
             threshold_radius.append(0)
         else:
             thresholds_y.append(approximated_costs[i])
-            thresholds_y2.append(approximated_annual_costs[i])
+            thresholds_y2.append(approximated_levelized_costs[i])
             thresholds_y3.append(threshold)
             threshold_radius.append(3)
             set_threshold = True
 
+    approximated_costs.reverse()
+    approximated_flows.reverse()
+    approximated_levelized_costs.reverse()
     thresholds.reverse()
     thresholds_y.reverse()
     thresholds_y2.reverse()
     thresholds_y3.reverse()
     threshold_radius.reverse()
 
+    # network for exact computation of flow
     network = NetworkGraph(source_sink_connections, source_source_connections, sink_sink_connections,
                            range(len(source_source_connections)), heat_sinks["id"])
     network.add_edge_attribute("distance", source_sink_distances, source_source_distances, sink_sink_distances)
     # reduce to minimum spanning tree
     network.reduce_to_minimum_spanning_tree("distance")
 
-    # compute max flow for every hour
+    # compute max flow for every time unit
     last_flows = [-1]
     while True:
         source_flows = []
@@ -260,7 +276,7 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
         connection_costs = []
         for flow, length in zip(connection_flows, connection_lengths):
             connection_costs.append(cost_of_connection(length, flow / time_resolution, order=convolution))
-        cost_per_connection = np.array(connection_costs)/np.abs(np.array(np.sum(connection_flows, axis=1))) / \
+        cost_per_connection = np.array(connection_costs)/np.array(np.sum(np.abs(connection_flows), axis=1)) / \
             investment_period * cost_factor
 
         # drop edges with 0 flow and above threshold
@@ -365,7 +381,7 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
 
     approximated_costs = list(map(round_to_n, approximated_costs, repeat(3)))
     approximated_flows = list(map(round_to_n, approximated_flows, repeat(3)))
-    approximated_annual_costs = list(map(round_to_n, approximated_annual_costs, repeat(3)))
+    approximated_levelized_costs = list(map(round_to_n, approximated_levelized_costs, repeat(3)))
     thresholds = list(map(round_to_n, thresholds, repeat(3)))
     thresholds_y = list(map(round_to_n, thresholds_y, repeat(3)))
     thresholds_y2 = list(map(round_to_n, thresholds_y2, repeat(3)))
@@ -402,4 +418,6 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
 
     return total_excess_heat_available, total_excess_heat_connected, total_flow_scalar, total_cost_scalar,\
         annual_cost_of_network, levelised_cost_of_heat_supply, excess_heat_profile_monthly,\
-        heat_demand_profile_monthly, excess_heat_profile_daily, heat_demand_profile_daily, approximated_costs, approximated_flows, thresholds, thresholds_y, thresholds_y2, thresholds_y3, threshold_radius, approximated_annual_costs
+        heat_demand_profile_monthly, excess_heat_profile_daily, heat_demand_profile_daily, approximated_costs,\
+        approximated_flows, thresholds, thresholds_y, thresholds_y2, thresholds_y3, threshold_radius,\
+        approximated_levelized_costs

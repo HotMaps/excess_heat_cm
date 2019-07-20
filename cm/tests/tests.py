@@ -31,6 +31,7 @@ class TestAPI(unittest.TestCase):
 
     def test_compute(self):
         raster_file_path = 'tests/data/pl22.tif'
+        #raster_file_path = "tests/data/heat_tot_curr_density_pilot_aera_1_aalborg.tif"
         # simulate copy from HTAPI to CM
         save_path = UPLOAD_DIRECTORY+"/heat_tot_curr_density_pilot_aera_1_aalborg.tif"
         copyfile(raster_file_path, save_path)
@@ -73,9 +74,10 @@ class TestAPI(unittest.TestCase):
         inputs_parameter_selection["cost_factor"] = 1
         inputs_parameter_selection["operational_costs"] = 2
         inputs_parameter_selection["transmission_line_threshold"] = 0.3
-        inputs_parameter_selection["time_resolution"] = "week"
+        inputs_parameter_selection["time_resolution"] = "month"
         inputs_parameter_selection["spatial_resolution"] = 2
         nuts = ['PL22', 'PL21', "PL41", "PL42", "PL43", "PL51", "PL52", "CZ08"]
+        #nuts = ["DK05"]
 
         inputs_parameter_selection["pix_threshold"] = 100
         inputs_parameter_selection["DH_threshold"] = 30

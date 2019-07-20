@@ -1,8 +1,5 @@
-import os
-import time
-import sys
 import numpy as np
-from math import floor, log10
+
 
 from .dh_potential.CM_TUW4.polygonize import polygonize
 from .dh_potential.CM_TUW0.rem_mk_dir import rm_mk_dir, rm_file
@@ -12,9 +9,9 @@ import dh_potential.CM_TUW19.run_cm as CM19
 from .excess_heat.excess_heat import excess_heat
 
 
-def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
-         output_raster2, output_shp1, output_shp2,
-         search_radius, investment_period, discount_rate, cost_factor, operational_costs, transmission_line_threshold, time_resolution, spatial_resolution, nuts2_id, output_transmission_lines, industry_profiles, sink_profiles,
+def main(heat_density_map, pix_threshold, DH_threshold, output_raster1, output_raster2, output_shp1, output_shp2,
+         search_radius, investment_period, discount_rate, cost_factor, operational_costs, transmission_line_threshold,
+         time_resolution, spatial_resolution, nuts2_id, output_transmission_lines, industry_profiles, sink_profiles,
          in_orig=None, only_return_areas=False, ):
     # The CM can be run for the following ranges of pixel and Dh thresholds:
     if pix_threshold < 1:
@@ -40,9 +37,12 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
 
     total_excess_heat_available, total_excess_heat_connected, total_flow_scalar, total_cost_scalar,\
         annual_cost_of_network, levelised_cost_of_heat_supply, excess_heat_profile_monthly,\
-        heat_demand_profile_monthly, excess_heat_profile_daily, heat_demand_profile_daily, approximated_costs, approximated_flows, thresholds, thresholds_y, thresholds_y2, thresholds_y3, threshold_radius, approximated_annual_costs = \
+        heat_demand_profile_monthly, excess_heat_profile_daily, heat_demand_profile_daily, approximated_costs,\
+        approximated_flows, thresholds, thresholds_y, thresholds_y2, thresholds_y3, threshold_radius,\
+        approximated_levelized_costs = \
         excess_heat(output_shp2, search_radius, investment_period, discount_rate, cost_factor, operational_costs,
-                    transmission_line_threshold, time_resolution, spatial_resolution, nuts2_id, output_transmission_lines, industry_profiles, sink_profiles)
+                    transmission_line_threshold, time_resolution, spatial_resolution, nuts2_id,
+                    output_transmission_lines, industry_profiles, sink_profiles)
 
     def round_to_n(x, n):
         length = 0
@@ -70,7 +70,7 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
                     "label": "Potential in coherent areas",
                     "backgroundColor": ["#3e95cd"]*len(DHPot),
                     "data": list(np.around(DHPot, 2))
-                    }]
+                }]
             }
         },
         {
@@ -85,8 +85,7 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
                     "backgroundColor": ["#3e95cd", "#3e95cd", "#fe7c60", "#fe7c60", "#fe7c60"],
                     "data": [total_heat_demand, total_potential, round_to_n(total_excess_heat_available, 3),
                              round_to_n(total_excess_heat_connected, 3), round_to_n(total_flow_scalar, 3)]
-                    },
-                ]
+                }]
             }
         },
         {
@@ -99,18 +98,13 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
                     "label": "Cost of network in Euros",
                     "data": approximated_costs,
                     "borderColor": "#3e95cd",
-                },
-                {
+                }, {
                     "label": "Set transmission line threshold",
                     "data": thresholds_y,
                     "pointRadius": threshold_radius,
                     "borderColor": "#fe7c60",
-                },
-
-                ]
+                }]
             }
-
-
         },
         {
             "type": "line",
@@ -118,33 +112,26 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
             "yLabel": "Costs in ct/kWh/a",
             "data": {
                 "labels": [str(x) for x in approximated_flows],
-                "datasets": [
-                    {
-                        "label": "levelized cost",
-                        "data": approximated_annual_costs,
-                        "borderColor": "#3e95cd",
-                    },
-                    {
-                        "label": "Transmission line threshold",
-                        "data": thresholds,
-                        "borderColor": "#3e95cd",
-                    },
-                    {
-                        "label": "Set transmission line threshold",
-                        "data": thresholds_y2,
-                        "pointRadius": threshold_radius,
-                        "borderColor": "#fe7c60",
-                    },
-                    {
-                        "label": "Set transmission line threshold",
-                        "data": thresholds_y3,
-                        "pointRadius": threshold_radius,
-                        "borderColor": "#fe7c60",
-                    },
-
-                ]
+                "datasets": [{
+                    "label": "levelized cost",
+                    "data": approximated_levelized_costs,
+                    "borderColor": "#3e95cd",
+                }, {
+                    "label": "Transmission line threshold",
+                    "data": thresholds,
+                    "borderColor": "#3e95cd",
+                }, {
+                    "label": "Set transmission line threshold",
+                    "data": thresholds_y2,
+                    "pointRadius": threshold_radius,
+                    "borderColor": "#fe7c60",
+                }, {
+                    "label": "Set transmission line threshold",
+                    "data": thresholds_y3,
+                    "pointRadius": threshold_radius,
+                    "borderColor": "#fe7c60",
+                }]
             }
-
         },
         {
             "type": "line",
@@ -158,14 +145,12 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
                     "borderColor": "#3e95cd",
                     "backgroundColor": "rgba(62, 149, 205, 0.35)",
                     "data": heat_demand_profile_monthly
-                    },
-                    {
+                    }, {
                     "label": "Excess heat",
                     "borderColor": "#fe7c60",
                     "backgroundColor": "rgba(254, 124, 96, 0.35)",
                     "data": excess_heat_profile_monthly
-                    }
-                    ]
+                }]
             }
         },
         {
@@ -178,36 +163,16 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
                     "label": "Heat demand",
                     "borderColor": "#3e95cd",
                     "backgroundColor": "rgba(62, 149, 205, 0.35)",
-                    "data": heat_demand_profile_daily},
-                    {
+                    "data": heat_demand_profile_daily
+                }, {
                     "label": "Excess heat",
                     "borderColor": "#fe7c60",
                     "backgroundColor": "rgba(254, 124, 96, 0.35)",
                     "data": excess_heat_profile_daily
-                    }
-                    ]
+                }]
             }
         }
     ]
+
     return total_potential, total_heat_demand, graphics, total_excess_heat_available, total_excess_heat_connected,\
         total_flow_scalar, total_cost_scalar, annual_cost_of_network, levelised_cost_of_heat_supply
-
-
-if __name__ == "__main__":
-    start = time.time()
-    path = r'W:\workspace_mostafa\Hotmaps\Hotmaps\app\modules\common'
-    data_warehouse = path + os.sep + 'AD/data_warehouse'
-    heat_density_map = data_warehouse + os.sep + 'heat_tot_curr_density_AT.tif'
-    output_dir = path + os.sep + 'Outputs'
-    outRasterPath1 = output_dir + os.sep + 'F13_' + '1.tif'
-    outRasterPath2 = output_dir + os.sep + 'F13_' + '2.tif'
-    output_shp1 = output_dir + os.sep + 'F13_' + '1.shp'
-    output_shp2 = output_dir + os.sep + 'F13_' + '2.shp'
-    rm_mk_dir(output_dir)
-    # pix_threshold [MWh/ha]
-    pix_threshold = 100
-    # DH_threshold [MWh/year]
-    DH_threshold = 30000
-    main(heat_density_map, pix_threshold, DH_threshold, outRasterPath1, outRasterPath2, output_shp1, output_shp2)
-    elapsed = time.time() - start
-    print("%0.3f seconds" % elapsed)
