@@ -40,7 +40,7 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
 
     total_excess_heat_available, total_excess_heat_connected, total_flow_scalar, total_cost_scalar,\
         annual_cost_of_network, levelised_cost_of_heat_supply, excess_heat_profile_monthly,\
-        heat_demand_profile_monthly, excess_heat_profile_daily, heat_demand_profile_daily, approximated_costs, approximated_flows, thresholds, thresholds_y, threshold_radius, approximated_annual_costs = \
+        heat_demand_profile_monthly, excess_heat_profile_daily, heat_demand_profile_daily, approximated_costs, approximated_flows, thresholds, thresholds_y, thresholds_y2, thresholds_y3, threshold_radius, approximated_annual_costs = \
         excess_heat(output_shp2, search_radius, investment_period, discount_rate, cost_factor, operational_costs,
                     transmission_line_threshold, time_resolution, spatial_resolution, nuts2_id, output_transmission_lines, industry_profiles, sink_profiles)
 
@@ -101,21 +101,49 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
                     "borderColor": "#3e95cd",
                 },
                 {
-
-                    "label": "levelized cost in ct/kWh/a",
-                    "data": approximated_annual_costs,
-                    "borderColor": "#3e95cd",
+                    "label": "Set transmission line threshold",
+                    "data": thresholds_y,
+                    "pointRadius": threshold_radius,
+                    "borderColor": "#fe7c60",
                 },
-                {
-
-                    "label": "Transmission line threshold in ct/kWh/a",
-                    "data": thresholds,
-                    "borderColor": "#3e95cd",
-                }
 
                 ]
             }
 
+
+        },
+        {
+            "type": "line",
+            "xLabel": "Annual delivered excess heat in GWh",
+            "yLabel": "Costs in ct/kWh/a",
+            "data": {
+                "labels": [str(x) for x in approximated_flows],
+                "datasets": [
+                    {
+                        "label": "levelized cost",
+                        "data": approximated_annual_costs,
+                        "borderColor": "#3e95cd",
+                    },
+                    {
+                        "label": "Transmission line threshold",
+                        "data": thresholds,
+                        "borderColor": "#3e95cd",
+                    },
+                    {
+                        "label": "Set transmission line threshold",
+                        "data": thresholds_y2,
+                        "pointRadius": threshold_radius,
+                        "borderColor": "#fe7c60",
+                    },
+                    {
+                        "label": "Set transmission line threshold",
+                        "data": thresholds_y3,
+                        "pointRadius": threshold_radius,
+                        "borderColor": "#fe7c60",
+                    },
+
+                ]
+            }
 
         },
         {
