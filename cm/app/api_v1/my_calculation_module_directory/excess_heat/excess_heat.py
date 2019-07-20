@@ -33,13 +33,16 @@ def round_to_n(x, n):
 
 
 def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_factor, operational_costs,
-                transmission_line_threshold, nuts2_id, output_transmission_lines, industry_profiles, sink_profiles):
+                transmission_line_threshold, time_resolution, spatial_resolution, nuts2_id, output_transmission_lines, industry_profiles, sink_profiles):
 
     industrial_subsector_map = {"Iron and steel": "iron_and_steel", "Refineries": "chemicals_and_petrochemicals",
                                 "Chemical industry": "chemicals_and_petrochemicals", "Cement": "non_metalic_minerals",
                                 "Glass": "non_metalic_minerals",
                                 "Non-metallic mineral products": "non_metalic_minerals", "Paper and printing": "paper",
                                 "Non-ferrous metals": "iron_and_steel", "Other non-classified": "food_and_tobacco"}
+
+    time_resolution_map = {"hour": 1, "day": 10, "week": 146, "month": 730, "year": 8760}
+    convolution_map = {"hour": 6, "day": 1, "week": 1, "month": 1, "year": 1}
 
     nuts0_id = []
     for id_ in nuts2_id:
@@ -48,7 +51,7 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
     # load heat source and heat sink data
     # heat_sources = ad_industrial_database_dict(sources)
     heat_sources = ad_industrial_database_local(nuts2_id)
-    heat_sinks = ad_TUW23(sinks, nuts2_id[0])
+    heat_sinks = ad_TUW23(sinks, nuts2_id[0], spatial_resolution)
 
     # escape main routine if dh_potential cm did not produce shp file
     if not isinstance(heat_sinks, pd.DataFrame):
@@ -79,6 +82,9 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
                 heat_sources = heat_sources[((heat_sources.Nuts0_ID != missing_profile) |
                                              (heat_sources.Subsector != sub_sector))]
 
+    convolution = convolution_map[time_resolution]
+    time_resolution = time_resolution_map[time_resolution]
+
     # drop all sinks with unknown or invalid nuts id
     heat_sinks = heat_sinks[heat_sinks.Nuts2_ID != ""]
     heat_sinks = heat_sinks.dropna()
@@ -91,8 +97,9 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
     heat_source_profiles = []
     heat_source_coordinates = []
     for _, heat_source in heat_sources.iterrows():
-        heat_source_profiles.append(normalized_heat_profiles[industrial_subsector_map[heat_source["Subsector"]]]
-                                    [heat_source["Nuts0_ID"]] * float(heat_source["Excess_heat"]))
+        reduced_profile = normalized_heat_profiles[industrial_subsector_map[heat_source["Subsector"]]][heat_source["Nuts0_ID"]].reshape(int(8760 / time_resolution), time_resolution)
+        reduced_profile = np.sum(reduced_profile, axis=1)
+        heat_source_profiles.append(reduced_profile * float(heat_source["Excess_heat"]))
         heat_source_coordinates.append((heat_source["Lon"], heat_source["Lat"]))
     heat_source_profiles = np.array(heat_source_profiles)
     heat_source_profiles = heat_source_profiles.transpose()
@@ -101,8 +108,9 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
     heat_sink_profiles = []
     heat_sink_coordinates = []
     for _, heat_sink in heat_sinks.iterrows():
-        heat_sink_profiles.append(normalized_heat_profiles["residential_heating"][heat_sink["Nuts2_ID"]] *
-                                  heat_sink["Heat_demand"])
+        reduced_profile = normalized_heat_profiles["residential_heating"][heat_sink["Nuts2_ID"]].reshape(int(8760 / time_resolution), time_resolution)
+        reduced_profile = np.sum(reduced_profile, axis=1)
+        heat_sink_profiles.append(reduced_profile * heat_sink["Heat_demand"])
         heat_sink_coordinates.append((heat_sink["Lon"], heat_sink["Lat"]))
     heat_sink_profiles = np.array(heat_sink_profiles)
     heat_sink_profiles = heat_sink_profiles.transpose()
@@ -237,7 +245,7 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
 
         connection_costs = []
         for flow, length in zip(connection_flows, connection_lengths):
-            connection_costs.append(cost_of_connection(length, flow))
+            connection_costs.append(cost_of_connection(length, flow / time_resolution, order=convolution))
         cost_per_connection = np.array(connection_costs)/np.array(np.sum(connection_flows, axis=1)) / \
             investment_period * cost_factor
 
@@ -258,10 +266,10 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
     # generate indicators
     heat_exchanger_source_costs = []
     for flow in source_flows:
-        heat_exchanger_source_costs.append(cost_of_heat_exchanger_source(flow))
+        heat_exchanger_source_costs.append(cost_of_heat_exchanger_source(flow / time_resolution, order=convolution))
     heat_exchanger_sink_costs = []
     for flow in sink_flows:
-        heat_exchanger_sink_costs.append(cost_of_heat_exchanger_sink(flow))
+        heat_exchanger_sink_costs.append(cost_of_heat_exchanger_sink(flow / time_resolution, order=convolution))
 
     heat_exchanger_source_cost_total = np.sum(heat_exchanger_source_costs) * cost_factor
     heat_exchanger_sink_cost_total = np.sum(heat_exchanger_sink_costs) * cost_factor
@@ -295,27 +303,36 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
     # prepare hourly profiles for visualisation
     heat_source_profiles = heat_source_profiles.transpose()
     heat_sink_profiles = heat_sink_profiles.transpose()
-    excess_heat_profile = np.zeros(8760)
+    excess_heat_profile = np.zeros(int(8760 / time_resolution))
     for i, source_flow in enumerate(source_flows):
         # only consider sources which deliver heat
         if np.sum(source_flow) > 0:
             excess_heat_profile = excess_heat_profile + heat_source_profiles[i]
-    heat_demand_profile = np.zeros(8760)
+    heat_demand_profile = np.zeros(int(8760 / time_resolution))
     for i, sink_flow in enumerate(sink_flows):
         heat_demand_profile = heat_demand_profile + heat_sink_profiles[i]
-    # reshape to monthly format
-    excess_heat_profile_monthly = excess_heat_profile.reshape((12, 730))
-    heat_demand_profile_monthly = heat_demand_profile.reshape((12, 730))
-    # sum for every month
-    excess_heat_profile_monthly = np.mean(excess_heat_profile_monthly, axis=1)
-    heat_demand_profile_monthly = np.mean(heat_demand_profile_monthly, axis=1)
+
+    if time_resolution <= 730:
+        # reshape to monthly format
+        excess_heat_profile_monthly = excess_heat_profile.reshape((12, int(730 / time_resolution)))
+        heat_demand_profile_monthly = heat_demand_profile.reshape((12, int(730 / time_resolution)))
+        # sum for every month
+        excess_heat_profile_monthly = np.mean(excess_heat_profile_monthly, axis=1) / time_resolution
+        heat_demand_profile_monthly = np.mean(heat_demand_profile_monthly, axis=1) / time_resolution
+    else:
+        excess_heat_profile_monthly = np.sum(excess_heat_profile) / 730 / 12 * np.array([1] * 12)
+        heat_demand_profile_monthly = np.sum(heat_demand_profile) / 730 / 12 * np.array([1] * 12)
 
     # reshape to daily format
-    excess_heat_profile_daily = excess_heat_profile.reshape((365, 24))
-    heat_demand_profile_daily = heat_demand_profile.reshape((365, 24))
-    # sum for every hour of day
-    excess_heat_profile_daily = np.mean(excess_heat_profile_daily, axis=0)
-    heat_demand_profile_daily = np.mean(heat_demand_profile_daily, axis=0)
+    if time_resolution <= 1:
+        excess_heat_profile_daily = excess_heat_profile.reshape((365, 24))
+        heat_demand_profile_daily = heat_demand_profile.reshape((365, 24))
+        # sum for every hour of day
+        excess_heat_profile_daily = np.mean(excess_heat_profile_daily, axis=0)
+        heat_demand_profile_daily = np.mean(heat_demand_profile_daily, axis=0)
+    else:
+        excess_heat_profile_daily = np.sum(excess_heat_profile) / 365 / 24 * np.array([1] * 24)
+        heat_demand_profile_daily = np.sum(excess_heat_profile) / 365 / 24 * np.array([1] * 24)
 
     excess_heat_profile_monthly = np.abs(excess_heat_profile_monthly)
     heat_demand_profile_monthly = np.abs(heat_demand_profile_monthly)

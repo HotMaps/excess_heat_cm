@@ -91,6 +91,26 @@ INPUTS_CALCULATION_MODULE = [
      'input_min': 0,
      'input_max': 20,
      'cm_id': CM_ID
+     },
+    {'input_name': 'time resolution',
+     'input_type': 'select',
+     'input_parameter_name': 'time_resolution',
+     'input_value': ["week", "hour", "day", "month", "year"],
+     'input_unit': 'none',
+     'input_min': 'none',
+     'input_max': 'none',
+     'input_priority': 1,
+     'cm_id': CM_ID
+     },
+    {'input_name': 'spatial resolution',
+     'input_type': 'input',
+     'input_parameter_name': 'spatial_resolution',
+     'input_value': 2,
+     'input_unit': 'km',
+     'input_min': 1,
+     'input_max': 10,
+     'input_priority': 1,
+     'cm_id': CM_ID
      }
 ]
 

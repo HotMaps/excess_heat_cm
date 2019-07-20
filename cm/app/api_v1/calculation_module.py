@@ -40,6 +40,9 @@ def calculation(output_directory, inputs_raster_selection, inputs_vector_selecti
     operational_costs = float(inputs_parameter_selection["operational_costs"])
     transmission_line_threshold = float(inputs_parameter_selection["transmission_line_threshold"])
 
+    time_resolution = inputs_parameter_selection["time_resolution"]
+    spatial_resolution = float(inputs_parameter_selection["spatial_resolution"])
+
     nuts2_id = nuts
     print('type nuts', type(nuts2_id))
 
@@ -74,7 +77,7 @@ def calculation(output_directory, inputs_raster_selection, inputs_vector_selecti
                     search_radius,
                     investment_period,
                     discount_rate, cost_factor, operational_costs,
-                    transmission_line_threshold,
+                    transmission_line_threshold, time_resolution, spatial_resolution,
                     nuts2_id, output_transmission_lines, industry_profiles, sink_profiles)
 
     output_transmission_lines = create_zip_shapefiles(output_directory, output_transmission_lines)

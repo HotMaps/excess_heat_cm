@@ -14,7 +14,7 @@ from .excess_heat.excess_heat import excess_heat
 
 def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
          output_raster2, output_shp1, output_shp2,
-         search_radius, investment_period, discount_rate, cost_factor, operational_costs, transmission_line_threshold, nuts2_id, output_transmission_lines, industry_profiles, sink_profiles,
+         search_radius, investment_period, discount_rate, cost_factor, operational_costs, transmission_line_threshold, time_resolution, spatial_resolution, nuts2_id, output_transmission_lines, industry_profiles, sink_profiles,
          in_orig=None, only_return_areas=False, ):
     # The CM can be run for the following ranges of pixel and Dh thresholds:
     if pix_threshold < 1:
@@ -42,7 +42,7 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
         annual_cost_of_network, levelised_cost_of_heat_supply, excess_heat_profile_monthly,\
         heat_demand_profile_monthly, excess_heat_profile_daily, heat_demand_profile_daily, approximated_costs, approximated_flows, thresholds, thresholds_y, threshold_radius, approximated_annual_costs = \
         excess_heat(output_shp2, search_radius, investment_period, discount_rate, cost_factor, operational_costs,
-                    transmission_line_threshold, nuts2_id, output_transmission_lines, industry_profiles, sink_profiles)
+                    transmission_line_threshold, time_resolution, spatial_resolution, nuts2_id, output_transmission_lines, industry_profiles, sink_profiles)
 
     def round_to_n(x, n):
         length = 0

@@ -73,13 +73,17 @@ def ad_industrial_database_dict(dictionary):
     return data
 
 
-def ad_TUW23(out_shp_label, nuts2_id):
+def ad_TUW23(out_shp_label, nuts2_id, spatial_resolution):
     """
     Function extracting potential heat sinks computed by the TUW23 CM. It creates a grid of points of constant density
     inside coherent areas.
 
     :param out_shp_label: File name of shp file containing the coherent areas of TUW23 CM.
     :type out_shp_label: sting
+    :param nuts2_id: nuts2 id that is assigned to the points.
+    :type nuts2_id: string
+    :param spatial_resolution: distance between points generated in km.
+    :type spatial_resolution: float
     :return: Dataframe containing the potential heat sinks and a correspondence id for each coherent aera.
     :rtype: pandas Dataframe
     """
@@ -112,7 +116,7 @@ def ad_TUW23(out_shp_label, nuts2_id):
             coherent_areas_transformed.append(multi_poly)
 
     data = []
-    delta = 0.015
+    delta = spatial_resolution / 6371 / 2 / np.pi * 360
     for i, coherent_area in enumerate(coherent_areas_transformed):
         entry_points = []
         (minx, miny, maxx, maxy) = coherent_area.bounds
