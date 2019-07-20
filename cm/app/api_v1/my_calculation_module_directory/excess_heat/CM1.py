@@ -220,7 +220,7 @@ def cost_of_connection(connection_distance, hourly_heat_flow, order=24):
     pipe_capacities = [0.2, 0.3, 0.6, 1.2, 1.9, 3.6, 6.1, 9.8, 20, 45, 75, 125, 190, 1e19]
     pipe_costs = [195, 206, 220, 240, 261, 288, 323, 357, 426, 564, 701, 839, 976, 976]
     if np.sum(hourly_heat_flow) != 0:
-        capacity = np.max(moving_average(hourly_heat_flow, order))
+        capacity = np.max(moving_average(np.abs(hourly_heat_flow), order))
         # create boolean array and np.argmax will return the index of the first True, hence the first pipe capacity
         # exceeding the required capacity
         pipe = int(np.argmax(pipe_capacities >= capacity))

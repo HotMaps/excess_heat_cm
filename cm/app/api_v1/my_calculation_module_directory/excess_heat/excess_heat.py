@@ -149,7 +149,7 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
 
             for flow, length in zip(connection_flow, connection_lengths):
                 connection_costs.append(cost_of_connection(length, flow/4000, order=1))
-            cost_per_connection = np.array(connection_costs)/np.array(connection_flow) / \
+            cost_per_connection = np.array(connection_costs)/np.abs(np.array(connection_flow)) / \
                 investment_period * cost_factor
 
             heat_exchanger_source_costs = cost_of_heat_exchanger_source(source_flow/4000, order=1)
@@ -164,7 +164,7 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
             # GWh
             total_flow_scalar = np.sum(source_flow) / 1000
 
-            # drop edges with 0 flow and above threshold
+            # drop edges with 0 flow
             edges = cost_approximation_network.return_edge_source_target_vertices()
             for costs, edge in zip(cost_per_connection, edges):
                 if costs < 0:
@@ -196,6 +196,7 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
             thresholds.append(max(cost_per_connection))
             most_expensive = list(cost_per_connection).index(max(cost_per_connection))
             cost_approximation_network.delete_edges([edges[most_expensive]])
+
     if len(thresholds) < len(approximated_costs):
         thresholds.append(0)
 
@@ -203,7 +204,6 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
     approximated_flows.reverse()
     approximated_annual_costs.reverse()
 
-    thresholds.reverse()
     thresholds = np.array(thresholds) / 1000 * 100  # convert euro/MWh to ct/kWh
     thresholds = thresholds.tolist()
 
@@ -213,7 +213,7 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
     threshold_radius = []
     set_threshold = False
     for i, threshold in enumerate(thresholds):
-        if threshold < transmission_line_threshold or set_threshold is True:
+        if threshold > transmission_line_threshold or set_threshold is True:
             thresholds_y.append(0)
             thresholds_y2.append(0)
             thresholds_y3.append(0)
@@ -224,6 +224,12 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
             thresholds_y3.append(threshold)
             threshold_radius.append(3)
             set_threshold = True
+
+    thresholds.reverse()
+    thresholds_y.reverse()
+    thresholds_y2.reverse()
+    thresholds_y3.reverse()
+    threshold_radius.reverse()
 
     network = NetworkGraph(source_sink_connections, source_source_connections, sink_sink_connections,
                            range(len(source_source_connections)), heat_sinks["id"])
@@ -254,7 +260,7 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
         connection_costs = []
         for flow, length in zip(connection_flows, connection_lengths):
             connection_costs.append(cost_of_connection(length, flow / time_resolution, order=convolution))
-        cost_per_connection = np.array(connection_costs)/np.array(np.sum(connection_flows, axis=1)) / \
+        cost_per_connection = np.array(connection_costs)/np.abs(np.array(np.sum(connection_flows, axis=1))) / \
             investment_period * cost_factor
 
         # drop edges with 0 flow and above threshold
@@ -361,6 +367,9 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
     approximated_flows = list(map(round_to_n, approximated_flows, repeat(3)))
     approximated_annual_costs = list(map(round_to_n, approximated_annual_costs, repeat(3)))
     thresholds = list(map(round_to_n, thresholds, repeat(3)))
+    thresholds_y = list(map(round_to_n, thresholds_y, repeat(3)))
+    thresholds_y2 = list(map(round_to_n, thresholds_y2, repeat(3)))
+    thresholds_y3 = list(map(round_to_n, thresholds_y3, repeat(3)))
 
     # catch any negative value
     if total_excess_heat_available < 0:
