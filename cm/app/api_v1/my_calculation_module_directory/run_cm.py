@@ -99,6 +99,7 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1, output_r
                     "data": thresholds_y,
                     "pointRadius": threshold_radius,
                     "borderColor": "#fe7c60",
+                    "pointBackgroundColor": "#fe7c60",
                     "showLine": False
                 },
                 {
@@ -120,12 +121,14 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1, output_r
                     "data": thresholds_y2,
                     "pointRadius": threshold_radius,
                     "borderColor": "#fe7c60",
+                    "pointBackgroundColor": "#fe7c60",
                     "showLine": False
                 }, {
                     "label": "Set transmission line threshold",
                     "data": thresholds_y3,
                     "pointRadius": threshold_radius,
                     "borderColor": "#fe7c60",
+                    "pointBackgroundColor": "#fe7c60",
                     "showLine": False
                 },
                 {
