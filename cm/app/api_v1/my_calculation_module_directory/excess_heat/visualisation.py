@@ -10,6 +10,7 @@ schema = {
                     ("Flow", "str"),
                     ("Temp", "str"),
                     ("Cost", "str"),
+                    ("LCOH", "str"),
                     ("Length", "str")
                 ])
                 }
@@ -31,10 +32,10 @@ def round_to_n(x, n):
     return round(x, n) * 10 ** length
 
 
-def create_transmission_line_shp(transmission_lines, flows, temperatures, costs, lengths, file):
+def create_transmission_line_shp(transmission_lines, flows, temperatures, costs, lcohs, lengths, file):
     with fiona.open(file,  "w", crs=from_epsg(4326), driver=output_driver, schema=schema) as shp:
-        for transmission_line, flow, temperature, cost, length in zip(transmission_lines, flows, temperatures, costs,
-                                                                      lengths):
+        for transmission_line, flow, temperature, cost, lcoh, length in zip(transmission_lines, flows, temperatures, costs,
+                                                                            lcohs, lengths):
             line = {
                 "geometry": {
                     "type": "LineString",
@@ -44,6 +45,7 @@ def create_transmission_line_shp(transmission_lines, flows, temperatures, costs,
                     ("Flow", str(round_to_n(flow, 3)) + " MWh/a"),
                     ("Temp", str(round_to_n(temperature, 3)) + " C"),
                     ("Cost", str(round_to_n(cost, 3)) + " Euro"),
+                    ("LCOH", str(round_to_n(lcoh, 3)) + "ct/kwh/a"),
                     ("Length", str(round_to_n(length, 3)) + " km")
                 ])
             }
