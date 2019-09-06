@@ -138,7 +138,7 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1, output_r
                 }, {
                     "label": "Transmission line threshold",
                     "data": thresholds,
-                    "borderColor": "#3e95cd",
+                    "borderColor":"#32CD32",
                 }
                 ]
             }
