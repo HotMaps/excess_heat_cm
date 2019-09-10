@@ -111,11 +111,11 @@ def calculation(output_directory, inputs_raster_selection, inputs_vector_selecti
                             "value": str(round_to_n(total_excess_heat_connected, 3))},
                            {"unit": "GWh", "name": "Excess heat used",
                             "value": str(round_to_n(total_flow_scalar, 3))},
-                           {"unit": "Euro", "name": "Cost of network",
+                           {"unit": "Euro", "name": "Investments necessary for network",
                             "value": str(round_to_n(total_cost_scalar, 3))},
                            {"unit": "Euro/year", "name": "Annual costs of network",
                             "value": str(round_to_n(annual_cost_of_network, 3))},
-                           {"unit": "ct/kWh/a", "name": "Levelized cost of heat supply",
+                           {"unit": "ct/kWh", "name": "Levelized cost of heat supply",
                             "value": str(round_to_n(levelised_cost_of_heat_supply, 3))},
                            ]
 

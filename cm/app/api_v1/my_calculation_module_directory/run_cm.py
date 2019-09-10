@@ -103,7 +103,7 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1, output_r
                     "showLine": False
                 },
                 {
-                    "label": "Cost of network in Euros",
+                    "label": "Investments necessary for network",
                     "data": approximated_costs,
                     "borderColor": "#3e95cd",
                 }
@@ -113,7 +113,7 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1, output_r
         {
             "type": "line",
             "xLabel": "Annual delivered excess heat in GWh",
-            "yLabel": "Costs in ct/kWh/a",
+            "yLabel": "Costs in ct/kWh",
             "data": {
                 "labels": [str(x) for x in approximated_flows],
                 "datasets": [{
@@ -138,7 +138,7 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1, output_r
                 }, {
                     "label": "Transmission line threshold",
                     "data": thresholds,
-                    "borderColor":"#32CD32",
+                    "borderColor": "#32CD32",
                 }
                 ]
             }
