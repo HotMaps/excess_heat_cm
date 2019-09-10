@@ -107,7 +107,7 @@ def calculation(output_directory, inputs_raster_selection, inputs_vector_selecti
                             "value": str(100 * round(total_potential / total_heat_demand, 4))},
                            {"unit": "GWh", "name": "Excess heat available in selected area",
                             "value": str(round_to_n(total_excess_heat_available, 3))},
-                           {"unit": "GWh", "name": "Excess heat of sizes connected to the network",
+                           {"unit": "GWh", "name": "Excess heat of sites connected to the network",
                             "value": str(round_to_n(total_excess_heat_connected, 3))},
                            {"unit": "GWh", "name": "Excess heat used",
                             "value": str(round_to_n(total_flow_scalar, 3))},
