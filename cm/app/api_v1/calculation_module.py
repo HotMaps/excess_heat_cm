@@ -45,8 +45,8 @@ def calculation(output_directory, inputs_raster_selection, inputs_vector_selecti
 
     # industrial_sites = inputs_vector_selection["industrial_database"]
 
-    lp_chemical = inputs_vector_selection["lp_industry_chemicals_and_petrochemicals_yearlong_2018"]
-    lp_food = inputs_vector_selection["lp_industry_food_and_tobacco_yearlong_2018"]
+    lp_chemical = inputs_vector_selection["lp_industry_chemicals_and_petrochemicals_2018"]
+    lp_food = inputs_vector_selection["lp_industry_food_and_tobacco_2018"]
     lp_iron = inputs_vector_selection["lp_industry_iron_and_steel_yearlong_2018"]
     lp_non_metalic = inputs_vector_selection["lp_industry_non_metalic_minerals_yearlong_2018"]
     lp_paper = inputs_vector_selection["lp_industry_paper_yearlong_2018"]
