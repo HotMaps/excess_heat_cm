@@ -219,7 +219,7 @@ def ad_industry_profiles_local(nuts0_ids):
                 # determine delimiter of csv file
                 with open(os.path.join(sub_path, str(nuts_id) + ".csv"), 'r', encoding='utf-8') as csv_file:
                     delimiter = csv.Sniffer().sniff(csv_file.readline()).delimiter
-                    df = pd.read_csv(os.path.join(sub_path, nuts_id + ".csv"), sep=delimiter, usecols=("NUTS0_code", "process", "hour", "load"))
+                    df = pd.read_csv(os.path.join(sub_path, str(nuts_id) + ".csv"), sep=delimiter, usecols=("NUTS0_code", "process", "hour", "load"))
                     raw_data.append(df)
             except IOError:
                 pass
@@ -249,7 +249,7 @@ def ad_residential_heating_profile_local(nuts2_ids):
             # determine delimiter of csv file
             with open(os.path.join(path, str(nuts_id) + ".csv"), 'r', encoding='utf-8') as csv_file:
                 delimiter = csv.Sniffer().sniff(csv_file.readline()).delimiter
-                df = pd.read_csv(os.path.join(path, nuts_id + ".csv"), sep=delimiter,
+                df = pd.read_csv(os.path.join(path, str(nuts_id) + ".csv"), sep=delimiter,
                                  usecols=("NUTS2_code", "process", "hour", "load"))
                 data.append(df)
         except IOError:

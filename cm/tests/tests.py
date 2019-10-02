@@ -77,7 +77,7 @@ class TestAPI(unittest.TestCase):
         inputs_parameter_selection["time_resolution"] = "month"
         inputs_parameter_selection["spatial_resolution"] = 2
         #nuts = ['PL22', 'PL21', "PL41", "PL42", "PL43", "PL51", "PL52", "CZ08"]
-        nuts = ["DK05", "DE71"]
+        nuts = ["DK05", "DE71", "DA99"]
 
         inputs_parameter_selection["pix_threshold"] = 100
         inputs_parameter_selection["DH_threshold"] = 30
