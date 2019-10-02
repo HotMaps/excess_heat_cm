@@ -199,25 +199,29 @@ def ad_industry_profiles_local(nuts0_ids):
     :rtype: list [pd.Dataframe, pd.Dataframe, ...].
     """
 
-    file_names = ("hotmaps_task_2.7_load_profile_industry_chemicals_and_petrochemicals_yearlong_2018.csv",
-                  "hotmaps_task_2.7_load_profile_industry_food_and_tobacco_yearlong_2018.csv",
-                  "hotmaps_task_2.7_load_profile_industry_iron_and_steel_yearlong_2018.csv",
-                  "hotmaps_task_2.7_load_profile_industry_non_metalic_minerals_yearlong_2018.csv",
-                  "hotmaps_task_2.7_load_profile_industry_paper_yearlong_2018.csv")
+    folder_names = ("hotmaps_task_2.7_load_profile_industry_chemicals_and_petrochemicals_yearlong_2018",
+                  "hotmaps_task_2.7_load_profile_industry_food_and_tobacco_yearlong_2018",
+                  "hotmaps_task_2.7_load_profile_industry_iron_and_steel_yearlong_2018",
+                  "hotmaps_task_2.7_load_profile_industry_non_metalic_minerals_yearlong_2018",
+                  "hotmaps_task_2.7_load_profile_industry_paper_yearlong_2018")
 
     path = os.path.dirname(
            os.path.dirname(os.path.abspath(__file__)))
     path = os.path.join(path, "data")
 
     data = []
-    for file_name in file_names:
-        sub_path = os.path.join(path, file_name)
-        # determine delimiter of csv file
-        with open(sub_path, 'r', encoding='utf-8') as csv_file:
-            delimiter = csv.Sniffer().sniff(csv_file.readline()).delimiter
+    for folder_name in folder_names:
+        sub_path = os.path.join(path, folder_name)
+        raw_data = []
+        for nuts_id in nuts0_ids:
 
-        raw_data = pd.read_csv(sub_path, sep=delimiter, usecols=("NUTS0_code", "process", "hour", "load"))
-        raw_data = raw_data[raw_data["NUTS0_code"].isin(nuts0_ids)]
+            # determine delimiter of csv file
+            with open(os.path.join(sub_path, nuts_id + ".csv"), 'r', encoding='utf-8') as csv_file:
+                delimiter = csv.Sniffer().sniff(csv_file.readline()).delimiter
+                df = pd.read_csv(os.path.join(sub_path, nuts_id + ".csv"), sep=delimiter, usecols=("NUTS0_code", "process", "hour", "load"))
+                raw_data.append(df)
+
+        raw_data = pd.concat(raw_data, ignore_index=True)
         data.append(raw_data)
 
     return data
@@ -234,19 +238,18 @@ def ad_residential_heating_profile_local(nuts2_ids):
     path = os.path.dirname(
         os.path.dirname(os.path.abspath(__file__)))
     path = os.path.join(path, "data")
-    path1 = os.path.join(path, "hotmaps_task_2.7_load_profile_residential_heating_yearlong_2010_part1.csv")
-    path2 = os.path.join(path, "hotmaps_task_2.7_load_profile_residential_heating_yearlong_2010_part2.csv")
+    path = os.path.join(path, "data_hotmaps_task_2.7_load_profile_residential_shw_and_heating_yearlong_2010")
 
-    # determine delimiter of csv file
-    with open(path1, 'r', encoding='utf-8') as csv_file:
-        delimiter = csv.Sniffer().sniff(csv_file.readline()).delimiter
-    data = pd.read_csv(path1, sep=delimiter, usecols=("NUTS2_code", "process", "hour", "load"))
-    with open(path2, 'r', encoding='utf-8') as csv_file:
-        delimiter = csv.Sniffer().sniff(csv_file.readline()).delimiter
-    data2 = pd.read_csv(path2, sep=delimiter, usecols=("NUTS2_code", "process", "hour", "load"))
+    data = []
+    for nuts_id in nuts2_ids:
+        # determine delimiter of csv file
+        with open(os.path.join(path, nuts_id + ".csv"), 'r', encoding='utf-8') as csv_file:
+            delimiter = csv.Sniffer().sniff(csv_file.readline()).delimiter
+            df = pd.read_csv(os.path.join(path, nuts_id + ".csv"), sep=delimiter,
+                             usecols=("NUTS2_code", "process", "hour", "load"))
+            data.append(df)
 
-    data = data.append(data2)
-    data = data[data["NUTS2_code"].isin(nuts2_ids)]
+    data = pd.concat(data, ignore_index=True)
 
     return data
 
