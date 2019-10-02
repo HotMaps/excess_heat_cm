@@ -226,7 +226,7 @@ def cost_of_connection(connection_distance, hourly_heat_flow, order=24):
         pipe = int(np.argmax(pipe_capacities >= capacity))
         pipe_cost = pipe_costs[pipe]
 
-        return pipe_cost * connection_distance * 1000
+        return pipe_cost * connection_distance * 1000 * 2
     else:
         return -1
 
