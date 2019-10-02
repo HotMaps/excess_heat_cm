@@ -213,7 +213,7 @@ def ad_industry_profiles_local(nuts0_ids):
     for folder_name in folder_names:
         sub_path = os.path.join(path, folder_name)
         raw_data = []
-        for nuts_id in nuts0_ids:
+        for nuts_id in set(nuts0_ids):
 
             try:
                 # determine delimiter of csv file
@@ -244,7 +244,7 @@ def ad_residential_heating_profile_local(nuts2_ids):
     path = os.path.join(path, "data_hotmaps_task_2.7_load_profile_residential_shw_and_heating_yearlong_2010")
 
     data = []
-    for nuts_id in nuts2_ids:
+    for nuts_id in set(nuts2_ids):
         try:
             # determine delimiter of csv file
             with open(os.path.join(path, str(nuts_id) + ".csv"), 'r', encoding='utf-8') as csv_file:
