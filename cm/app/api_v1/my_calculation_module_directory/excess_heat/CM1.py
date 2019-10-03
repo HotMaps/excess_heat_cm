@@ -265,4 +265,7 @@ def cost_of_heat_exchanger_sink(hourly_heat_flow, order=24):
 
 
 def annuity_costs(cost, discount_rate, years):
-    return cost * (discount_rate + 1) ** years * discount_rate / ((discount_rate + 1) ** years - 1)
+    if discount_rate == 0:
+        return cost / years
+    else:
+        return cost * (discount_rate + 1) ** years * discount_rate / ((discount_rate + 1) ** years - 1)
