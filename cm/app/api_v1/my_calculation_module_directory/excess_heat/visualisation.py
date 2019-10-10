@@ -9,8 +9,6 @@ schema = {
                 "properties": OrderedDict([
                     ("Flow", "str"),
                     ("Temp", "str"),
-                    ("Cost", "str"),
-                    ("LCOH", "str"),
                     ("Length", "str")
                 ])
                 }
@@ -44,8 +42,6 @@ def create_transmission_line_shp(transmission_lines, flows, temperatures, costs,
                 "properties": OrderedDict([
                     ("Flow", str(round_to_n(flow, 3)) + " MWh/a"),
                     ("Temp", str(round_to_n(temperature, 3)) + " C"),
-                    ("Cost", str(round_to_n(cost, 3)) + " Euro"),
-                    ("LCOH", str(round_to_n(lcoh, 3)) + "ct/kWh"),
                     ("Length", str(round_to_n(length, 3)) + " km")
                 ])
             }
