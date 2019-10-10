@@ -119,7 +119,7 @@ SIGNATURE = {
     "category": "Buildings",
     "cm_name": CM_NAME,
     "layers_needed": [
-        {"type": "heat", "description": "Select heat demand density layer."},
+        "heat",
     ],
     "vectors_needed": [
     #"lp_residential_shw_and_heating_yearlong_2010",
@@ -130,7 +130,7 @@ SIGNATURE = {
     #"lp_industry_chemicals_and_petrochemicals_2018"
     ],
     "type_layer_needed": [
-        "heat",
+        {"type": "heat", "description": "Select heat demand density layer."},
     ],
     "cm_url": "Do not add something",
     "cm_description": "CM computing the costs of the transportation of excess heat to district heating networks",
