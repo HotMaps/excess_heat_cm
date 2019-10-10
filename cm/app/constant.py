@@ -119,7 +119,7 @@ SIGNATURE = {
     "category": "Buildings",
     "cm_name": CM_NAME,
     "layers_needed": [
-        {"type": "heat", "description": "Choose layer to be considered for dh areas."}
+        {"type": "heat", "description": "Select heat demand density layer."},
     ],
     "vectors_needed": [
     #"lp_residential_shw_and_heating_yearlong_2010",
