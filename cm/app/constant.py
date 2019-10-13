@@ -126,6 +126,7 @@ SIGNATURE = {
     ],
     "type_layer_needed": [
         {"type": "heat", "description": "Select heat demand density layer."},
+        {"type": "industrial_database", "description": "Select industrial database layer"},
     ],
     "cm_url": "Do not add something",
     "cm_description": "CM computing the costs of the transportation of excess heat to district heating networks",
