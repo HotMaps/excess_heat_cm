@@ -34,7 +34,9 @@ def ad_industrial_database_dict(dictionary):
                         "Slovenia": "SI", "Slovakia": "SK", "United Kingdom": "UK", "Albania": "AL", "Montenegro": "ME",
                         "North Macedonia": "MK", "Serbia": "RS", "Turkey": "TR", "Switzerland": "CH", "Iceland": "IS",
                         "Liechtenstein": "LI", "Norway": "NO"}
-    raw_data = pd.DataFrame(dictionary["industrial_database"])
+    temp = '%s' % dictionary
+    dictionary = temp.replace("\'", "\"")
+    raw_data = pd.read_json(dictionary, orient='records')
     raw_data = raw_data.loc[:, ("geom", "subsector",  "country", "excess_heat_100_200c", "excess_heat_200_500c",
                                 "excess_heat_500c")]
 

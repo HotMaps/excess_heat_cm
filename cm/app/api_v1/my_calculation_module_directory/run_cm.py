@@ -11,14 +11,14 @@ from .excess_heat.excess_heat import excess_heat
 
 def main(heat_density_map, pix_threshold, DH_threshold, output_raster1, output_raster2, output_shp1, output_shp2,
          search_radius, investment_period, discount_rate, cost_factor, operational_costs, transmission_line_threshold,
-         time_resolution, spatial_resolution, nuts2_id, output_transmission_lines, industry_profiles, sink_profiles,
+         time_resolution, spatial_resolution, nuts2_id, output_transmission_lines, industrial_sites,
          in_orig=None, only_return_areas=False, ):
     # The CM can be run for the following ranges of pixel and Dh thresholds:
     if pix_threshold < 1:
         raise ValueError("Pixel threshold cannot be smaller than 1 GWh/km2!")
     if DH_threshold < 1:
         raise ValueError("DH threshold cannot be smaller than 1 GWh/year!")
-    # DH_Regions: boolean array showing DH regions
+
     DH_Regions, geo_transform, total_heat_demand = DHP.DHReg(heat_density_map,
                                                              pix_threshold,
                                                              DH_threshold,
@@ -42,7 +42,7 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1, output_r
         approximated_levelized_costs = \
         excess_heat(output_shp2, search_radius, investment_period, discount_rate, cost_factor, operational_costs,
                     transmission_line_threshold, time_resolution, spatial_resolution, nuts2_id,
-                    output_transmission_lines, industry_profiles, sink_profiles)
+                    output_transmission_lines, industrial_sites)
 
     def round_to_n(x, n):
         length = 0

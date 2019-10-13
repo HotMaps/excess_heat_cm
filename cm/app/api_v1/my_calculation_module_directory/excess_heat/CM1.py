@@ -185,7 +185,6 @@ def create_normalized_profiles(profiles, region_header, time_header, value_heade
         profile = np.array(profile[value_header].values)
         profile = profile / np.sum(profile)
         normalized_profiles[region] = profile
-
     return normalized_profiles
 
 

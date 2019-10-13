@@ -4,7 +4,7 @@ from itertools import repeat
 # from .read_data import ad_industrial_database_dict
 from .read_data import ad_TUW23
 from .read_data import ad_industry_profiles_dict
-from .read_data import ad_residential_heating_profile_dict
+from .read_data import ad_residential_heating_profile_dict, ad_industrial_database_dict
 from .read_data import ad_industry_profiles_local, ad_residential_heating_profile_local, ad_industrial_database_local
 from .CM1 import find_neighbours, create_normalized_profiles, \
                 cost_of_connection, cost_of_heat_exchanger_source, cost_of_heat_exchanger_sink, annuity_costs
@@ -12,6 +12,7 @@ from .CM1 import find_neighbours, create_normalized_profiles, \
 from .visualisation import create_transmission_line_shp
 
 from .graphs import NetworkGraph
+import time
 
 np.seterr(divide='ignore', invalid='ignore')
 
@@ -34,7 +35,7 @@ def round_to_n(x, n):
 
 def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_factor, operational_costs,
                 transmission_line_threshold, time_resolution, spatial_resolution, nuts2_id, output_transmission_lines,
-                industry_profiles, sink_profiles):
+                industrial_sites):
 
     industrial_subsector_map = {"Iron and steel": "iron_and_steel", "Refineries": "chemicals_and_petrochemicals",
                                 "Chemical industry": "chemicals_and_petrochemicals", "Cement": "non_metalic_minerals",
@@ -60,8 +61,8 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
     time_resolution = time_resolution_map[time_resolution]
 
     # load heat source and heat sink data
-    # heat_sources = ad_industrial_database_dict(sources)
-    heat_sources = ad_industrial_database_local(nuts2_id)
+    heat_sources = ad_industrial_database_dict(industrial_sites)
+    # heat_sources = ad_industrial_database_local(nuts2_id)
     heat_sinks = ad_TUW23(sinks, nuts2_id[0], spatial_resolution)
 
     # escape main routine if dh_potential cm did not produce shp file
@@ -69,8 +70,6 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
         return 0, 0, 0, 0, 0, 0, [0] * 12, [0] * 12, [0] * 24, [0] * 24, [0], [0], [0], [0], [0], [0], [0], [0]
 
     # load heating profiles for sources and sinks
-    #industry_profiles = ad_industry_profiles_dict(industry_profiles)
-    #residential_heating_profile = ad_residential_heating_profile_dict(sink_profiles)
     industry_profiles = ad_industry_profiles_local(nuts0_id)
     residential_heating_profile = ad_residential_heating_profile_local([nuts2_id[0]])
 
@@ -103,6 +102,7 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
     # generate profiles for all heat sources and store them in an array
     heat_source_profiles = []
     heat_source_coordinates = []
+    start = time.perf_counter()
     for _, heat_source in heat_sources.iterrows():
         reduced_profile = normalized_heat_profiles[
             industrial_subsector_map[heat_source["Subsector"]]][heat_source["Nuts0_ID"]]\
@@ -342,8 +342,8 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
     for i, sink_flow in enumerate(sink_flows):
         heat_demand_profile = heat_demand_profile + heat_sink_profiles[i]
 
+    # reshape to monthly format if time resolution is at least monthly
     if time_resolution <= 730:
-        # reshape to monthly format
         excess_heat_profile_monthly = excess_heat_profile.reshape((12, int(730 / time_resolution)))
         heat_demand_profile_monthly = heat_demand_profile.reshape((12, int(730 / time_resolution)))
         # sum for every month
@@ -353,7 +353,7 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
         excess_heat_profile_monthly = np.sum(excess_heat_profile) / 730 / 12 * np.array([1] * 12)
         heat_demand_profile_monthly = np.sum(heat_demand_profile) / 730 / 12 * np.array([1] * 12)
 
-    # reshape to daily format
+    # reshape to daily format if time resolution is at least daily
     if time_resolution <= 1:
         excess_heat_profile_daily = excess_heat_profile.reshape((365, 24))
         heat_demand_profile_daily = heat_demand_profile.reshape((365, 24))

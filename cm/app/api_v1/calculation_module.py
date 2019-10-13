@@ -43,18 +43,7 @@ def calculation(output_directory, inputs_raster_selection, inputs_vector_selecti
     nuts2_id = nuts
     print('type nuts', type(nuts2_id))
 
-    # industrial_sites = inputs_vector_selection["industrial_database"]
-
-    #lp_chemical = inputs_vector_selection["lp_industry_chemicals_and_petrochemicals_2018"]
-    #lp_food = inputs_vector_selection["lp_industry_food_and_tobacco_2018"]
-    #lp_iron = inputs_vector_selection["lp_industry_iron_and_steel_yearlong_2018"]
-    #lp_non_metalic = inputs_vector_selection["lp_industry_non_metalic_minerals_yearlong_2018"]
-    #lp_paper = inputs_vector_selection["lp_industry_paper_yearlong_2018"]
-    #industry_profiles = [lp_chemical, lp_food, lp_iron, lp_non_metalic, lp_paper]
-
-    #sink_profiles = inputs_vector_selection["lp_residential_shw_and_heating_yearlong_2010"]
-    industry_profiles = []
-    sink_profiles = []
+    industrial_sites = inputs_vector_selection["industrial_database"]
 
     output_raster1 = generate_output_file_tif(output_directory)
     output_raster2 = generate_output_file_tif(output_directory)
@@ -67,7 +56,7 @@ def calculation(output_directory, inputs_raster_selection, inputs_vector_selecti
         run_cm.main(input_raster_selection, pix_threshold, DH_threshold, output_raster1, output_raster2,
                     output_shp1, output_shp2, search_radius, investment_period, discount_rate, cost_factor,
                     operational_costs, transmission_line_threshold, time_resolution, spatial_resolution,
-                    nuts2_id, output_transmission_lines, industry_profiles, sink_profiles)
+                    nuts2_id, output_transmission_lines, industrial_sites)
 
     output_transmission_lines = create_zip_shapefiles(output_directory, output_transmission_lines)
     result = dict()

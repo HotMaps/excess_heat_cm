@@ -122,12 +122,7 @@ SIGNATURE = {
         "heat_tot_curr_density_tif",
     ],
     "vectors_needed": [
-    #"lp_residential_shw_and_heating_yearlong_2010",
-    #"lp_industry_iron_and_steel_yearlong_2018",
-    #"lp_industry_paper_yearlong_2018",
-    #"lp_industry_non_metalic_minerals_yearlong_2018",
-    #"lp_industry_food_and_tobacco_2018",
-    #"lp_industry_chemicals_and_petrochemicals_2018"
+        "industrial_database"
     ],
     "type_layer_needed": [
         {"type": "heat", "description": "Select heat demand density layer."},
