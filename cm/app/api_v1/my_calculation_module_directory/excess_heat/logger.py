@@ -17,6 +17,6 @@ class Logger:
 
     def string_report(self):
         log_string = ""
-        for message, type in zip(self.messages, self.message_types):
-            log_string += type + ": " + message + " \n "
+        for message, type_ in zip(self.messages, self.message_types):
+            log_string += type_ + ": " + message + " \n "
         return log_string

@@ -1,36 +1,18 @@
 import numpy as np
 import pandas as pd
 from itertools import repeat
-# from .read_data import ad_industrial_database_dict
+from .read_data import ad_industrial_database_dict
 from .read_data import ad_TUW23
-from .read_data import ad_industry_profiles_dict
-from .read_data import ad_residential_heating_profile_dict, ad_industrial_database_dict
-from .read_data import ad_industry_profiles_local, ad_residential_heating_profile_local, ad_industrial_database_local
+from .read_data import ad_industry_profiles_local, ad_residential_heating_profile_local
 from .CM1 import find_neighbours, create_normalized_profiles, \
                 cost_of_connection, cost_of_heat_exchanger_source, cost_of_heat_exchanger_sink, annuity_costs
 
-from .visualisation import create_transmission_line_shp
+from .visualisation import create_transmission_line_shp, round_to_n
 
 from .graphs import NetworkGraph
 from .logger import Logger
 
 np.seterr(divide='ignore', invalid='ignore')
-
-
-def round_to_n(x, n):
-    length = 0
-    if x > 1:
-        while x > 1:
-            x /= 10
-            length += 1
-    elif x == 0:
-        return 0
-    else:
-        while x < 1:
-            x *= 10
-            length -= 1
-
-    return round(x, n) * 10 ** length
 
 
 def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_factor, operational_costs,
@@ -72,7 +54,7 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
 
     # escape main routine if dh_potential cm did not produce shp file
     if not isinstance(heat_sinks, pd.DataFrame):
-        log.add_error("no dh area in selection")
+        log.add_error("No dh area in selection.")
         log_message = log.string_report()
         return -1, log_message
 
@@ -97,10 +79,10 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
             for missing_profile in missing_profiles:
                 heat_sources = heat_sources[((heat_sources.Nuts0_ID != missing_profile) |
                                              (heat_sources.Subsector != sub_sector))]
-                log.add_warning("No industry profiles available for " + str(missing_profile))
+                log.add_warning("No industry profiles available for " + str(missing_profile) + ".")
 
     if heat_sources.shape[0] == 0:
-        log.add_error("No industrial sites in selected area")
+        log.add_error("No industrial sites in selected area.")
         log_message = log.string_report()
         return -1, log_message
 
@@ -111,10 +93,10 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
                             set(normalized_heat_profiles["residential_heating"].keys()))
     for missing_profile in missing_profiles:
         heat_sinks = heat_sinks[heat_sinks.Nuts2_ID != missing_profile]
-        log.add_warning("No residential heating profile available for " + str(missing_profile))
+        log.add_warning("No residential heating profile available for " + str(missing_profile) + ".")
 
     if heat_sinks.shape[0] == 0:
-        log.add_error("No entry points in selected area")
+        log.add_error("No entry points in selected area.")
         log_message = log.string_report()
         return -1, log_message
 
@@ -157,7 +139,7 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
 
     # if no source sink connections there can not be any flow
     if len([val for sublist in source_sink_connections for val in sublist]) == 0:
-        log.add_error("no industrial sites in range")
+        log.add_error("No industrial sites in range.")
         log_message = log.string_report()
         return -1, log_message
 
@@ -338,7 +320,7 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
     total_flow_scalar = np.sum(source_flows) / 1000
 
     if total_flow_scalar == 0:
-        log.add_error("no excess heat used")
+        log.add_error("No excess heat used.")
         log_message = log.string_report()
         return -1, log_message
 
@@ -432,6 +414,13 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
         annual_cost_of_network = 0
     if levelised_cost_of_heat_supply < 0:
         levelised_cost_of_heat_supply = 0
+
+    total_excess_heat_available = round_to_n(total_excess_heat_available, 3)
+    total_excess_heat_connected = round_to_n(total_excess_heat_connected, 3)
+    total_flow_scalar = round_to_n(total_flow_scalar, 3)
+    total_cost_scalar = round_to_n(total_cost_scalar, 3)
+    annual_cost_of_network = round_to_n(annual_cost_of_network, 3)
+    levelised_cost_of_heat_supply = round_to_n(levelised_cost_of_heat_supply, 3)
 
     # generate graphics
     coordinates = []

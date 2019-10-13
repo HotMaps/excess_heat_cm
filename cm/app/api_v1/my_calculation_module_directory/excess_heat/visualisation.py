@@ -1,7 +1,6 @@
 import fiona
 from fiona.crs import from_epsg
 from collections import OrderedDict
-from math import floor, log10
 
 output_driver = "ESRI Shapefile"
 schema = {

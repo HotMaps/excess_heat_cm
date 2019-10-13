@@ -80,21 +80,6 @@ def calculation(output_directory, inputs_raster_selection, inputs_vector_selecti
 
     result['name'] = CM_NAME
 
-    def round_to_n(x, n):
-        length = 0
-        if x > 1:
-            while x > 1:
-                x /= 10
-                length += 1
-        elif x == 0:
-            return 0
-        else:
-            while x < 1:
-                x *= 10
-                length -= 1
-
-        return round(x, n) * 10 ** length
-
     result['indicator'] = [{"unit": " ", "name": "Log", "value": log_message},
                            {"unit": "GWh", "name": "Total heat demand in GWh within the selected zone",
                             "value": str(total_heat_demand)},
@@ -104,17 +89,17 @@ def calculation(output_directory, inputs_raster_selection, inputs_vector_selecti
                             "name": "Potential share of district heating from total demand in selected zone",
                             "value": str(100 * round(total_potential / total_heat_demand, 4))},
                            {"unit": "GWh", "name": "Excess heat available in selected area",
-                            "value": str(round_to_n(total_excess_heat_available, 3))},
+                            "value": str(total_excess_heat_available)},
                            {"unit": "GWh", "name": "Excess heat of sites connected to the network",
-                            "value": str(round_to_n(total_excess_heat_connected, 3))},
+                            "value": str(total_excess_heat_connected)},
                            {"unit": "GWh", "name": "Excess heat used",
-                            "value": str(round_to_n(total_flow_scalar, 3))},
+                            "value": str(total_flow_scalar)},
                            {"unit": "Euro", "name": "Investments necessary for network",
-                            "value": str(round_to_n(total_cost_scalar, 3))},
+                            "value": str(total_cost_scalar)},
                            {"unit": "Euro/year", "name": "Annual costs of network",
-                            "value": str(round_to_n(annual_cost_of_network, 3))},
+                            "value": str(annual_cost_of_network)},
                            {"unit": "ct/kWh", "name": "Levelized cost of heat supply",
-                            "value": str(round_to_n(levelised_cost_of_heat_supply, 3))},
+                            "value": str(levelised_cost_of_heat_supply)},
                            ]
 
     result['graphics'] = graphics

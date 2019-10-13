@@ -7,6 +7,7 @@ import dh_potential.CM_TUW4.district_heating_potential as DHP
 import dh_potential.CM_TUW19.run_cm as CM19
 
 from .excess_heat.excess_heat import excess_heat
+from .excess_heat.visualisation import round_to_n
 
 
 def main(heat_density_map, pix_threshold, DH_threshold, output_raster1, output_raster2, output_shp1, output_shp2,
@@ -60,20 +61,6 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1, output_r
     approximated_flows, thresholds, thresholds_y, thresholds_y2, thresholds_y3, threshold_radius, \
     approximated_levelized_costs, log_message = results
 
-    def round_to_n(x, n):
-        length = 0
-        if x > 1:
-            while x > 1:
-                x /= 10
-                length += 1
-        elif x == 0:
-            return 0
-        else:
-            while x < 1:
-                x *= 10
-                length -= 1
-
-        return round(x, n) * 10 ** length
 
     graphics = [
         {
