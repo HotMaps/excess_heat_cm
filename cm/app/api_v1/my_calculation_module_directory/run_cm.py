@@ -46,7 +46,7 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1, output_r
         CM19.main(output_raster2, geo_transform, 'float32', hdm_dh_region_cut)
 
     else:
-        return -1, "no dh area in selection"
+        return -1, "error: no dh area in selection \n "
 
     results = excess_heat(output_shp2, search_radius, investment_period, discount_rate, cost_factor, operational_costs,
               transmission_line_threshold, time_resolution, spatial_resolution, nuts2_id,

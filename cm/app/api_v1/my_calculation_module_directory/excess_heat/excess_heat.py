@@ -13,7 +13,6 @@ from .visualisation import create_transmission_line_shp
 
 from .graphs import NetworkGraph
 from .logger import Logger
-import time
 
 np.seterr(divide='ignore', invalid='ignore')
 
@@ -51,16 +50,19 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
     # factor for cost approximation network. Determines the peak performance compared to the yearly average
     peak_performance_map = {"hour": 2, "day": 2, "week": 2, "month": 2, "year": 1}
 
-    # generate nuts 0 ids
+    # generate unique nuts 0 ids
     nuts0_id = []
     for id_ in nuts2_id:
         nuts0_id.append(id_[:2])
+    nuts0_id = list(set(nuts0_id))
+    nuts2_id = list(set(nuts2_id))
 
     # set time_resolution settings
     convolution = convolution_map[time_resolution]
     peak_performance = peak_performance_map[time_resolution]
     time_resolution = time_resolution_map[time_resolution]
 
+    # create logger
     log = Logger()
 
     # load heat source and heat sink data
@@ -96,6 +98,7 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
                 heat_sources = heat_sources[((heat_sources.Nuts0_ID != missing_profile) |
                                              (heat_sources.Subsector != sub_sector))]
                 log.add_warning("No industry profiles available for " + str(missing_profile))
+
     if heat_sources.shape[0] == 0:
         log.add_error("No industrial sites in selected area")
         log_message = log.string_report()
@@ -109,12 +112,13 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
     for missing_profile in missing_profiles:
         heat_sinks = heat_sinks[heat_sinks.Nuts2_ID != missing_profile]
         log.add_warning("No residential heating profile available for " + str(missing_profile))
+
     if heat_sinks.shape[0] == 0:
         log.add_error("No entry points in selected area")
         log_message = log.string_report()
         return -1, log_message
 
-    # generate profiles for all heat sources and store them in an array
+    # generate profiles at set time resolution for all heat sources and store them in an array
     heat_source_profiles = []
     heat_source_coordinates = []
     for _, heat_source in heat_sources.iterrows():
@@ -127,7 +131,7 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
     heat_source_profiles = np.array(heat_source_profiles)
     heat_source_profiles = heat_source_profiles.transpose()
 
-    # generate profiles for all heat sinks and store them in an array
+    # generate profiles at set time resolution for all heat sinks and store them in an array
     heat_sink_profiles = []
     heat_sink_coordinates = []
     for _, heat_sink in heat_sinks.iterrows():
@@ -151,6 +155,7 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
         heat_sinks, heat_sinks, "Lon", "Lat", "Lon", "Lat", "Temperature", "Temperature", search_radius,
         temperature, "true", "true", "true", small_angle_approximation=True)
 
+    # if no source sink connections there can not be any flow
     if len([val for sublist in source_sink_connections for val in sublist]) == 0:
         log.add_error("no industrial sites in range")
         log_message = log.string_report()
@@ -227,11 +232,14 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
                 levelised_cost_of_heat_supply = 0
 
         approximated_levelized_costs.append(levelised_cost_of_heat_supply)
+
+        # while there are still connections left delete the most expensive
         if len(cost_per_connection) > 0:
             thresholds.append(min(max(cost_per_connection), min(thresholds + [1e6])))
             most_expensive = list(cost_per_connection).index(max(cost_per_connection))
             cost_approximation_network.delete_edges([edges[most_expensive]])
 
+    # add last threshold if non existent
     if len(thresholds) < len(approximated_costs):
         thresholds.append(0)
 
