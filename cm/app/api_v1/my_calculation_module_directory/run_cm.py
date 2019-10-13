@@ -35,14 +35,17 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1, output_r
     polygonize(output_raster1, output_raster2, output_shp1, output_shp2, DHPot)
     rm_file(output_raster2, output_raster2[:-4] + '.tfw')
 
-    total_excess_heat_available, total_excess_heat_connected, total_flow_scalar, total_cost_scalar,\
-        annual_cost_of_network, levelised_cost_of_heat_supply, excess_heat_profile_monthly,\
-        heat_demand_profile_monthly, excess_heat_profile_daily, heat_demand_profile_daily, approximated_costs,\
-        approximated_flows, thresholds, thresholds_y, thresholds_y2, thresholds_y3, threshold_radius,\
-        approximated_levelized_costs = \
-        excess_heat(output_shp2, search_radius, investment_period, discount_rate, cost_factor, operational_costs,
-                    transmission_line_threshold, time_resolution, spatial_resolution, nuts2_id,
-                    output_transmission_lines, industrial_sites)
+    results = excess_heat(output_shp2, search_radius, investment_period, discount_rate, cost_factor, operational_costs,
+              transmission_line_threshold, time_resolution, spatial_resolution, nuts2_id,
+              output_transmission_lines, industrial_sites)
+    if results[0] == -1:
+        return results
+
+    total_excess_heat_available, total_excess_heat_connected, total_flow_scalar, total_cost_scalar, \
+    annual_cost_of_network, levelised_cost_of_heat_supply, excess_heat_profile_monthly, \
+    heat_demand_profile_monthly, excess_heat_profile_daily, heat_demand_profile_daily, approximated_costs, \
+    approximated_flows, thresholds, thresholds_y, thresholds_y2, thresholds_y3, threshold_radius, \
+    approximated_levelized_costs, log_message = results
 
     def round_to_n(x, n):
         length = 0
@@ -185,4 +188,4 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1, output_r
     ]
 
     return total_potential, total_heat_demand, graphics, total_excess_heat_available, total_excess_heat_connected,\
-        total_flow_scalar, total_cost_scalar, annual_cost_of_network, levelised_cost_of_heat_supply
+        total_flow_scalar, total_cost_scalar, annual_cost_of_network, levelised_cost_of_heat_supply, log_message

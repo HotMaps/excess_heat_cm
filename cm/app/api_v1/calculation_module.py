@@ -51,12 +51,20 @@ def calculation(output_directory, inputs_raster_selection, inputs_vector_selecti
     output_shp2 = generate_output_file_shp(output_directory)
     output_transmission_lines = generate_output_file_shp(output_directory)
 
-    total_potential, total_heat_demand, graphics, total_excess_heat_available, total_excess_heat_connected,\
-        total_flow_scalar, total_cost_scalar, annual_cost_of_network, levelised_cost_of_heat_supply = \
-        run_cm.main(input_raster_selection, pix_threshold, DH_threshold, output_raster1, output_raster2,
-                    output_shp1, output_shp2, search_radius, investment_period, discount_rate, cost_factor,
-                    operational_costs, transmission_line_threshold, time_resolution, spatial_resolution,
-                    nuts2_id, output_transmission_lines, industrial_sites)
+    results = run_cm.main(input_raster_selection, pix_threshold, DH_threshold, output_raster1, output_raster2,
+                output_shp1, output_shp2, search_radius, investment_period, discount_rate, cost_factor,
+                operational_costs, transmission_line_threshold, time_resolution, spatial_resolution,
+                nuts2_id, output_transmission_lines, industrial_sites)
+
+    if results[0] == -1:
+        result = dict()
+        result['name'] = CM_NAME
+        result['indicator'] = [{"unit": " ", "name": "Log",
+                            "value": results[1]}]
+        return result
+
+    total_potential, total_heat_demand, graphics, total_excess_heat_available, total_excess_heat_connected, \
+    total_flow_scalar, total_cost_scalar, annual_cost_of_network, levelised_cost_of_heat_supply, log_message = results
 
     output_transmission_lines = create_zip_shapefiles(output_directory, output_transmission_lines)
     result = dict()
@@ -87,7 +95,8 @@ def calculation(output_directory, inputs_raster_selection, inputs_vector_selecti
 
         return round(x, n) * 10 ** length
 
-    result['indicator'] = [{"unit": "GWh", "name": "Total heat demand in GWh within the selected zone",
+    result['indicator'] = [{"unit": " ", "name": "Log", "value": log_message},
+                           {"unit": "GWh", "name": "Total heat demand in GWh within the selected zone",
                             "value": str(total_heat_demand)},
                            {"unit": "GWh", "name": "Total district heating potential in GWh within the selected zone",
                             "value": str(total_potential)},
