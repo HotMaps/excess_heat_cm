@@ -39,7 +39,7 @@ def DHRegions(DH, DH_threshold):
     DH_expanded = binary_dilation(DH, structure=struct)
     DH_connected = binary_erosion(DH_expanded, structure=struct)
     # fills the holes within the connected components
-    #DH_noHole = binary_fill_holes(DH_connected)
+    # DH_noHole = binary_fill_holes(DH_connected)
     DH_noHole = DH_connected
     # label the connected components
     struct = np.ones((3, 3)).astype(int)
@@ -50,7 +50,7 @@ def DHRegions(DH, DH_threshold):
     if labels.size > 0:
         # labels start from 1. Therefore, PotDH should have numLabels+1
         # elements
-        PotDH = np.zeros((numLabels+1)).astype(bool)
+        PotDH = np.zeros((numLabels + 1)).astype(bool)
         # using sparse matrix indices to swift the calculation. This helps to
         # implement "np.unique" much faster
         sparseRow, sparseCol = np.nonzero(labels)
@@ -75,8 +75,8 @@ def DHRegions(DH, DH_threshold):
         element which is one is 3)
         '''
         end = np.cumsum(counts)
-        st = np.concatenate((np.zeros((1)), end[0:numLabels-1]))
-        
+        st = np.concatenate((np.zeros((1)), end[0:numLabels - 1]))
+
         for i in range(numLabels):
             # sum over sparseDH
             # input: [MWh/ha] for each ha --> summation returns MWh for the
@@ -85,7 +85,7 @@ def DHRegions(DH, DH_threshold):
             if pot >= DH_threshold:
                 # here should be i+1 because labeling starts from one and not
                 # from zero
-                PotDH[i+1] = True
+                PotDH[i + 1] = True
         DH_regions = PotDH[labels]
         return DH_regions
 
@@ -97,7 +97,7 @@ def DHPotential(DH_Regions, heat_density_map):
         hdm_arr, gt = RA(heat_density_map, return_gt=True)
     struct = np.ones((3, 3)).astype(int)
     labels, numLabels = measurements.label(DH_Regions, structure=struct)
-    DHPot = np.zeros((numLabels+1)).astype(float)
+    DHPot = np.zeros((numLabels + 1)).astype(float)
     sparseRow, sparseCol = np.nonzero(labels)
     # This helps to implement "np.unique" much faster
     sparse_labels = labels[sparseRow, sparseCol]
@@ -106,15 +106,15 @@ def DHPotential(DH_Regions, heat_density_map):
     # summation process much faster.
     sortedSparseData = np.asarray(sorted(zip(sparseRow, sparseCol,
                                              sparse_labels, sparse_hdm),
-                                        key=lambda x: x[2]))
+                                         key=lambda x: x[2]))
     unique, counts = np.unique(sparse_labels, return_counts=True)
     end = np.cumsum(counts)
-    st = np.concatenate((np.zeros((1)), end[0:numLabels-1]))
+    st = np.concatenate((np.zeros((1)), end[0:numLabels - 1]))
     for i in range(numLabels):
         # input: [MWh/ha] for each ha --> to get potential in GWh it
         # should be multiplied by 0.001
-        DHPot[i+1] = 0.001 * np.sum(sortedSparseData[int(st[i]):int(end[i]), 3])
-    #DH_Potential = DHPot[labels]
+        DHPot[i + 1] = 0.001 * np.sum(sortedSparseData[int(st[i]):int(end[i]), 3])
+    # DH_Potential = DHPot[labels]
     DHPot = DHPot[1::]
     # potential of each coherent area in GWh is assigned to its pixels
     return DHPot, labels
@@ -130,26 +130,9 @@ def DHReg(heat_density_map, pix_threshold, DH_threshold, in_orig=None):
     elif isinstance(heat_density_map, str):
         hdm_arr, gt = RA(heat_density_map, return_gt=True)
     # division by 1000 for MWh to GWh
-    total_heat_demand = np.sum(hdm_arr)/1000
+    total_heat_demand = np.sum(hdm_arr) / 1000
     hdm_arr_filtered = hdm_arr * (hdm_arr > pix_threshold)
     DH_Selected_Region = DHRegions(hdm_arr_filtered, DH_threshold)
+    hdm_dh_region_cut = hdm_arr * (DH_Selected_Region > 0).astype(int)
     # return DH_Selected_Region and raster geotransform array
-    return DH_Selected_Region, gt, total_heat_demand
-
-
-if __name__ == "__main__":
-    start = time.time()
-    data_warehouse = path + os.sep + 'AD/data_warehouse'
-    heat_density_map = data_warehouse + os.sep + 'heat_tot_curr_density_AT.tif'
-    region = data_warehouse + os.sep + 'AT.shp'
-    output_dir = path + os.sep + 'Outputs'
-    if not os.path.exists(output_dir):
-        os.mkdir(output_dir)
-    outRasterPath = output_dir + os.sep + 'Pot_AT_TH30.tif'
-    # pix_threshold [GWh/km2]
-    pix_threshold = 10
-    # DH_threshold [GWh/a]
-    DH_threshold = 30
-    output = DHReg(heat_density_map, region, pix_threshold, DH_threshold)
-    elapsed = time.time() - start
-    print("%0.3f seconds" % elapsed)
+    return DH_Selected_Region, hdm_dh_region_cut, gt, total_heat_demand

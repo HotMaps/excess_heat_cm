@@ -15,16 +15,11 @@ import CM.CM_TUW19.run_cm as CM19
 def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
          output_raster2, output_shp1, output_shp2, in_orig=None,
          only_return_areas=False):
-    # The CM can be run for the following ranges of pixel and Dh thresholds:
-    if pix_threshold < 1:
-        raise ValueError("Pixel threshold cannot be smaller than 1 GWh/km2!")
-    if DH_threshold < 1:
-        raise ValueError("DH threshold cannot be smaller than 1 GWh/year!")
     # DH_Regions: boolean array showing DH regions
-    DH_Regions, geo_transform, total_heat_demand = DHP.DHReg(heat_density_map,
-                                                             pix_threshold,
-                                                             DH_threshold,
-                                                             in_orig)
+    DH_Regions, hdm_dh_region_cut, geo_transform, total_heat_demand = DHP.DHReg(heat_density_map,
+                                                                                 pix_threshold,
+                                                                                 DH_threshold,
+                                                                                 in_orig)
     if only_return_areas:
         geo_transform = None
         return DH_Regions
@@ -35,8 +30,7 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
         dh_area_flag = False
     else:
         dh_area_flag = True
-
-    graphics = [
+    graphics  = [
             {
                     "type": "bar",
                     "xLabel": "DH Area Label",
@@ -62,30 +56,14 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1,
                                     }]
                     }
                 }]
+    symbol_vals_str = []
     if dh_area_flag:
         CM19.main(output_raster1, geo_transform, 'int8', DH_Regions)
-        CM19.main(output_raster2, geo_transform, 'int32', labels)
-        polygonize(output_raster1, output_raster2, output_shp1, output_shp2, DHPot)
-        rm_file(output_raster2, output_raster2[:-4] + '.tfw')
-    return total_potential, total_heat_demand, graphics
-    
-    
+        temp_raster = os.path.dirname(output_raster2) + '/temp.tif'
+        CM19.main(temp_raster, geo_transform, 'int32', labels)
+        symbol_vals_str = polygonize(output_raster1, temp_raster,
+                                     output_shp1, output_shp2, DHPot)
+        rm_file(temp_raster, temp_raster[:-4] + '.tfw')
+        CM19.main(output_raster2, geo_transform, 'float32', hdm_dh_region_cut)
 
-if __name__ == "__main__":
-    start = time.time()
-    path = r'W:\workspace_mostafa\Hotmaps\Hotmaps\app\modules\common'
-    data_warehouse = path + os.sep + 'AD/data_warehouse'
-    heat_density_map = data_warehouse + os.sep + 'heat_tot_curr_density_AT.tif'
-    output_dir = path + os.sep + 'Outputs'
-    outRasterPath1 = output_dir + os.sep + 'F13_' + '1.tif'
-    outRasterPath2 = output_dir + os.sep + 'F13_' + '2.tif'
-    output_shp1 = output_dir + os.sep + 'F13_' + '1.shp'
-    output_shp2 = output_dir + os.sep + 'F13_' + '2.shp'
-    rm_mk_dir(output_dir)
-    # pix_threshold [MWh/ha]
-    pix_threshold = 100
-    # DH_threshold [MWh/year]
-    DH_threshold = 30000
-    main(heat_density_map, pix_threshold, DH_threshold, outRasterPath1, outRasterPath2, output_shp1, output_shp2)
-    elapsed = time.time() - start
-    print("%0.3f seconds" % elapsed)
+    return total_potential, total_heat_demand, graphics, symbol_vals_str
