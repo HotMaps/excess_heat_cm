@@ -36,8 +36,6 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
     nuts0_id = []
     for id_ in nuts2_id:
         nuts0_id.append(id_[:2])
-    nuts0_id = list(set(nuts0_id))
-    nuts2_id = list(set(nuts2_id))
 
     # set time_resolution settings
     convolution = convolution_map[time_resolution]
