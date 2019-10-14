@@ -43,7 +43,8 @@ def calculation(output_directory, inputs_raster_selection, inputs_vector_selecti
     nuts2_id = nuts
     print('type nuts', type(nuts2_id))
 
-    industrial_sites = inputs_vector_selection["industrial_database_excess_heat"]
+    industrial_sites_heat = inputs_vector_selection["industrial_database_excess_heat"]
+    industrial_sites_subsector = inputs_vector_selection["industrial_database_subsector"]
 
     output_raster1 = generate_output_file_tif(output_directory)
     output_raster2 = generate_output_file_tif(output_directory)
@@ -54,7 +55,7 @@ def calculation(output_directory, inputs_raster_selection, inputs_vector_selecti
     results = run_cm.main(input_raster_selection, pix_threshold, DH_threshold, output_raster1, output_raster2,
                 output_shp1, output_shp2, search_radius, investment_period, discount_rate, cost_factor,
                 operational_costs, transmission_line_threshold, time_resolution, spatial_resolution,
-                nuts2_id, output_transmission_lines, industrial_sites)
+                nuts2_id, output_transmission_lines, industrial_sites_heat, industrial_sites_subsector)
 
     if results[0] == -1:
         result = dict()

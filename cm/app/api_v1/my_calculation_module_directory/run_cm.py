@@ -12,7 +12,7 @@ from .excess_heat.visualisation import round_to_n
 
 def main(heat_density_map, pix_threshold, DH_threshold, output_raster1, output_raster2, output_shp1, output_shp2,
          search_radius, investment_period, discount_rate, cost_factor, operational_costs, transmission_line_threshold,
-         time_resolution, spatial_resolution, nuts2_id, output_transmission_lines, industrial_sites,
+         time_resolution, spatial_resolution, nuts2_id, output_transmission_lines, industrial_sites_heat, industrial_sites_subsector,
          in_orig=None, only_return_areas=False, ):
     # The CM can be run for the following ranges of pixel and Dh thresholds:
     if pix_threshold < 1:
@@ -51,7 +51,7 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1, output_r
 
     results = excess_heat(output_shp2, search_radius, investment_period, discount_rate, cost_factor, operational_costs,
               transmission_line_threshold, time_resolution, spatial_resolution, nuts2_id,
-              output_transmission_lines, industrial_sites)
+              output_transmission_lines, industrial_sites_heat, industrial_sites_subsector)
     if results[0] == -1:
         return results
 

@@ -17,7 +17,7 @@ np.seterr(divide='ignore', invalid='ignore')
 
 def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_factor, operational_costs,
                 transmission_line_threshold, time_resolution, spatial_resolution, nuts2_id, output_transmission_lines,
-                industrial_sites):
+                industrial_sites_heat, industrial_sites_subsector):
 
     industrial_subsector_map = {"Iron and steel": "iron_and_steel", "Refineries": "chemicals_and_petrochemicals",
                                 "Chemical industry": "chemicals_and_petrochemicals", "Cement": "non_metalic_minerals",
@@ -48,7 +48,7 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
     log = Logger()
 
     # load heat source and heat sink data
-    heat_sources = ad_industrial_database_dict(industrial_sites)
+    heat_sources = ad_industrial_database_dict(industrial_sites_heat, industrial_sites_subsector)
     # heat_sources = ad_industrial_database_local(nuts2_id)
     heat_sinks = ad_TUW23(sinks, nuts2_id[0], spatial_resolution)
 

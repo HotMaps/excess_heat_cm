@@ -24,7 +24,7 @@ def extract_coordinates_from_wkb_point(point):
     return geometry.x, geometry.y
 
 
-def ad_industrial_database_dict(dictionary):
+def ad_industrial_database_dict(dictionary_heat, dictionary_subsector):
     country_to_nuts0 = {"Austria": "AT", "Belgium": "BE", "Bulgaria": "BG", "Cyprus": "CY", "Czech Republic": "CZ",
                         "Germany": "DE", "Denmark": "DK", "Estonia": "EE", "Finland": "FI", "France": "FR",
                         "Greece": "EL", "Hungary": "HU", "Croatia": "HR", "Ireland": "IE", "Italy": "IT",
@@ -34,23 +34,32 @@ def ad_industrial_database_dict(dictionary):
                         "Slovenia": "SI", "Slovakia": "SK", "United Kingdom": "UK", "Albania": "AL", "Montenegro": "ME",
                         "North Macedonia": "MK", "Serbia": "RS", "Turkey": "TR", "Switzerland": "CH", "Iceland": "IS",
                         "Liechtenstein": "LI", "Norway": "NO"}
-    temp = '%s' % dictionary
-    dictionary = temp.replace("\'", "\"")
-    raw_data = pd.read_json(dictionary, orient='records')
-    raw_data = raw_data.loc[:, ("geom", "subsector",  "country", "excess_heat_100_200c", "excess_heat_200_500c",
+    temp = '%s' % dictionary_heat
+    dictionary_heat = temp.replace("\'", "\"")
+    raw_data = pd.read_json(dictionary_heat, orient='records')
+    raw_data = raw_data.loc[:, ("id", "geometry_wkt",  "country", "excess_heat_100_200c", "excess_heat_200_500c",
                                 "excess_heat_500c")]
+
 
     raw_data["Lon"] = ""
     raw_data["Lat"] = ""
     raw_data["Nuts0"] = ""
     for i, site in raw_data.iterrows():
         # check if site location is available
-        if not pd.isna(site["geom"]) and site["geom"] != "":
-            lon, lat = extract_coordinates_from_wkb_point(site["geom"])
-            raw_data.loc[i, "Lon"] = lon
-            raw_data.loc[i, "Lat"] = lat
+        if not pd.isna(site["geometry_wkt"]) and site["geometry_wkt"] != "":
+            lon, lat = re.findall(r"[-+]?\d*\.\d+|\d+", site["geometry_wkt"])
+            raw_data.loc[i, "Lon"] = float(lon)
+            raw_data.loc[i, "Lat"] = float(lat)
         if not pd.isna(site["country"]) and site["country"] != "":
             raw_data.loc[i, "Nuts0"] = country_to_nuts0[site["country"]]
+
+
+    temp = '%s' % dictionary_subsector
+    dictionary_subsector = temp.replace("\'", "\"")
+    raw_data2 = pd.read_json(dictionary_subsector, orient='records')
+    raw_data2 = raw_data2.loc[:, ("id", "subsector")]
+    raw_data = pd.merge(raw_data, raw_data2, left_on='id', right_on='id')
+
 
     raw_data = raw_data[raw_data.Lon != ""]
     raw_data = raw_data[raw_data.Lat != ""]
