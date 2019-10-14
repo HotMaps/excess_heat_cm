@@ -122,11 +122,11 @@ SIGNATURE = {
         "heat_tot_curr_density_tif",
     ],
     "vectors_needed": [
-        "industrial_database"
+        "industrial_database_excess_heat"
     ],
     "type_layer_needed": [
         {"type": "heat", "description": "Select heat demand density layer."},
-        {"type": "industrial_database", "description": "Select industrial database layer"},
+        {"type": "industrial_database_excess_heat", "description": "Select industrial database layer"},
     ],
     "cm_url": "Do not add something",
     "cm_description": "CM computing the costs of the transportation of excess heat to district heating networks",

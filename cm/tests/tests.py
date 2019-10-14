@@ -40,7 +40,7 @@ class TestAPI(unittest.TestCase):
         inputs_parameter_selection = {}
         inputs_vector_selection = {}
 
-        inputs_vector_selection["industrial_database"] = 'tests/data/industrial_Database_dk.json'
+        inputs_vector_selection["industrial_database_excess_heat"] = 'tests/data/industrial_Database_dk.json'
 
         inputs_parameter_selection["search_radius"] = 30
         inputs_parameter_selection["investment_period"] = 30
