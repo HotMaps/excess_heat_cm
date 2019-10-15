@@ -3,7 +3,7 @@ import pandas as pd
 from itertools import repeat
 from .read_data import ad_industrial_database_dict
 from .read_data import ad_TUW23
-from .read_data import ad_industry_profiles_local, ad_residential_heating_profile_local
+from .read_data import ad_industry_profiles_local, ad_residential_heating_profile_local, ad_industrial_database_local
 from .CM1 import find_neighbours, create_normalized_profiles, \
                 cost_of_connection, cost_of_heat_exchanger_source, cost_of_heat_exchanger_sink, annuity_costs
 
@@ -46,8 +46,8 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
     log = Logger()
 
     # load heat source and heat sink data
-    heat_sources = ad_industrial_database_dict(industrial_sites_heat, industrial_sites_subsector)
-    # heat_sources = ad_industrial_database_local(nuts2_id)
+    #heat_sources = ad_industrial_database_dict(industrial_sites_heat, industrial_sites_subsector)
+    heat_sources = ad_industrial_database_local(nuts2_id)
     heat_sinks = ad_TUW23(sinks, nuts2_id[0], spatial_resolution)
 
     # escape main routine if dh_potential cm did not produce shp file

@@ -122,8 +122,8 @@ SIGNATURE = {
         "heat_tot_curr_density_tif",
     ],
     "vectors_needed": [
-        "industrial_database_excess_heat"
-        "industrial_database_subsector"
+        #"industrial_database_excess_heat"
+        #"industrial_database_subsector"
     ],
     "type_layer_needed": [
         {"type": "heat", "description": "Select heat demand density layer."},

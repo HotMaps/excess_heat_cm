@@ -43,8 +43,10 @@ def calculation(output_directory, inputs_raster_selection, inputs_vector_selecti
     nuts2_id = nuts
     print('type nuts', type(nuts2_id))
 
-    industrial_sites_heat = inputs_vector_selection["industrial_database_excess_heat"]
-    industrial_sites_subsector = inputs_vector_selection["industrial_database_subsector"]
+    #industrial_sites_heat = inputs_vector_selection["industrial_database_excess_heat"]
+    #industrial_sites_subsector = inputs_vector_selection["industrial_database_subsector"]
+    industrial_sites_heat = []
+    industrial_sites_subsector = []
 
     output_raster1 = generate_output_file_tif(output_directory)
     output_raster2 = generate_output_file_tif(output_directory)
