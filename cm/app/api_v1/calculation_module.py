@@ -62,8 +62,8 @@ def calculation(output_directory, inputs_raster_selection, inputs_vector_selecti
     if results[0] == -1:
         result = dict()
         result['name'] = CM_NAME
-        result['indicator'] = [{"unit": " ", "name": "Log",
-                            "value": results[1]}]
+        result['indicator'] = [{"unit": " ", "name": results[1],
+                            "value": "0"}]
         return result
 
     total_potential, total_heat_demand, graphics, total_excess_heat_available, total_excess_heat_connected, \
