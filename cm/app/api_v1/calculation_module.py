@@ -83,7 +83,7 @@ def calculation(output_directory, inputs_raster_selection, inputs_vector_selecti
 
     result['name'] = CM_NAME
 
-    result['indicator'] = [{"unit": " ", "name": log_message, "value": "-"},
+    result['indicator'] = [{"unit": " ", "name": log_message, "value": "0"},
                            {"unit": "GWh", "name": "Total heat demand in GWh within the selected zone",
                             "value": str(total_heat_demand)},
                            {"unit": "GWh", "name": "Total district heating potential in GWh within the selected zone",
