@@ -268,7 +268,7 @@ def ad_residential_heating_profile_local(nuts2_ids):
     if len(data) > 0:
         data = pd.concat(data, ignore_index=True)
     else:
-        data = pd.DataFrame([])
+        data = pd.DataFrame([], columns=["NUTS2_code", "process", "hour", "load"])
 
     return data
 
