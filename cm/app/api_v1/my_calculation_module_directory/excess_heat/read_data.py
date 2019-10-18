@@ -265,7 +265,10 @@ def ad_residential_heating_profile_local(nuts2_ids):
         except IOError:
             pass
 
-    data = pd.concat(data, ignore_index=True)
+    if len(data) > 0:
+        data = pd.concat(data, ignore_index=True)
+    else:
+        data = pd.DataFrame([])
 
     return data
 
