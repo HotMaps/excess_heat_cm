@@ -358,6 +358,7 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
     excess_heat_profile = excess_heat_profile / efficiency   # rescale sources
 
     heat_loss = (1-efficiency)*total_flow_scalar
+    heat_used = total_flow_scalar + heat_loss
 
     # reshape to monthly format if time resolution is at least monthly
     if time_resolution <= 730:
@@ -420,6 +421,7 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
 
     total_excess_heat_available = round_to_n(total_excess_heat_available, 3)
     total_excess_heat_connected = round_to_n(total_excess_heat_connected, 3)
+    heat_used = round_to_n(heat_used, 3)
     total_flow_scalar = round_to_n(total_flow_scalar, 3)
     heat_loss = round_to_n(heat_loss, 3)
     total_cost_scalar = round_to_n(total_cost_scalar, 3)
@@ -443,7 +445,7 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
 
     log_message = log.string_report()
 
-    return total_excess_heat_available, total_excess_heat_connected, total_flow_scalar, heat_loss, total_cost_scalar,\
+    return total_excess_heat_available, total_excess_heat_connected, heat_used, total_flow_scalar, heat_loss, total_cost_scalar,\
         annual_cost_of_network, levelised_cost_of_heat_supply, excess_heat_profile_monthly,\
         heat_demand_profile_monthly, excess_heat_profile_daily, heat_demand_profile_daily, approximated_costs,\
         approximated_flows, thresholds, thresholds_y, thresholds_y2, thresholds_y3, threshold_radius,\
