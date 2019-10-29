@@ -48,6 +48,7 @@ class TestAPI(unittest.TestCase):
         inputs_parameter_selection["discount_rate"] = 0
         inputs_parameter_selection["cost_factor"] = 1
         inputs_parameter_selection["operational_costs"] = 0
+        inputs_parameter_selection["heat_losses"] = 20
         inputs_parameter_selection["transmission_line_threshold"] = 0.3
         inputs_parameter_selection["time_resolution"] = "month"
         inputs_parameter_selection["spatial_resolution"] = 2

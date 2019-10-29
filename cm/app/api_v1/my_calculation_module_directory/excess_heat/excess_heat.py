@@ -16,8 +16,8 @@ np.seterr(divide='ignore', invalid='ignore')
 
 
 def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_factor, operational_costs,
-                transmission_line_threshold, time_resolution, spatial_resolution, nuts2_id, output_transmission_lines,
-                industrial_sites_heat, industrial_sites_subsector):
+                transmission_line_threshold, heat_losses, time_resolution, spatial_resolution, nuts2_id,
+                output_transmission_lines, industrial_sites_heat, industrial_sites_subsector):
 
     industrial_subsector_map = {"Iron and steel": "iron_and_steel", "Refineries": "chemicals_and_petrochemicals",
                                 "Chemical industry": "chemicals_and_petrochemicals", "Cement": "non_metalic_minerals",
@@ -41,6 +41,7 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
     convolution = convolution_map[time_resolution]
     peak_performance = peak_performance_map[time_resolution]
     time_resolution = time_resolution_map[time_resolution]
+    efficency = (1 - heat_losses/100)
 
     # create logger
     log = Logger()
@@ -106,7 +107,7 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
             industrial_subsector_map[heat_source["Subsector"]]][heat_source["Nuts0_ID"]]\
             .reshape(int(8760 / time_resolution), time_resolution)  # reshape profile to match time resolution setting
         reduced_profile = np.sum(reduced_profile, axis=1)
-        heat_source_profiles.append(reduced_profile * float(heat_source["Excess_heat"]))
+        heat_source_profiles.append(reduced_profile * float(heat_source["Excess_heat"]) * efficency)
         heat_source_coordinates.append((heat_source["Lon"], heat_source["Lat"]))
     heat_source_profiles = np.array(heat_source_profiles)
     heat_source_profiles = heat_source_profiles.transpose()

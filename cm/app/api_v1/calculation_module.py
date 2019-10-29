@@ -35,6 +35,7 @@ def calculation(output_directory, inputs_raster_selection, inputs_vector_selecti
     discount_rate = float(inputs_parameter_selection["discount_rate"])
     cost_factor = float(inputs_parameter_selection["cost_factor"])
     operational_costs = float(inputs_parameter_selection["operational_costs"])
+    heat_losses = float(inputs_parameter_selection["heat_losses"])
     transmission_line_threshold = float(inputs_parameter_selection["transmission_line_threshold"])
 
     time_resolution = inputs_parameter_selection["time_resolution"]
@@ -56,7 +57,7 @@ def calculation(output_directory, inputs_raster_selection, inputs_vector_selecti
 
     results = run_cm.main(input_raster_selection, pix_threshold, DH_threshold, output_raster1, output_raster2,
                 output_shp1, output_shp2, search_radius, investment_period, discount_rate, cost_factor,
-                operational_costs, transmission_line_threshold, time_resolution, spatial_resolution,
+                operational_costs, heat_losses, transmission_line_threshold, time_resolution, spatial_resolution,
                 nuts2_id, output_transmission_lines, industrial_sites_heat, industrial_sites_subsector)
 
     if results[0] == -1:
