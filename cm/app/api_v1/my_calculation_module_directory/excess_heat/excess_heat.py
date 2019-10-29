@@ -15,8 +15,8 @@ from .logger import Logger
 np.seterr(divide='ignore', invalid='ignore')
 
 
-def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_factor, operational_costs,
-                transmission_line_threshold, heat_losses, time_resolution, spatial_resolution, nuts2_id,
+def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_factor, operational_costs, heat_losses,
+                transmission_line_threshold, time_resolution, spatial_resolution, nuts2_id,
                 output_transmission_lines, industrial_sites_heat, industrial_sites_subsector):
 
     industrial_subsector_map = {"Iron and steel": "iron_and_steel", "Refineries": "chemicals_and_petrochemicals",
