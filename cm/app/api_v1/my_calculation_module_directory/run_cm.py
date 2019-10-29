@@ -55,7 +55,7 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1, output_r
     if results[0] == -1:
         return results
 
-    total_excess_heat_available, total_excess_heat_connected, total_flow_scalar, total_cost_scalar, \
+    total_excess_heat_available, total_excess_heat_connected, total_flow_scalar, heat_loss, total_cost_scalar, \
     annual_cost_of_network, levelised_cost_of_heat_supply, excess_heat_profile_monthly, \
     heat_demand_profile_monthly, excess_heat_profile_daily, heat_demand_profile_daily, approximated_costs, \
     approximated_flows, thresholds, thresholds_y, thresholds_y2, thresholds_y3, threshold_radius, \
@@ -188,4 +188,4 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1, output_r
     ]
 
     return total_potential, total_heat_demand, graphics, total_excess_heat_available, total_excess_heat_connected,\
-        total_flow_scalar, total_cost_scalar, annual_cost_of_network, levelised_cost_of_heat_supply, log_message
+        total_flow_scalar, heat_loss, total_cost_scalar, annual_cost_of_network, levelised_cost_of_heat_supply, log_message

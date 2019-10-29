@@ -68,7 +68,7 @@ def calculation(output_directory, inputs_raster_selection, inputs_vector_selecti
         return result
 
     total_potential, total_heat_demand, graphics, total_excess_heat_available, total_excess_heat_connected, \
-    total_flow_scalar, total_cost_scalar, annual_cost_of_network, levelised_cost_of_heat_supply, log_message = results
+    total_flow_scalar, heat_loss, total_cost_scalar, annual_cost_of_network, levelised_cost_of_heat_supply, log_message = results
 
     output_transmission_lines = create_zip_shapefiles(output_directory, output_transmission_lines)
     result = dict()
@@ -97,6 +97,8 @@ def calculation(output_directory, inputs_raster_selection, inputs_vector_selecti
                                 "value": str(total_excess_heat_connected)},
                                {"unit": "GWh", "name": "Excess heat used",
                                 "value": str(total_flow_scalar)},
+                               {"unit": "GWh", "name": "Heat loss",
+                                "value": str(heat_loss)},
                                {"unit": "Euro", "name": "Investments necessary for network",
                                 "value": str(total_cost_scalar)},
                                {"unit": "Euro/year", "name": "Annual costs of network",
@@ -120,6 +122,8 @@ def calculation(output_directory, inputs_raster_selection, inputs_vector_selecti
                                 "value": str(total_excess_heat_connected)},
                                {"unit": "GWh", "name": "Excess heat used",
                                 "value": str(total_flow_scalar)},
+                               {"unit": "GWh", "name": "Heat loss",
+                                "value": str(heat_loss)},
                                {"unit": "Euro", "name": "Investments necessary for network",
                                 "value": str(total_cost_scalar)},
                                {"unit": "Euro/year", "name": "Annual costs of network",

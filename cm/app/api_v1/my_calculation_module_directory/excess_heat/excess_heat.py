@@ -41,7 +41,7 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
     convolution = convolution_map[time_resolution]
     peak_performance = peak_performance_map[time_resolution]
     time_resolution = time_resolution_map[time_resolution]
-    efficency = (1 - heat_losses/100)
+    efficiency = (1 - heat_losses/100)
 
     # create logger
     log = Logger()
@@ -107,7 +107,7 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
             industrial_subsector_map[heat_source["Subsector"]]][heat_source["Nuts0_ID"]]\
             .reshape(int(8760 / time_resolution), time_resolution)  # reshape profile to match time resolution setting
         reduced_profile = np.sum(reduced_profile, axis=1)
-        heat_source_profiles.append(reduced_profile * float(heat_source["Excess_heat"]) * efficency)
+        heat_source_profiles.append(reduced_profile * float(heat_source["Excess_heat"]) * efficiency)
         heat_source_coordinates.append((heat_source["Lon"], heat_source["Lat"]))
     heat_source_profiles = np.array(heat_source_profiles)
     heat_source_profiles = heat_source_profiles.transpose()
@@ -355,6 +355,10 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
     for i, sink_flow in enumerate(sink_flows):
         heat_demand_profile = heat_demand_profile + heat_sink_profiles[i]
 
+    excess_heat_profile = excess_heat_profile / efficiency   # rescale sources
+
+    heat_loss = (1-efficiency)*total_flow_scalar
+
     # reshape to monthly format if time resolution is at least monthly
     if time_resolution <= 730:
         excess_heat_profile_monthly = excess_heat_profile.reshape((12, int(730 / time_resolution)))
@@ -417,6 +421,7 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
     total_excess_heat_available = round_to_n(total_excess_heat_available, 3)
     total_excess_heat_connected = round_to_n(total_excess_heat_connected, 3)
     total_flow_scalar = round_to_n(total_flow_scalar, 3)
+    heat_loss = round_to_n(heat_loss, 3)
     total_cost_scalar = round_to_n(total_cost_scalar, 3)
     annual_cost_of_network = round_to_n(annual_cost_of_network, 3)
     levelised_cost_of_heat_supply = round_to_n(levelised_cost_of_heat_supply, 3)
@@ -438,7 +443,7 @@ def excess_heat(sinks, search_radius, investment_period, discount_rate, cost_fac
 
     log_message = log.string_report()
 
-    return total_excess_heat_available, total_excess_heat_connected, total_flow_scalar, total_cost_scalar,\
+    return total_excess_heat_available, total_excess_heat_connected, total_flow_scalar, heat_loss, total_cost_scalar,\
         annual_cost_of_network, levelised_cost_of_heat_supply, excess_heat_profile_monthly,\
         heat_demand_profile_monthly, excess_heat_profile_daily, heat_demand_profile_daily, approximated_costs,\
         approximated_flows, thresholds, thresholds_y, thresholds_y2, thresholds_y3, threshold_radius,\
