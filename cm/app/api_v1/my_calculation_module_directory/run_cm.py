@@ -85,7 +85,7 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1, output_r
                            "Total excess heat from connected sites", "Excess heat used", "Excess heat delivered"],
                 "datasets": [{
                     "label": "Heat Demand and Excess heat",
-                    "backgroundColor": ["#3e95cd", "#3e95cd", "#fe7c60", "#fe7c60", "#fe7c60"],
+                    "backgroundColor": ["#3e95cd", "#3e95cd", "#fe7c60", "#fe7c60", "#fe7c60", "#fe7c60"],
                     "data": [total_heat_demand, total_potential, round_to_n(total_excess_heat_available, 3),
                              round_to_n(total_excess_heat_connected, 3), round_to_n(heat_used, 3), round_to_n(total_flow_scalar, 3)]
                 }]
