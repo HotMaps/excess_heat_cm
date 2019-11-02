@@ -22,9 +22,20 @@ INPUTS_CALCULATION_MODULE = [
 
     {'input_name': 'Min. heat demand in hectare',
      'input_type': 'input',
+
      'input_parameter_name': 'pix_threshold',
      'input_value': 333,
      'input_unit': 'MWh/ha',
+
+
+
+     'input_priority': 0,
+     
+
+
+
+
+
      'input_min': 0,
      'input_max': 1000,
      'cm_id': CM_ID
@@ -125,17 +136,28 @@ INPUTS_CALCULATION_MODULE = [
 
 
 SIGNATURE = {
+
     "category": "Supply",
     "cm_name": CM_NAME,
     "layers_needed": [
         "heat_tot_curr_density_tif",
+
+
+
+
+
+
+
+
+
+
     ],
     "vectors_needed": [
         #"industrial_database_excess_heat"
         #"industrial_database_subsector"
     ],
     "type_layer_needed": [
-        {"type": "heat", "description": "Select heat demand density layer."},
+      {"type": "heat", "description": "Select heat demand density layer."},
         #{"type": "industrial_database_excess_heat", "description": "Select industrial database layer"},
         #{"type": "industrial_database_subsector", "description": "Select industrial database layer"},
     ],
