@@ -25,7 +25,7 @@ INPUTS_CALCULATION_MODULE = [
 
      'input_parameter_name': 'pix_threshold',
      'input_value': 333,
-     'input_unit': 'MWh/ha',
+     'input_unit': 'MWh/(ha*yr)',
 
 
 
@@ -44,7 +44,7 @@ INPUTS_CALCULATION_MODULE = [
      'input_type': 'input',
      'input_parameter_name': 'DH_threshold',
      'input_value': 30,
-     'input_unit': 'GWh/year',
+     'input_unit': 'GWh/yr',
      'input_min': 0,
      'input_max': 500,
      'cm_id': CM_ID
@@ -107,7 +107,7 @@ INPUTS_CALCULATION_MODULE = [
      'input_type': 'input',
      'input_parameter_name': 'transmission_line_threshold',
      'input_value': 0.5,
-     'input_unit': 'ct/kWh/a',
+     'input_unit': 'ct/kWh/yr',
      'input_min': 0,
      'input_max': 20,
      'cm_id': CM_ID
@@ -116,9 +116,7 @@ INPUTS_CALCULATION_MODULE = [
      'input_type': 'select',
      'input_parameter_name': 'time_resolution',
      'input_value': ["week", "hour", "day", "month", "year"],
-     'input_unit': 'none',
-     'input_min': 'none',
-     'input_max': 'none',
+     'input_unit': ' ',
      'input_priority': 1,
      'cm_id': CM_ID
      },
