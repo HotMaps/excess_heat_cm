@@ -110,6 +110,7 @@ INPUTS_CALCULATION_MODULE = [
      'input_unit': '',
      'input_min': '',
      'input_max': '',
+     'input_priority': 1,
      'cm_id': CM_ID
      },
     {'input_name': 'spatial resolution',
@@ -124,7 +125,6 @@ INPUTS_CALCULATION_MODULE = [
      }
 ]
 
-# test CI
 
 SIGNATURE = {
 
