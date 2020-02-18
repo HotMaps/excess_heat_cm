@@ -38,7 +38,7 @@ def calculation(output_directory, inputs_raster_selection, inputs_vector_selecti
     heat_losses = float(inputs_parameter_selection["heat_losses"])
     transmission_line_threshold = float(inputs_parameter_selection["transmission_line_threshold"])
 
-    time_resolution = inputs_parameter_selection["time_resolution"]
+    time_resolution = float(inputs_parameter_selection["time_resolution"])
     spatial_resolution = float(inputs_parameter_selection["spatial_resolution"])
 
     nuts2_id = nuts
