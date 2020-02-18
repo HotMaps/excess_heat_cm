@@ -26,16 +26,7 @@ INPUTS_CALCULATION_MODULE = [
      'input_parameter_name': 'pix_threshold',
      'input_value': 333,
      'input_unit': 'MWh/(ha*yr)',
-
-
-
      'input_priority': 0,
-     
-
-
-
-
-
      'input_min': 0,
      'input_max': 1000,
      'cm_id': CM_ID
@@ -133,6 +124,7 @@ INPUTS_CALCULATION_MODULE = [
      }
 ]
 
+# test CI
 
 SIGNATURE = {
 
@@ -140,16 +132,6 @@ SIGNATURE = {
     "cm_name": CM_NAME,
     "layers_needed": [
         "heat_tot_curr_density_tif",
-
-
-
-
-
-
-
-
-
-
     ],
     "vectors_needed": [
         #"industrial_database_excess_heat"
