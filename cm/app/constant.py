@@ -116,7 +116,9 @@ INPUTS_CALCULATION_MODULE = [
      'input_type': 'select',
      'input_parameter_name': 'time_resolution',
      'input_value': ["week", "hour", "day", "month", "year"],
-     'input_unit': ' ',
+     'input_unit': 'none',
+     'input_min': 'none',
+     'input_max': 'none',
      'input_priority': 1,
      'cm_id': CM_ID
      },
