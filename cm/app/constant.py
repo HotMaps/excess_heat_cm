@@ -85,15 +85,6 @@ INPUTS_CALCULATION_MODULE = [
      'input_max': 10,
      'cm_id': CM_ID
      },
-    {'input_name': 'Heat losses',
-     'input_type': 'input',
-     'input_parameter_name': 'heat_losses',
-     'input_value': 10,
-     'input_unit': '%',
-     'input_min': 0,
-     'input_max': 50,
-     'cm_id': CM_ID
-     },
     {'input_name': 'Transmission line threshold',
      'input_type': 'input',
      'input_parameter_name': 'transmission_line_threshold',
