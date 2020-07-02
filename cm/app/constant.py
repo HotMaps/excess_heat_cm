@@ -136,5 +136,6 @@ SIGNATURE = {
     "cm_url": "Do not add something",
     "cm_description": "CM computing the costs of the transportation of excess heat to district heating networks",
     "cm_id": CM_ID,
+    "wiki_url":"https://wiki.hotmaps.eu/en/CM-Excess-heat-transport-potential",
     'inputs_calculation_module': INPUTS_CALCULATION_MODULE
 }
