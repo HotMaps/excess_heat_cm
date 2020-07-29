@@ -1,11 +1,13 @@
 from osgeo import gdal
 import os
-from cm.app.constant import CM_NAME
-from cm.app.helper import generate_output_file_tif, create_zip_shapefiles, generate_output_file_shp
+path = os.path.dirname(os.path.abspath(__file__))
+from ..constant import CM_NAME
+from ..helper import generate_output_file_tif, create_zip_shapefiles, generate_output_file_shp
 
 """ Entry point of the calculation module function"""
-
-from cm.app.api_v1.my_calculation_module_directory import run_cm
+if path not in sys.path:
+    sys.path.append(path)
+from my_calculation_module_directory import run_cm
 
 """ Entry point of the calculation module function"""
 
