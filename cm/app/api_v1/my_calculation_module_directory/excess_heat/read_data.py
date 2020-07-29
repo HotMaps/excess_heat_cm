@@ -366,14 +366,14 @@ def ad_residential_heating_profile_local(nuts2_ids):
 
 def join_point_to_nuts2(industrial_database_excess_heat, path_nuts, delimiter=','):
     gdf_nuts = gpd.read_file(path_nuts)
-    df_industry = pd.read_csv(industrial_database_excess_heat, sep=delimiter, encoding='latin1')
+    df_industry = pd.read_csv(industrial_database_excess_heat, encoding='latin1')
     df_industry = df_industry.dropna(subset=['geometry_wkt'])
     #df_industry [['SRID','LATLONG']] = df_industry.geom.str.split(";", expand=True,)
     gdf_industry = gpd.GeoDataFrame( df_industry, geometry=[loads_wkt(x) for x in df_industry['geometry_wkt']], crs='EPSG:4326')
     try:
         gdf = gpd.sjoin(gdf_nuts, gdf_industry, how='right', op='intersects', lsuffix='left', rsuffix='right')
     except:
-        raise Exception(gdf_nuts)
+        raise Exception(gdf_industry)
     return gdf
 
 
