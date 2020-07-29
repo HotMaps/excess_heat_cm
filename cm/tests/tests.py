@@ -7,7 +7,7 @@ from .test_client import TestClient
 
 import json as json_lib
 
-UPLOAD_DIRECTORY = 'home/david/var/hotmaps/cm_files_uploaded'
+UPLOAD_DIRECTORY = '/var/hotmaps/cm_files_uploaded'
 
 if not os.path.exists(UPLOAD_DIRECTORY):
     os.makedirs(UPLOAD_DIRECTORY)
@@ -28,8 +28,6 @@ class TestAPI(unittest.TestCase):
 
     def test_compute(self):
         raster_file_path = 'tests/data/pl22.tif'
-        #raster_file_path = 'tests/data/Test_heat_tot_curr_density_nuts3.tif'
-        #raster_file_path = "tests/data/heat_tot_curr_density_pilot_aera_1_aalborg.tif"
         # simulate copy from HTAPI to CM
         save_path = UPLOAD_DIRECTORY+"/Test_heat_tot_curr_density_nuts3.tif"
         copyfile(raster_file_path, save_path)
@@ -39,8 +37,7 @@ class TestAPI(unittest.TestCase):
         inputs_vector_selection = {}
 
         inputs_vector_selection["industrial_database_excess_heat"] = 'tests/data/Test_industrial_database_excess_heat_nuts3.csv'
-        #inputs_vector_selection["industrial_database_subsector"] = 'tests/data/industrial_database_subsector_dk.json'
-
+        
         #inputs_parameter_selection["search_radius"] = 20
         inputs_parameter_selection["investment_period"] = 30
         inputs_parameter_selection["discount_rate"] = 3
@@ -58,7 +55,6 @@ class TestAPI(unittest.TestCase):
 
         inputs_raster_selection["heat"] = save_path
         inputs_raster_selection["nuts_id_number"] = "tests/data/pl22_nuts.tif"
-        #inputs_raster_selection["nuts_id_number"] = "tests/data/Test_nuts_ids.tif"
 
         # register the calculation module
         payload = {"inputs_raster_selection": inputs_raster_selection,
