@@ -1,11 +1,11 @@
 from osgeo import gdal
 import os
-from ..constant import CM_NAME
-from ..helper import generate_output_file_tif, create_zip_shapefiles, generate_output_file_shp
+from cm.app.constant import CM_NAME
+from cm.app.helper import generate_output_file_tif, create_zip_shapefiles, generate_output_file_shp
 
 """ Entry point of the calculation module function"""
 
-from .my_calculation_module_directory import run_cm
+from cm.app.api_v1.my_calculation_module_directory import run_cm
 
 """ Entry point of the calculation module function"""
 
@@ -15,7 +15,7 @@ from .my_calculation_module_directory import run_cm
 # TODO: CM provider can "return as many indicators as he wants"
 
 
-def calculation(output_directory, inputs_raster_selection, inputs_vector_selection, inputs_parameter_selection, nuts):
+def calculation(output_directory, inputs_raster_selection, inputs_vector_selection, inputs_parameter_selection):
     """ def calculation()"""
     '''
     inputs:
@@ -30,7 +30,7 @@ def calculation(output_directory, inputs_raster_selection, inputs_vector_selecti
     inputs_parameter_selection["pix_threshold"] = int(inputs_parameter_selection["pix_threshold"])
     inputs_parameter_selection["DH_threshold"] = int(inputs_parameter_selection["DH_threshold"])
 
-    inputs_parameter_selection["search_radius"] = float(inputs_parameter_selection["search_radius"]) * 1000
+    #inputs_parameter_selection["search_radius"] = float(inputs_parameter_selection["search_radius"]) * 1000
     inputs_parameter_selection["investment_period"] = float(inputs_parameter_selection["investment_period"])
     inputs_parameter_selection["discount_rate"] = float(inputs_parameter_selection["discount_rate"]) / 100
     inputs_parameter_selection["cost_factor"] = float(inputs_parameter_selection["cost_factor"])
@@ -39,13 +39,15 @@ def calculation(output_directory, inputs_raster_selection, inputs_vector_selecti
         float(inputs_parameter_selection["transmission_line_threshold"]) * 10   # convert from ct/kWh to euro/MWh
     inputs_parameter_selection["spatial_resolution"] = float(inputs_parameter_selection["spatial_resolution"])
 
+    industrial_database_excess_heat = inputs_vector_selection['industrial_database_excess_heat']
+
     output_raster1 = generate_output_file_tif(output_directory)
     output_raster2 = generate_output_file_tif(output_directory)
     output_shp1 = generate_output_file_shp(output_directory)
     output_shp2 = generate_output_file_shp(output_directory)
     output_transmission_lines = generate_output_file_shp(output_directory)
 
-    results = run_cm.main(inputs_parameter_selection, inputs_raster_selection, inputs_vector_selection,
+    results = run_cm.main(inputs_parameter_selection, inputs_raster_selection, industrial_database_excess_heat,
                           output_raster1, output_raster2, output_shp1, output_shp2, output_transmission_lines)
 
     if results[0] == -1:

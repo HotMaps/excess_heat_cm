@@ -40,15 +40,15 @@ INPUTS_CALCULATION_MODULE = [
      'input_max': 500,
      'cm_id': CM_ID
      },
-    {'input_name': 'Maximum search radius',
-     'input_type': 'input',
-     'input_parameter_name': 'search_radius',
-     'input_value': 20,
-     'input_unit': 'km',
-     'input_min': 0,
-     'input_max': 100,
-     'cm_id': CM_ID
-     },
+    #{'input_name': 'Maximum search radius',
+    # 'input_type': 'input',
+    # 'input_parameter_name': 'search_radius',
+    # 'input_value': 20,
+    # 'input_unit': 'km',
+    # 'input_min': 0,
+    # 'input_max': 100,
+    # 'cm_id': CM_ID
+    #},
     {'input_name': 'Lifetime of equipment',
      'input_type': 'input',
      'input_parameter_name': 'investment_period',
@@ -124,18 +124,18 @@ SIGNATURE = {
     "layers_needed": [
         "heat_tot_curr_density_tif",
     ],
-    "vectors_needed": [
-        #"industrial_database_excess_heat"
-        #"industrial_database_subsector"
-    ],
+    "vectors_needed": [],
     "type_layer_needed": [
       {"type": "heat", "description": "Select heat demand density layer."},
         #{"type": "industrial_database_excess_heat", "description": "Select industrial database layer"},
         #{"type": "industrial_database_subsector", "description": "Select industrial database layer"},
     ],
+     "type_vectors_needed": [
+      {"type": "industrial_database_excess_heat", "description": "Select industrial site data"},
+     ],
     "cm_url": "Do not add something",
     "cm_description": "CM computing the costs of the transportation of excess heat to district heating networks",
     "cm_id": CM_ID,
-    "wiki_url":"https://wiki.hotmaps.eu/en/CM-Excess-heat-transport-potential",
+    "wiki_url": "https://wiki.hotmaps.eu/en/CM-Excess-heat-transport-potential",
     'inputs_calculation_module': INPUTS_CALCULATION_MODULE
 }
