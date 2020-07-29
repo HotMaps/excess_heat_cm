@@ -7,13 +7,13 @@ import requests
 import logging
 import os
 from flask import send_from_directory
-from app import helper
-from app import constant
+from cm.app import helper
+from cm.app import constant
 
-from app.api_v1 import errors
+from cm.app.api_v1 import errors
 import socket
 from . import calculation_module
-from app import CalculationModuleRpcClient
+from cm.app import CalculationModuleRpcClient
 
 LOG_FORMAT = ('%(levelname) -10s %(asctime)s %(name) -30s %(funcName) '
               '-35s %(lineno) -5d: %(message)s')
@@ -139,8 +139,8 @@ def compute():
     LOGGER.info('inputs_parameter_selection', inputs_parameter_selection)
 
 
-    nuts = helper.validateJSON(data["nuts"])
-    print ('nuts', nuts)
+    #nuts = helper.validateJSON(data["nuts"])
+    #print ('nuts', nuts)
 #    LOGGER.info('nuts', nuts)
 
 
@@ -148,7 +148,7 @@ def compute():
 
     output_directory = UPLOAD_DIRECTORY
     # call the calculation module function
-    result = calculation_module.calculation(output_directory, inputs_raster_selection,inputs_vector_selection,inputs_parameter_selection,nuts)
+    result = calculation_module.calculation(output_directory, inputs_raster_selection,inputs_vector_selection,inputs_parameter_selection)
 
     response = {
         'result': result

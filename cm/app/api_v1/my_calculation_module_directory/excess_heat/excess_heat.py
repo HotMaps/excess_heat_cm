@@ -2,23 +2,23 @@ import numpy as np
 import pandas as pd
 import rasterio
 
-from .logger import Logger
-from .read_data import ad_nuts_id, ad_industrial_database_local, ad_tuw23v2, ad_industry_profiles_local,\
+from cm.app.api_v1.my_calculation_module_directory.excess_heat.logger import Logger
+from cm.app.api_v1.my_calculation_module_directory.excess_heat.read_data import ad_nuts_id, ad_industrial_database_local, ad_tuw23v2, ad_industry_profiles_local,\
     ad_residential_heating_profile_local
-from .utility import create_normalized_profiles
-from .parameters import *
-from .dh_network.dh_network import DHNetwork
+from cm.app.api_v1.my_calculation_module_directory.excess_heat.utility import create_normalized_profiles
+from cm.app.api_v1.my_calculation_module_directory.excess_heat.parameters import *
+from cm.app.api_v1.my_calculation_module_directory.excess_heat.dh_network.dh_network import DHNetwork
 
-
-def excess_heat(inputs_parameter_selection, inputs_raster_selection, output_transmission_lines, output_raster1):
+def excess_heat(inputs_parameter_selection, inputs_raster_selection, industrial_database_excess_heat, output_transmission_lines, output_raster1):
     heat_density_map = inputs_raster_selection["heat"]
     nuts_id_raster = inputs_raster_selection["nuts_id_number"]
-    search_radius = inputs_parameter_selection["search_radius"]
+    search_radius = 20000 #inputs_parameter_selection["search_radius"]    
     investment_period = inputs_parameter_selection["investment_period"]
     discount_rate = inputs_parameter_selection["discount_rate"]
     transmission_line_threshold = inputs_parameter_selection["transmission_line_threshold"]
     time_resolution = inputs_parameter_selection["time_resolution"]
     spatial_resolution = inputs_parameter_selection["spatial_resolution"]
+    #industry_sites = inputs_vector_selection["industrial_database_excess_heat"]
 
     # create logger
     log = Logger()
@@ -37,7 +37,7 @@ def excess_heat(inputs_parameter_selection, inputs_raster_selection, output_tran
     for id_ in nuts2_ids:
         nuts0_id.append(id_[:2])
 
-    heat_sources = ad_industrial_database_local(nuts2_ids)
+    heat_sources = ad_industrial_database_local(industrial_database_excess_heat, nuts2_ids) #here we need to pass over industry_sites from the platform
     heat_sinks = ad_tuw23v2(output_raster1, heat_density_map, nuts_id_raster)
 
     # escape main routine if dh_potential cm did not produce shp file

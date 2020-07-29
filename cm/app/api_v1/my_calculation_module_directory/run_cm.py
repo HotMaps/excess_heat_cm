@@ -1,17 +1,17 @@
 import numpy as np
 import os
 
-from .dh_potential.CM_TUW4.polygonize import polygonize
-from .dh_potential.CM_TUW0.rem_mk_dir import rm_mk_dir, rm_file
-import dh_potential.CM_TUW4.district_heating_potential as DHP
-import dh_potential.CM_TUW19.run_cm as CM19
+from cm.app.api_v1.my_calculation_module_directory.dh_potential.CM_TUW4.polygonize import polygonize
+from cm.app.api_v1.my_calculation_module_directory.dh_potential.CM_TUW0.rem_mk_dir import rm_mk_dir, rm_file
+import cm.app.api_v1.my_calculation_module_directory.dh_potential.CM_TUW4.district_heating_potential as DHP
+import cm.app.api_v1.my_calculation_module_directory.dh_potential.CM_TUW19.run_cm as CM19
 
-from .excess_heat.excess_heat import excess_heat
-from .excess_heat.utility import round_to_n
-from .format import generate_graphics, round_indicators
+from cm.app.api_v1.my_calculation_module_directory.excess_heat.excess_heat import excess_heat
+from cm.app.api_v1.my_calculation_module_directory.excess_heat.utility import round_to_n
+from cm.app.api_v1.my_calculation_module_directory.format import generate_graphics, round_indicators
 
 
-def main(inputs_parameter_selection, inputs_raster_selection, inputs_vector_selection,
+def main(inputs_parameter_selection, inputs_raster_selection, industrial_database_excess_heat,
          output_raster1, output_raster2, output_shp1, output_shp2, output_transmission_lines):
     # The CM can be run for the following ranges of pixel and Dh thresholds:
     if inputs_parameter_selection["pix_threshold"] < 1:
@@ -51,8 +51,8 @@ def main(inputs_parameter_selection, inputs_raster_selection, inputs_vector_sele
     else:
         return -1, "error: no dh area in selection"
 
-    results = excess_heat(inputs_parameter_selection, inputs_raster_selection, output_transmission_lines,
-                          output_raster1)
+    results = excess_heat(inputs_parameter_selection, inputs_raster_selection, industrial_database_excess_heat,
+                          output_transmission_lines, output_raster1)
     if results[0] == -1:
         return results
 
