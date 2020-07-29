@@ -2,12 +2,12 @@ import numpy as np
 import pandas as pd
 import rasterio
 
-from cm.app.api_v1.my_calculation_module_directory.excess_heat.logger import Logger
-from cm.app.api_v1.my_calculation_module_directory.excess_heat.read_data import ad_nuts_id, ad_industrial_database_local, ad_tuw23v2, ad_industry_profiles_local,\
+from my_calculation_module_directory.excess_heat.logger import Logger
+from my_calculation_module_directory.excess_heat.read_data import ad_nuts_id, ad_industrial_database_local, ad_tuw23v2, ad_industry_profiles_local,\
     ad_residential_heating_profile_local
-from cm.app.api_v1.my_calculation_module_directory.excess_heat.utility import create_normalized_profiles
-from cm.app.api_v1.my_calculation_module_directory.excess_heat.parameters import *
-from cm.app.api_v1.my_calculation_module_directory.excess_heat.dh_network.dh_network import DHNetwork
+from my_calculation_module_directory.excess_heat.utility import create_normalized_profiles
+from my_calculation_module_directory.excess_heat.parameters import *
+from my_calculation_module_directory.excess_heat.dh_network.dh_network import DHNetwork
 
 def excess_heat(inputs_parameter_selection, inputs_raster_selection, industrial_database_excess_heat, output_transmission_lines, output_raster1):
     heat_density_map = inputs_raster_selection["heat"]

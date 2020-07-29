@@ -7,13 +7,13 @@ import requests
 import logging
 import os
 from flask import send_from_directory
-from cm.app import helper
-from cm.app import constant
+from  app import helper
+from app import constant
 
-from cm.app.api_v1 import errors
+from app.api_v1 import errors
 import socket
 from . import calculation_module
-from cm.app import CalculationModuleRpcClient
+from app import CalculationModuleRpcClient
 
 LOG_FORMAT = ('%(levelname) -10s %(asctime)s %(name) -30s %(funcName) '
               '-35s %(lineno) -5d: %(message)s')

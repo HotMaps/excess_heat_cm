@@ -1,5 +1,6 @@
 from osgeo import gdal
 import os
+import sys
 path = os.path.dirname(os.path.abspath(__file__))
 from ..constant import CM_NAME
 from ..helper import generate_output_file_tif, create_zip_shapefiles, generate_output_file_shp
@@ -108,5 +109,4 @@ def calculation(output_directory, inputs_raster_selection, inputs_vector_selecti
         result['indicator'].insert(0, {"unit": " ", "name": log_message, "value": "0"})
 
     result['graphics'] = graphics
-
     return result

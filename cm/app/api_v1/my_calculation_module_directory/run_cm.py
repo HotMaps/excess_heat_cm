@@ -1,14 +1,14 @@
 import numpy as np
 import os
 
-from cm.app.api_v1.my_calculation_module_directory.dh_potential.CM_TUW4.polygonize import polygonize
-from cm.app.api_v1.my_calculation_module_directory.dh_potential.CM_TUW0.rem_mk_dir import rm_mk_dir, rm_file
-import cm.app.api_v1.my_calculation_module_directory.dh_potential.CM_TUW4.district_heating_potential as DHP
-import cm.app.api_v1.my_calculation_module_directory.dh_potential.CM_TUW19.run_cm as CM19
+from my_calculation_module_directory.dh_potential.CM_TUW4.polygonize import polygonize
+from my_calculation_module_directory.dh_potential.CM_TUW0.rem_mk_dir import rm_mk_dir, rm_file
+import my_calculation_module_directory.dh_potential.CM_TUW4.district_heating_potential as DHP
+import my_calculation_module_directory.dh_potential.CM_TUW19.run_cm as CM19
 
-from cm.app.api_v1.my_calculation_module_directory.excess_heat.excess_heat import excess_heat
-from cm.app.api_v1.my_calculation_module_directory.excess_heat.utility import round_to_n
-from cm.app.api_v1.my_calculation_module_directory.format import generate_graphics, round_indicators
+from my_calculation_module_directory.excess_heat.excess_heat import excess_heat
+from my_calculation_module_directory.excess_heat.utility import round_to_n
+from my_calculation_module_directory.format import generate_graphics, round_indicators
 
 
 def main(inputs_parameter_selection, inputs_raster_selection, industrial_database_excess_heat,
