@@ -188,7 +188,11 @@ class DHNetwork:
         return np.array(self.heat_used(mode)) - np.array(self.heat_lost(mode))
 
     def levelized_cost_of_heat_supply(self, mode="individual"):
-        return np.array(self.total_costs(typ="annual_cost", mode=mode)) / np.array(self.heat_delivered(mode=mode))
+        a = np.array(self.heat_delivered(mode=mode))
+        if np.sum(a) > 0:
+            return np.array(self.total_costs(typ="annual_cost", mode=mode)) / a
+        else:
+            return 0
 
     def pump_energy_costs(self, mode="individual"):
         transmission_line = TransmissionLine(time_unit=self.time_unit, country=self.country,

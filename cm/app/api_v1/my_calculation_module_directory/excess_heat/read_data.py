@@ -370,7 +370,10 @@ def join_point_to_nuts2(industrial_database_excess_heat, path_nuts, delimiter=',
     df_industry = df_industry.dropna(subset=['geometry_wkt'])
     #df_industry [['SRID','LATLONG']] = df_industry.geom.str.split(";", expand=True,)
     gdf_industry = gpd.GeoDataFrame( df_industry, geometry=[loads_wkt(x) for x in df_industry['geometry_wkt']], crs='EPSG:4326')
-    gdf = gpd.sjoin(gdf_nuts, gdf_industry, how='right', op='intersects', lsuffix='left', rsuffix='right')
+    try:
+        gdf = gpd.sjoin(gdf_nuts, gdf_industry, how='right', op='intersects', lsuffix='left', rsuffix='right')
+    except:
+        raise Exception(gdf_nuts)
     return gdf
 
 
@@ -393,12 +396,8 @@ def ad_industrial_database_local(industrial_database_excess_heat, nuts2_ids): # 
                         "Liechtenstein": "LI", "Norway": "NO"}
     path = os.path.dirname(
         os.path.dirname(os.path.abspath(__file__)))
-    print(path)
     #path_industry = os.path.join(os.path.join(path, "data"), "Industrial_Database.csv")
     path_nuts = os.path.join(os.path.join(path, "data"), "Nuts2_4326.geojson")
-    print("#"*20,"path_nuts")
-    print(path)
-    print(path_nuts)
     # determine delimiter of csv file
     #with open(path_industry, 'r', encoding='utf-8') as csv_file:
     #    delimiter = csv.Sniffer().sniff(csv_file.readline()).delimiter

@@ -62,6 +62,4 @@ def main(inputs_parameter_selection, inputs_raster_selection, industrial_databas
 
     indicators = round_indicators(indicators, 3)
     graphics = generate_graphics(inputs_parameter_selection, indicators, graphics_data)
-    print("test")
-
     return indicators, graphics, log_message
