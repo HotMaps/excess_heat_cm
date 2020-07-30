@@ -1,9 +1,11 @@
 from osgeo import gdal
 import os
 import sys
+import numpy as np
+import pandas as pd
 path = os.path.dirname(os.path.abspath(__file__))
 from ..constant import CM_NAME
-from ..helper import generate_output_file_tif, create_zip_shapefiles, generate_output_file_shp
+from ..helper import generate_output_file_tif, create_zip_shapefiles, generate_output_file_shp, generate_output_file_csv
 
 """ Entry point of the calculation module function"""
 if path not in sys.path:
@@ -16,6 +18,17 @@ from my_calculation_module_directory import run_cm
 # TODO: CM provider must "not change input_raster_selection,output_raster  1 raster input => 1 raster output"
 # TODO: CM provider can "add all the parameters he needs to run his CM
 # TODO: CM provider can "return as many indicators as he wants"
+
+def merge_industry_subsector(industrial_database_excess_heat, industrial_database_subsector, ind_out_csv):
+    df1 = pd.read_csv(industrial_database_excess_heat, encoding='latin1').drop_duplicates(subset='geometry_wkt')
+    df2 = pd.read_csv(industrial_database_subsector, encoding='latin1').drop_duplicates(subset='geometry_wkt')
+    df = df1.merge(df2, on='geometry_wkt', how='left', suffixes=('', '_right')).drop_duplicates(subset='geometry_wkt')
+    if df.shape[0] > 0:
+        flag = False
+    else:
+        flag = True
+    df.to_csv(ind_out_csv, index=False, encoding='latin1')
+    return flag
 
 
 def calculation(output_directory, inputs_raster_selection, inputs_vector_selection, inputs_parameter_selection):
@@ -43,18 +56,27 @@ def calculation(output_directory, inputs_raster_selection, inputs_vector_selecti
     inputs_parameter_selection["spatial_resolution"] = float(inputs_parameter_selection["spatial_resolution"])
 
     industrial_database_excess_heat = inputs_vector_selection['industrial_database_excess_heat']
-
+    industrial_database_subsector = inputs_vector_selection['industrial_database_subsector']
+    
+    ind_out_csv = generate_output_file_csv(output_directory)
     output_raster1 = generate_output_file_tif(output_directory)
     output_raster2 = generate_output_file_tif(output_directory)
     output_shp1 = generate_output_file_shp(output_directory)
     output_shp2 = generate_output_file_shp(output_directory)
     output_transmission_lines = generate_output_file_shp(output_directory)
 
-    results = run_cm.main(inputs_parameter_selection, inputs_raster_selection, industrial_database_excess_heat,
+    result = dict()
+    flag = merge_industry_subsector(industrial_database_excess_heat, industrial_database_subsector, ind_out_csv)
+    if flag:
+        result['name'] = CM_NAME
+        result['indicator'] = [{"unit": " ", "name": "Error! Check industrial excess heat and industrial subset data sets.",
+                                "value": "0"}]
+        return result
+
+    results = run_cm.main(inputs_parameter_selection, inputs_raster_selection, ind_out_csv,
                           output_raster1, output_raster2, output_shp1, output_shp2, output_transmission_lines)
 
     if results[0] == -1:
-        result = dict()
         result['name'] = CM_NAME
         result['indicator'] = [{"unit": " ", "name": results[1],
                                 "value": "0"}]
@@ -63,7 +85,6 @@ def calculation(output_directory, inputs_raster_selection, inputs_vector_selecti
     indicators, graphics, log_message = results
 
     output_transmission_lines = create_zip_shapefiles(output_directory, output_transmission_lines)
-    result = dict()
 
     # if graphics is not None:
     if indicators["total_potential"] > 0:

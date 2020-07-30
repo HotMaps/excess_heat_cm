@@ -29,14 +29,15 @@ class TestAPI(unittest.TestCase):
     def test_compute(self):
         raster_file_path = 'tests/data/pl22.tif'
         # simulate copy from HTAPI to CM
-        save_path = UPLOAD_DIRECTORY+"/Test_heat_tot_curr_density_nuts3.tif"
+        save_path = UPLOAD_DIRECTORY+"/test_heat_tot_curr_density.tif"
         copyfile(raster_file_path, save_path)
 
         inputs_raster_selection = {}
         inputs_parameter_selection = {}
         inputs_vector_selection = {}
 
-        inputs_vector_selection["industrial_database_excess_heat"] = 'tests/data/Test_industrial_database_excess_heat_nuts3.csv'
+        inputs_vector_selection["industrial_database_excess_heat"] = 'tests/data/test_industrial_database_excess_heat.csv'
+        inputs_vector_selection["industrial_database_subsector"] = 'tests/data/test_industrial_database_subsector.csv'
         
         #inputs_parameter_selection["search_radius"] = 20
         inputs_parameter_selection["investment_period"] = 30

@@ -132,6 +132,7 @@ SIGNATURE = {
     ],
      "type_vectors_needed": [
       {"type": "industrial_database_excess_heat", "description": "Select industrial site data"},
+      {"type": "industrial_database_subsector", "description": "Select industrial site subsector"},
      ],
     "cm_url": "Do not add something",
     "cm_description": "CM computing the costs of the transportation of excess heat to district heating networks",

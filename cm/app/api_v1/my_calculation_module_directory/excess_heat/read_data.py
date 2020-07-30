@@ -408,7 +408,7 @@ def ad_industrial_database_local(industrial_database_excess_heat, nuts2_ids): # 
     raw_data.rename(columns={'NUTS2_ID': 'Nuts2_ID'}, inplace=True)
     #print(raw_data)
 
-    Subsector = "Iron and steel"
+    subsector = "Iron and steel"
 
     raw_data = raw_data[raw_data["Nuts2_ID"].isin(nuts2_ids)]
     # dataframe for processed data
@@ -431,7 +431,7 @@ def ad_industrial_database_local(industrial_database_excess_heat, nuts2_ids): # 
 
             nuts0 = country_to_nuts0[site["country"]]
 
-            if "Subsector" in site.index:
+            if "subsector" in site.index:
                 # check if heat at specific temperature range is available
                 # TODO deal with units; hard coded temp ranges?
                 if not pd.isna(site["excess_heat_100_200c"]) and site["excess_heat_100_200c"] != 0:
@@ -439,48 +439,28 @@ def ad_industrial_database_local(industrial_database_excess_heat, nuts2_ids): # 
                                                site["excess_heat_100_200c"] * 1000, 150, site["Nuts2_ID"])
                 if not pd.isna(site["excess_heat_200_500c"]) and site["excess_heat_200_500c"] != 0:
                     data.loc[data.shape[0]] = (ellipsoid, lon, lat, nuts0,
-                                               site["Subsector"], site["excess_heat_200_500c"] * 1000, 350,
+                                               site["subsector"], site["excess_heat_200_500c"] * 1000, 350,
                                                site["Nuts2_ID"])
                 if not pd.isna(site["excess_heat_500c"]) and site["excess_heat_500c"] != "" and\
                         site["excess_heat_500c"] != 0:
                     data.loc[data.shape[0]] = (ellipsoid, lon, lat, nuts0,
-                                               site["Subsector"], site["excess_heat_500c"] * 1000, 500, site["Nuts2_ID"])
+                                               site["subsector"], site["excess_heat_500c"] * 1000, 500, site["Nuts2_ID"])
             else:
                 # check if heat at specific temperature range is available
                 # TODO deal with units; hard coded temp ranges?
                 if not pd.isna(site["excess_heat_100_200c"]) and site["excess_heat_100_200c"] != 0:
-                    data.loc[data.shape[0]] = (ellipsoid, lon, lat, nuts0, "Iron and steel",
+                    data.loc[data.shape[0]] = (ellipsoid, lon, lat, nuts0, subsector,
                                                site["excess_heat_100_200c"] * 1000, 150, site["Nuts2_ID"])
                 if not pd.isna(site["excess_heat_200_500c"]) and site["excess_heat_200_500c"] != 0:
                     data.loc[data.shape[0]] = (ellipsoid, lon, lat, nuts0,
-                                               "Iron and steel", site["excess_heat_200_500c"] * 1000, 350,
+                                               subsector, site["excess_heat_200_500c"] * 1000, 350,
                                                site["Nuts2_ID"])
                 if not pd.isna(site["excess_heat_500c"]) and site["excess_heat_500c"] != "" and \
                         site["excess_heat_500c"] != 0:
                     data.loc[data.shape[0]] = (ellipsoid, lon, lat, nuts0,
-                                               "Iron and steel", site["excess_heat_500c"] * 1000, 500,
+                                               subsector, site["excess_heat_500c"] * 1000, 500,
                                                site["Nuts2_ID"])
 
     data["id"] = range(data.shape[0])
 
     return data
-
-#if __name__ == "__main__":
-#    path = os.path.dirname(
-#        os.path.dirname(os.path.abspath(__file__)))
-#
-#    path_industry = os.path.join(os.path.join(path, "data"), "Industrial_Database.csv")
-#    path_nuts = os.path.join(os.path.join(path, "data"), "Nuts2_4326.shp")
-#
-#    with open(path_industry, 'r', encoding='utf-8') as csv_file:
-#        delimiter = csv.Sniffer().sniff(csv_file.readline()).delimiter
-#
-#    raw_data = pd.read_csv(path_industry, sep=delimiter, usecols=("geom", "Subsector", "Excess_Heat_100-200C",
-#                                                         "Excess_Heat_200-500C", "Excess_Heat_500C",
-#                                                         "Country", "Nuts2_ID"))
-#    delimiter =";"
-#    gdf = join_point_to_nuts2(path_industry, path_nuts, delimiter)
-#    print(gdf)
-#    raw_data = pd.DataFrame(gdf)
-#    raw_data.rename(columns={'NUTS2_ID': 'Nuts2_ID'}, inplace=True)
-#    raw_data.to_csv('OUT.csv')
