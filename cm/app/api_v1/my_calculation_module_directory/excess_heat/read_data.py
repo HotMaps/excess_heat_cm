@@ -403,7 +403,7 @@ def ad_industrial_database_local(industrial_database_excess_heat, nuts2_ids): # 
     #                                                     "Country")) #, "Nuts2_ID"
 
     gdf = join_point_to_nuts2(industrial_database_excess_heat, path_nuts)
-    #print (gdf)
+    print(gdf.columns)
     raw_data = pd.DataFrame(gdf)
     raw_data.rename(columns={'NUTS2_ID': 'Nuts2_ID'}, inplace=True)
     #print(raw_data)

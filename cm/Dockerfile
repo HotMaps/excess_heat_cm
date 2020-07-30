@@ -1,6 +1,6 @@
 FROM hotmaps/base_cm:latest
 
-RUN apt-get install -y python3-igraph
+RUN apt-get install -y python3-igraph libspatialindex-dev
 # Setup app server
 WORKDIR /
 RUN mkdir -p /data
