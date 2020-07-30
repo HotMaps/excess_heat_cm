@@ -20,6 +20,7 @@ from my_calculation_module_directory import run_cm
 # TODO: CM provider can "return as many indicators as he wants"
 
 def merge_industry_subsector(industrial_database_excess_heat, industrial_database_subsector, ind_out_csv):
+    """merge industrial site and subsector csv layers"""
     df1 = pd.read_csv(industrial_database_excess_heat, encoding='latin1').drop_duplicates(subset='geometry_wkt')
     df2 = pd.read_csv(industrial_database_subsector, encoding='latin1').drop_duplicates(subset='geometry_wkt')
     df = df1.merge(df2, on='geometry_wkt', how='left', suffixes=('', '_right')).drop_duplicates(subset='geometry_wkt')
