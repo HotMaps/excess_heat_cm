@@ -371,6 +371,7 @@ def join_point_to_nuts2(industrial_database_excess_heat, path_nuts, delimiter=',
     #df_industry [['SRID','LATLONG']] = df_industry.geom.str.split(";", expand=True,)
     gdf_industry = gpd.GeoDataFrame( df_industry, geometry=[loads_wkt(x) for x in df_industry['geometry_wkt']], crs='EPSG:4326')
     gdf = gpd.sjoin(gdf_nuts, gdf_industry, how='right', op='intersects', lsuffix='left', rsuffix='right')
+    return gdf
 
 
 def ad_industrial_database_local(industrial_database_excess_heat, nuts2_ids): # here we need to get the industry sites
