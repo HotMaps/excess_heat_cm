@@ -127,7 +127,7 @@ SIGNATURE = {
     "vectors_needed": [],
     "type_layer_needed": [
       {"type": "heat", "description": "Select heat demand density layer."},
-        #{"type": "industrial_database_excess_heat", "description": "Select industrial database layer"},
+      {"type": "nuts_id_number", "description": "Hotmaps NUTS ID Number"},
         #{"type": "industrial_database_subsector", "description": "Select industrial database layer"},
     ],
      "type_vectors_needed": [
