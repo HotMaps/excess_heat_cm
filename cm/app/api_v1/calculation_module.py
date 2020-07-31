@@ -21,9 +21,9 @@ from my_calculation_module_directory import run_cm
 
 def merge_industry_subsector(industrial_database_excess_heat, industrial_database_subsector, ind_out_csv):
     """merge industrial site and subsector csv layers"""
-    df1 = pd.read_csv(industrial_database_excess_heat, encoding='latin1').drop_duplicates(subset='geometry_wkt')
-    df2 = pd.read_csv(industrial_database_subsector, encoding='latin1').drop_duplicates(subset='geometry_wkt')
-    df = df1.merge(df2, on='geometry_wkt', how='left', suffixes=('', '_right')).drop_duplicates(subset='geometry_wkt')
+    df1 = pd.read_csv(industrial_database_excess_heat, encoding='latin1').drop_duplicates(subset=['geometry_wkt'])
+    df2 = pd.read_csv(industrial_database_subsector, encoding='latin1').drop_duplicates(subset=['geometry_wkt'])
+    df = df1.merge(df2, on='geometry_wkt', how='left', suffixes=('', '_right')).drop_duplicates(subset=['geometry_wkt'])
     if df.shape[0] > 0:
         flag = False
     else:
@@ -76,7 +76,6 @@ def calculation(output_directory, inputs_raster_selection, inputs_vector_selecti
 
     results = run_cm.main(inputs_parameter_selection, inputs_raster_selection, ind_out_csv,
                           output_raster1, output_raster2, output_shp1, output_shp2, output_transmission_lines)
-
     if results[0] == -1:
         result['name'] = CM_NAME
         result['indicator'] = [{"unit": " ", "name": results[1],
@@ -131,4 +130,5 @@ def calculation(output_directory, inputs_raster_selection, inputs_vector_selecti
         result['indicator'].insert(0, {"unit": " ", "name": log_message, "value": "0"})
 
     result['graphics'] = graphics
+
     return result

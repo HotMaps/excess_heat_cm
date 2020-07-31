@@ -52,7 +52,7 @@ def main(inputs_parameter_selection, inputs_raster_selection, industrial_databas
         return -1, "error: no dh area in selection"
 
     results = excess_heat(inputs_parameter_selection, inputs_raster_selection, industrial_database_excess_heat,
-                          output_transmission_lines, output_raster1)
+                    output_transmission_lines, output_raster1)
     if results[0] == -1:
         return results
 

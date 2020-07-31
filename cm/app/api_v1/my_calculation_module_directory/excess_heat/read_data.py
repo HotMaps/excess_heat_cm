@@ -4,11 +4,9 @@ import fiona
 import os
 import csv
 import rasterio
-
 import pandas as pd
 import geopandas as gpd
 from shapely.wkt import loads as loads_wkt
-
 from pyproj import Proj, Transformer
 from shapely.geometry import Point, Polygon, MultiPolygon
 from shapely.wkb import loads
@@ -96,6 +94,8 @@ def ad_tuw23v2(dh_areas, hdm, nuts_id):
     data["ellipsoid"] = "SRID=4326"
     data["Economic_Activity"] = "Steam and air conditioning supply"
     data["Temperature"] = 100
+    
+    data = data.drop_duplicates(subset=['id'])
     return data
 
 
@@ -366,14 +366,20 @@ def ad_residential_heating_profile_local(nuts2_ids):
 
 def join_point_to_nuts2(industrial_database_excess_heat, path_nuts, delimiter=','):
     gdf_nuts = gpd.read_file(path_nuts)
-    df_industry = pd.read_csv(industrial_database_excess_heat, encoding='latin1')
+    df_industry = pd.read_csv(industrial_database_excess_heat, encoding='latin1', usecols=("geometry_wkt", "srid", "subsector", "excess_heat_100_200c",
+                                                         "excess_heat_200_500c", "excess_heat_500c",
+                                                         "country"))
     df_industry = df_industry.dropna(subset=['geometry_wkt'])
     #df_industry [['SRID','LATLONG']] = df_industry.geom.str.split(";", expand=True,)
     gdf_industry = gpd.GeoDataFrame( df_industry, geometry=[loads_wkt(x) for x in df_industry['geometry_wkt']], crs='EPSG:4326')
-    return gpd.sjoin(gdf_nuts, gdf_industry, how='right', op='intersects', lsuffix='left', rsuffix='right')
+    gdf = gpd.sjoin(gdf_nuts, gdf_industry, how='right', op='intersects', lsuffix='left', rsuffix='right')
+    gdf.rename(columns={'geometry_wkt': 'geom'}, inplace=True)
+    gdf.rename(columns={'NUTS2_ID': 'Nuts2_ID'}, inplace=True)
+    print(gdf.columns)
+    return gdf[["geom", 'srid', "subsector", "excess_heat_100_200c", "excess_heat_200_500c", "excess_heat_500c", "country", "Nuts2_ID"]].copy()
 
 
-def ad_industrial_database_local(industrial_database_excess_heat, nuts2_ids): # here we need to get the industry sites
+def ad_industrial_database_local(nuts2_ids, industrial_database_excess_heat):
     """
     loads data of heat sources given by a csv file.
 
@@ -391,24 +397,14 @@ def ad_industrial_database_local(industrial_database_excess_heat, nuts2_ids): # 
                         "North Macedonia": "MK", "Serbia": "RS", "Turkey": "TR", "Switzerland": "CH", "Iceland": "IS",
                         "Liechtenstein": "LI", "Norway": "NO"}
     path = os.path.dirname(
-        os.path.dirname(os.path.abspath(__file__)))
-    #path_industry = os.path.join(os.path.join(path, "data"), "Industrial_Database.csv")
-    path_nuts = os.path.join(os.path.join(path, "data"), "Nuts2_4326.geojson")
-    # determine delimiter of csv file
-    #with open(path_industry, 'r', encoding='utf-8') as csv_file:
-    #    delimiter = csv.Sniffer().sniff(csv_file.readline()).delimiter
+           os.path.dirname(os.path.abspath(__file__)))
+    path_nuts2 = os.path.join(os.path.join(path, "data"), "Nuts2_4326.geojson")
 
-    #raw_data = pd.read_csv(path_industry, sep=delimiter, usecols=("geom", "Subsector", "Excess_Heat_100-200C",
-    #                                                     "Excess_Heat_200-500C", "Excess_Heat_500C",
-    #                                                     "Country")) #, "Nuts2_ID"
+    # # determine delimiter of csv file
+    # with open(path, 'r', encoding='utf-8') as csv_file:
+        # delimiter = csv.Sniffer().sniff(csv_file.readline()).delimiter
 
-    gdf = join_point_to_nuts2(industrial_database_excess_heat, path_nuts)
-    print(gdf.columns)
-    raw_data = pd.DataFrame(gdf)
-    raw_data.rename(columns={'NUTS2_ID': 'Nuts2_ID'}, inplace=True)
-    #print(raw_data)
-
-    subsector = "Iron and steel"
+    raw_data = join_point_to_nuts2(industrial_database_excess_heat, path_nuts2)
 
     raw_data = raw_data[raw_data["Nuts2_ID"].isin(nuts2_ids)]
     # dataframe for processed data
@@ -417,50 +413,31 @@ def ad_industrial_database_local(industrial_database_excess_heat, nuts2_ids): # 
 
     for i, site in raw_data.iterrows():
         # check if site location is available
-        if not pd.isna(site["geometry_wkt"]):
-            # extract ellipsoid model and (lon, lat) from the "geom" column
-            #ellipsoid, coordinate = site["geometry_wkt"].split(";")
+        if not pd.isna(site["geom"]):
             ellipsoid = site['srid']
-            coordinate = site['geometry_wkt']
-
+            coordinate = site['geom']
             m = re.search(r"[-+]?[0-9]*\.?[0-9]+.[-+]?[0-9]*\.?[0-9]+", coordinate)
             m = m.group(0)
             lon, lat = m.split(" ")
             lon = float(lon)
             lat = float(lat)
-
             nuts0 = country_to_nuts0[site["country"]]
+            subsector = site["subsector"]
 
-            if "subsector" in site.index:
-                # check if heat at specific temperature range is available
-                # TODO deal with units; hard coded temp ranges?
-                if not pd.isna(site["excess_heat_100_200c"]) and site["excess_heat_100_200c"] != 0:
-                    data.loc[data.shape[0]] = (ellipsoid, lon, lat, nuts0, site["subsector"],
-                                               site["excess_heat_100_200c"] * 1000, 150, site["Nuts2_ID"])
-                if not pd.isna(site["excess_heat_200_500c"]) and site["excess_heat_200_500c"] != 0:
-                    data.loc[data.shape[0]] = (ellipsoid, lon, lat, nuts0,
-                                               site["subsector"], site["excess_heat_200_500c"] * 1000, 350,
-                                               site["Nuts2_ID"])
-                if not pd.isna(site["excess_heat_500c"]) and site["excess_heat_500c"] != "" and\
-                        site["excess_heat_500c"] != 0:
-                    data.loc[data.shape[0]] = (ellipsoid, lon, lat, nuts0,
-                                               site["subsector"], site["excess_heat_500c"] * 1000, 500, site["Nuts2_ID"])
-            else:
-                # check if heat at specific temperature range is available
-                # TODO deal with units; hard coded temp ranges?
-                if not pd.isna(site["excess_heat_100_200c"]) and site["excess_heat_100_200c"] != 0:
-                    data.loc[data.shape[0]] = (ellipsoid, lon, lat, nuts0, subsector,
-                                               site["excess_heat_100_200c"] * 1000, 150, site["Nuts2_ID"])
-                if not pd.isna(site["excess_heat_200_500c"]) and site["excess_heat_200_500c"] != 0:
-                    data.loc[data.shape[0]] = (ellipsoid, lon, lat, nuts0,
-                                               subsector, site["excess_heat_200_500c"] * 1000, 350,
-                                               site["Nuts2_ID"])
-                if not pd.isna(site["excess_heat_500c"]) and site["excess_heat_500c"] != "" and \
-                        site["excess_heat_500c"] != 0:
-                    data.loc[data.shape[0]] = (ellipsoid, lon, lat, nuts0,
-                                               subsector, site["excess_heat_500c"] * 1000, 500,
-                                               site["Nuts2_ID"])
-
+            # check if heat at specific temperature range is available
+            # TODO deal with units; hard coded temp ranges?
+            if not pd.isna(site["excess_heat_100_200c"]) and site["excess_heat_100_200c"] != 0:
+                data.loc[data.shape[0]] = (ellipsoid, lon, lat, nuts0, subsector,
+                                           site["excess_heat_100_200c"] * 1000, 150, site["Nuts2_ID"])
+            if not pd.isna(site["excess_heat_200_500c"]) and site["excess_heat_200_500c"] != 0:
+                data.loc[data.shape[0]] = (ellipsoid, lon, lat, nuts0,
+                                           subsector, site["excess_heat_200_500c"] * 1000, 350,
+                                           site["Nuts2_ID"])
+            if not pd.isna(site["excess_heat_500c"]) and site["excess_heat_500c"] != "" and \
+                    site["excess_heat_500c"] != 0:
+                data.loc[data.shape[0]] = (ellipsoid, lon, lat, nuts0,
+                                           subsector, site["excess_heat_500c"] * 1000, 500,
+                                           site["Nuts2_ID"])
     data["id"] = range(data.shape[0])
 
     return data

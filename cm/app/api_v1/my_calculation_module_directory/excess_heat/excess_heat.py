@@ -9,16 +9,17 @@ from my_calculation_module_directory.excess_heat.utility import create_normalize
 from my_calculation_module_directory.excess_heat.parameters import *
 from my_calculation_module_directory.excess_heat.dh_network.dh_network import DHNetwork
 
-def excess_heat(inputs_parameter_selection, inputs_raster_selection, industrial_database_excess_heat, output_transmission_lines, output_raster1):
+
+def excess_heat(inputs_parameter_selection, inputs_raster_selection, industrial_database_excess_heat,
+            output_transmission_lines, output_raster1):
     heat_density_map = inputs_raster_selection["heat"]
     nuts_id_raster = inputs_raster_selection["nuts_id_number"]
-    search_radius = 20000 #inputs_parameter_selection["search_radius"]    
+    search_radius = 20000 #inputs_parameter_selection["search_radius"]
     investment_period = inputs_parameter_selection["investment_period"]
     discount_rate = inputs_parameter_selection["discount_rate"]
     transmission_line_threshold = inputs_parameter_selection["transmission_line_threshold"]
     time_resolution = inputs_parameter_selection["time_resolution"]
     spatial_resolution = inputs_parameter_selection["spatial_resolution"]
-    #industry_sites = inputs_vector_selection["industrial_database_excess_heat"]
 
     # create logger
     log = Logger()
@@ -37,9 +38,9 @@ def excess_heat(inputs_parameter_selection, inputs_raster_selection, industrial_
     for id_ in nuts2_ids:
         nuts0_id.append(id_[:2])
 
-    heat_sources = ad_industrial_database_local(industrial_database_excess_heat, nuts2_ids) #here we need to pass over industry_sites from the platform
+    heat_sources = ad_industrial_database_local(nuts2_ids, industrial_database_excess_heat)
     heat_sinks = ad_tuw23v2(output_raster1, heat_density_map, nuts_id_raster)
-
+    
     # escape main routine if dh_potential cm did not produce shp file
     if not isinstance(heat_sinks, pd.DataFrame):
         log.add_error("No dh area in selection.")
@@ -81,7 +82,6 @@ def excess_heat(inputs_parameter_selection, inputs_raster_selection, industrial_
     for missing_profile in missing_profiles:
         heat_sinks = heat_sinks[heat_sinks.Nuts2_ID != missing_profile]
         log.add_warning("No residential heating profile available for " + str(missing_profile) + ".")
-
     if heat_sinks.shape[0] == 0:
         log.add_error("No entry points in selected area.")
         log_message = log.string_report()
@@ -112,7 +112,13 @@ def excess_heat(inputs_parameter_selection, inputs_raster_selection, industrial_
     heat_sink_profiles = np.array(heat_sink_profiles)
     heat_sink_profiles = heat_sink_profiles.transpose()
 
-    cost_approximation_network = DHNetwork(heat_sources, heat_sinks, [heat_sources["Excess_heat"].tolist()], [heat_sinks["Heat_demand"].tolist()])
+
+    # print(heat_source_profiles.shape)
+    # print(heat_sink_profiles.shape)
+    # print(heat_sinks.id.values)
+
+    #cost_approximation_network = DHNetwork(heat_sources, heat_sinks, [heat_sources["Excess_heat"].tolist()], [heat_sinks["Heat_demand"].tolist()])
+    cost_approximation_network = DHNetwork(heat_sources, heat_sinks, heat_source_profiles, heat_sink_profiles)
     cost_approximation_network.time_unit = "year"
     cost_approximation_network.lifetime = investment_period
     cost_approximation_network.discount_rate = discount_rate

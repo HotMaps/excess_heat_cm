@@ -174,6 +174,8 @@ class DHNetwork:
         for network, distances in zip(self.flows, self.network.get_edge_attribute("distance")):
             heat_loss = 0
             for flow, distance in zip(network[2], distances):
+                if distance == None:
+                    distance = 1e15
                 transmission_line.flow = np.abs(flow)   # ignore sign of flow direction
                 transmission_line.length = 2 * distance
                 transmission_line.find_recommended_selection()
@@ -252,9 +254,17 @@ class DHNetwork:
 
             # slice connection flow of network, hence drop source and sink flows
             connection_flow = network[2]
+            
+            print("#"*25)
+            print("connection_flow", connection_flow)
+            print("distances", distances)
+            print("edges", edges)
+            
+            
+            
             for flow, distance, edge in zip(connection_flow, distances, edges):
                 transmission_line.flow = np.abs(flow)   # ignore sign of flow direction
-                transmission_line.length = 2 * distance
+                transmission_line.length = 2.0 * distance
                 transmission_line.find_recommended_selection()
                 if transmission_line.specific_costs() > highest_specific_costs[-1]:
                     edge_to_delete = edge
