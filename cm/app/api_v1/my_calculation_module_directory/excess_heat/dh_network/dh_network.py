@@ -31,6 +31,11 @@ class DHNetwork:
                                                                      max_distance)
         source_correspondence = self.heat_sources["id"].tolist()
         sink_correspondence = self.heat_sinks["id"].tolist()
+
+        # print("source_sink_connections: ", len(source_sink_connections), " ", self.heat_sources.shape, " ", self.heat_sinks.shape)
+        # print("source_source_connections: ", len(source_source_connections), " ", self.heat_sources.shape, " ", self.heat_sources.shape)
+        # print("sink_sink_connections: ", len(sink_sink_connections), " ", self.heat_sinks.shape, " ", self.heat_sinks.shape)
+
         edge_attribute = ("distance", source_sink_distances, source_source_distances, sink_sink_distances)
         self.network = NetworkGraphUnion(source_sink_connections, source_source_connections, sink_sink_connections,
                                          source_correspondence, sink_correspondence, edge_attributes=[edge_attribute])
@@ -174,8 +179,6 @@ class DHNetwork:
         for network, distances in zip(self.flows, self.network.get_edge_attribute("distance")):
             heat_loss = 0
             for flow, distance in zip(network[2], distances):
-                if distance == None:
-                    distance = 1e15
                 transmission_line.flow = np.abs(flow)   # ignore sign of flow direction
                 transmission_line.length = 2 * distance
                 transmission_line.find_recommended_selection()
@@ -190,11 +193,7 @@ class DHNetwork:
         return np.array(self.heat_used(mode)) - np.array(self.heat_lost(mode))
 
     def levelized_cost_of_heat_supply(self, mode="individual"):
-        a = np.array(self.heat_delivered(mode=mode))
-        if np.sum(a) > 0:
-            return np.array(self.total_costs(typ="annual_cost", mode=mode)) / a
-        else:
-            return 0
+        return np.array(self.total_costs(typ="annual_cost", mode=mode)) / np.array(self.heat_delivered(mode=mode))
 
     def pump_energy_costs(self, mode="individual"):
         transmission_line = TransmissionLine(time_unit=self.time_unit, country=self.country,
@@ -254,17 +253,9 @@ class DHNetwork:
 
             # slice connection flow of network, hence drop source and sink flows
             connection_flow = network[2]
-            
-            print("#"*25)
-            print("connection_flow", connection_flow)
-            print("distances", distances)
-            print("edges", edges)
-            
-            
-            
             for flow, distance, edge in zip(connection_flow, distances, edges):
                 transmission_line.flow = np.abs(flow)   # ignore sign of flow direction
-                transmission_line.length = 2.0 * distance
+                transmission_line.length = 2 * distance
                 transmission_line.find_recommended_selection()
                 if transmission_line.specific_costs() > highest_specific_costs[-1]:
                     edge_to_delete = edge
