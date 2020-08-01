@@ -1,7 +1,5 @@
-from osgeo import gdal
 import os
 import sys
-import numpy as np
 import pandas as pd
 path = os.path.dirname(os.path.abspath(__file__))
 from ..constant import CM_NAME
@@ -43,10 +41,8 @@ def calculation(output_directory, inputs_raster_selection, inputs_vector_selecti
     Outputs:
         DH_Regions: contains binary values (no units) showing coherent areas
     '''
-
     inputs_parameter_selection["pix_threshold"] = int(inputs_parameter_selection["pix_threshold"])
     inputs_parameter_selection["DH_threshold"] = int(inputs_parameter_selection["DH_threshold"])
-
     #inputs_parameter_selection["search_radius"] = float(inputs_parameter_selection["search_radius"]) * 1000
     inputs_parameter_selection["investment_period"] = float(inputs_parameter_selection["investment_period"])
     inputs_parameter_selection["discount_rate"] = float(inputs_parameter_selection["discount_rate"]) / 100
@@ -54,7 +50,7 @@ def calculation(output_directory, inputs_raster_selection, inputs_vector_selecti
     inputs_parameter_selection["operational_costs"] = float(inputs_parameter_selection["operational_costs"]) / 100
     inputs_parameter_selection["transmission_line_threshold"] = \
         float(inputs_parameter_selection["transmission_line_threshold"]) * 10   # convert from ct/kWh to euro/MWh
-    inputs_parameter_selection["spatial_resolution"] = float(inputs_parameter_selection["spatial_resolution"])
+    #inputs_parameter_selection["spatial_resolution"] = float(inputs_parameter_selection["spatial_resolution"])
 
     industrial_database_excess_heat = inputs_vector_selection['industrial_database_excess_heat']
     industrial_database_subsector = inputs_vector_selection['industrial_database_subsector']

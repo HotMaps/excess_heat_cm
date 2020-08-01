@@ -19,7 +19,7 @@ def excess_heat(inputs_parameter_selection, inputs_raster_selection, industrial_
     discount_rate = inputs_parameter_selection["discount_rate"]
     transmission_line_threshold = inputs_parameter_selection["transmission_line_threshold"]
     time_resolution = inputs_parameter_selection["time_resolution"]
-    spatial_resolution = inputs_parameter_selection["spatial_resolution"]
+    #spatial_resolution = inputs_parameter_selection["spatial_resolution"]
 
     # create logger
     log = Logger()
@@ -131,12 +131,14 @@ def excess_heat(inputs_parameter_selection, inputs_raster_selection, industrial_
     flows = []
     levelized_costs_of_heat_supply = []
     while cost_approximation_network.number_of_transmission_lines(mode="total") > 0:
-        #print(cost_approximation_network.levelized_cost_of_heat_supply(mode="total"))
+        #print("lcoh: ", cost_approximation_network.levelized_cost_of_heat_supply(mode="total"))
         #cost_approximation_network.generate_shape_file(".test")
         costs.append(cost_approximation_network.remove_edge_with_highest_specific_cost(mode="total", return_costs=True))
         cost_approximation_network.compute_flow()
         flows.append(cost_approximation_network.heat_delivered(mode="total"))
+        #print("delivered heat: ", cost_approximation_network.heat_delivered(mode="total"))
         levelized_costs_of_heat_supply.append(cost_approximation_network.levelized_cost_of_heat_supply(mode="total"))
+
     graphics_data = dict()
     graphics_data["approximated_costs"] = costs
     graphics_data["approximated_flows"] = flows

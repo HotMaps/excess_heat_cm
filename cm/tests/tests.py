@@ -46,13 +46,13 @@ class TestAPI(unittest.TestCase):
         inputs_parameter_selection["cost_factor"] = 1
         inputs_parameter_selection["operational_costs"] = 1
         inputs_parameter_selection["heat_losses"] = 20
-        inputs_parameter_selection["transmission_line_threshold"] = 20
+        inputs_parameter_selection["transmission_line_threshold"] = 5
         inputs_parameter_selection["time_resolution"] = "week"
-        inputs_parameter_selection["spatial_resolution"] = 2
+        #inputs_parameter_selection["spatial_resolution"] = 2
         #nuts = ['PL22', 'PL21', "PL41", "PL42", "PL43", "PL51", "PL52", "CZ08"]
         #nuts = ["DK05"]
 
-        inputs_parameter_selection["pix_threshold"] = 555
+        inputs_parameter_selection["pix_threshold"] = 333
         inputs_parameter_selection["DH_threshold"] = 30
 
         inputs_raster_selection["heat"] = save_path

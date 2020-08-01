@@ -190,10 +190,16 @@ class DHNetwork:
             return heat_losses
 
     def heat_delivered(self, mode="individual"):
-        return np.array(self.heat_used(mode)) - np.array(self.heat_lost(mode))
+        tmp = np.array(self.heat_used(mode)) - np.array(self.heat_lost(mode))
+        if tmp > 0:
+            return np.array(self.heat_used(mode)) - np.array(self.heat_lost(mode))
+        return 0
 
     def levelized_cost_of_heat_supply(self, mode="individual"):
-        return np.array(self.total_costs(typ="annual_cost", mode=mode)) / np.array(self.heat_delivered(mode=mode))
+        if self.heat_delivered(mode='total') != 0:
+            return np.array(self.total_costs(typ="annual_cost", mode=mode)) / np.array(self.heat_delivered(mode=mode))
+        else:
+            return 0
 
     def pump_energy_costs(self, mode="individual"):
         transmission_line = TransmissionLine(time_unit=self.time_unit, country=self.country,

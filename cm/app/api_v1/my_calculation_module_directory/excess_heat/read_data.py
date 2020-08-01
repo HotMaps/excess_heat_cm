@@ -11,6 +11,7 @@ from pyproj import Proj, Transformer
 from shapely.geometry import Point, Polygon, MultiPolygon
 from shapely.wkb import loads
 from skimage import measure
+from scipy.ndimage import center_of_mass
 import numpy as np
 import json as json_lib
 from scipy.stats import mode
@@ -45,7 +46,67 @@ def ad_tuw23v2(dh_areas, hdm, nuts_id):
     out_proj = Proj(init='epsg:4326')
     transformer = Transformer.from_proj(in_proj, out_proj)
     data = []
-    for label in range(labels):
+
+    center_points = center_of_mass(all_labels.astype(bool).astype(int), labels=all_labels, index=1 + np.arange(labels))
+    for label in range(1, labels + 1):
+        ind = all_labels == label
+        xs, ys = np.where(ind != 0)
+        min_xs = min(xs)
+        max_xs = max(xs)
+        min_ys = min(ys)
+        max_ys = max(ys)
+        dh_area = all_labels * ind
+        nuts_id_m = nuts_id_raster * ind
+        dh_area = dh_area[min_xs:max_xs + 1, min_ys:max_ys + 1].astype(bool)
+        nuts_id_m = nuts_id_m[min_xs:max_xs + 1, min_ys:max_ys + 1]
+        nuts_id_m = nuts_id_m.flatten()
+        nuts = np.unique(nuts_id_m, return_counts=True)[0]
+        if len(nuts) > 1:
+            if nuts[0] == 0:
+                nuts = nuts[1]
+            else:
+                nuts = nuts[0]
+        else:
+            nuts = nuts[0]
+        nuts2_id = nuts_id_map[nuts_id_map["id"] == nuts].values[0][1][0:4]
+        heat_demand = np.sum(dh_area * hdm[min_xs:max_xs + 1, min_ys:max_ys + 1])
+        # label start from 1 but center point index should start from 0
+        coordinate = center_points[label-1]
+
+        lon = root_coordinate[0] + coordinate[1] * 100
+        lat = root_coordinate[1] - coordinate[0] * 100
+        lon, lat = transformer.transform(lon, lat)
+        data.append([lon, lat, heat_demand, label, nuts2_id])
+
+    data = pd.DataFrame(data, columns=["Lon", "Lat", "Heat_demand", "id", "Nuts2_ID"])
+
+    data["ellipsoid"] = "SRID=4326"
+    data["Economic_Activity"] = "Steam and air conditioning supply"
+    data["Temperature"] = 100
+
+    data = data.drop_duplicates(subset=['id'])
+    data.index = range(data.shape[0])
+    return data
+
+
+def ad_tuw23v2_old(dh_areas, hdm, nuts_id):
+    dh_areas = rasterio.open(dh_areas)
+    dh_areas = dh_areas.read()[0]
+    hdm = rasterio.open(hdm)
+    root_coordinate = hdm.profile["transform"][2], hdm.profile["transform"][5]
+    hdm = hdm.read()[0]
+    nuts_id_raster = rasterio.open(nuts_id)
+    nuts_id_raster = nuts_id_raster.read()[0]
+    nuts_id_map = ad_nuts_id()
+
+    all_labels, labels = measure.label(dh_areas, return_num=True)
+
+    distance = 20
+    in_proj = Proj(init='epsg:3035')
+    out_proj = Proj(init='epsg:4326')
+    transformer = Transformer.from_proj(in_proj, out_proj)
+    data = []
+    for label in range(1, labels+1):
         ind = all_labels == label
         xs, ys = np.where(ind != 0)
         min_xs = min(xs)
@@ -96,6 +157,7 @@ def ad_tuw23v2(dh_areas, hdm, nuts_id):
     data["Temperature"] = 100
     
     data = data.drop_duplicates(subset=['id'])
+    data.index = range(data.shape[0])
     return data
 
 
