@@ -144,7 +144,10 @@ def compute():
 #    LOGGER.info('nuts', nuts)
 
 
+    
+    inputs_raster_selection = helper.validateJSON(data["inputs_raster_selection"])
     inputs_vector_selection = helper.validateJSON(data["inputs_vector_selection"])
+    inputs_parameter_selection = helper.validateJSON(data["inputs_parameter_selection"])
 
     output_directory = UPLOAD_DIRECTORY
     # call the calculation module function
