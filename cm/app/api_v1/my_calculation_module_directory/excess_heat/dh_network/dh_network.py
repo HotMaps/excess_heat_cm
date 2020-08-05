@@ -322,6 +322,8 @@ class DHNetwork:
                 if len(flows[2]) > 0:
                     flows = np.sum(np.abs(flows[2]), axis=1)
                     for coordinate, length, flow in zip(coordinates_of_network, lengths, flows):
+                        if length == 0:
+                            continue
                         line = {
                             "geometry": {
                                 "type": "LineString",
