@@ -83,17 +83,17 @@ def calculation(output_directory, inputs_raster_selection, inputs_vector_selecti
     inputs_raster_selection["heat"] = save_path
     inputs_raster_selection["nuts_id_number"] = pp + "/test_nuts_id_number.tif"
 
+
+
+
+
+
+
+
+
+
+
     '''
-
-
-
-
-
-
-
-
-
-
     ############
     inputs_parameter_selection["pix_threshold"] = int(inputs_parameter_selection["pix_threshold"])
     inputs_parameter_selection["DH_threshold"] = int(inputs_parameter_selection["DH_threshold"])
@@ -109,7 +109,7 @@ def calculation(output_directory, inputs_raster_selection, inputs_vector_selecti
     industrial_database_excess_heat = inputs_vector_selection['industrial_database_excess_heat']
     industrial_database_subsector = inputs_vector_selection['industrial_database_subsector']
 
-    '''
+
     ind_out_csv = generate_output_file_csv(output_directory)
     output_raster1 = generate_output_file_tif(output_directory)
     output_raster2 = generate_output_file_tif(output_directory)
@@ -123,7 +123,7 @@ def calculation(output_directory, inputs_raster_selection, inputs_vector_selecti
     output_shp1 = output_directory + '/test1.shp'
     output_shp2 = output_directory + '/test2.shp'
     output_transmission_lines = output_directory + '/test.shp'
-
+    '''
     result = dict()
     flag = merge_industry_subsector(industrial_database_excess_heat, industrial_database_subsector, ind_out_csv)
     if flag:
