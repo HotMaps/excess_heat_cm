@@ -47,39 +47,39 @@ def generate_graphics(parameters, indicators, graphics_data):
     excess_heat_profile_daily = excess_heat_profile_daily.tolist()
     heat_demand_profile_daily = heat_demand_profile_daily.tolist()
 
-    thresholds = np.array(graphics_data["approximated_costs"]) / 1000 * 100  # convert euro/MWh to ct/kWh
-    thresholds = thresholds.tolist()
-    approximated_levelized_costs = graphics_data["approximated_levelized_costs"]
-    approximated_flows = graphics_data["approximated_flows"]
+    #thresholds = np.array(graphics_data["approximated_costs"]) / 1000 * 100  # convert euro/MWh to ct/kWh
+    #thresholds = thresholds.tolist()
+    #approximated_levelized_costs = graphics_data["approximated_levelized_costs"]
+    #approximated_flows = graphics_data["approximated_flows"]
 
     set_lcoh = []
     set_thresholds = []
     set_radius = []
     set_threshold = False
-    for i, threshold in enumerate(thresholds):
-        if threshold > transmission_line_threshold or set_threshold is True:
-            set_lcoh.append(0)
-            set_thresholds.append(0)
-            set_radius.append(0)
-        else:
-            set_lcoh.append(approximated_levelized_costs[i])
-            set_thresholds.append(threshold)
-            set_radius.append(3)
-            set_threshold = True
+    # for i, threshold in enumerate(thresholds):
+    #     if threshold > transmission_line_threshold or set_threshold is True:
+    #         set_lcoh.append(0)
+    #         set_thresholds.append(0)
+    #         set_radius.append(0)
+    #     else:
+    #         set_lcoh.append(approximated_levelized_costs[i])
+    #         set_thresholds.append(threshold)
+    #         set_radius.append(3)
+    #         set_threshold = True
 
-    approximated_flows.reverse()
-    approximated_levelized_costs.reverse()
-    thresholds.reverse()
+    #approximated_flows.reverse()
+    #approximated_levelized_costs.reverse()
+    #thresholds.reverse()
     set_lcoh.reverse()
     set_thresholds.reverse()
     set_radius.reverse()
 
     dhpot = round_list(dhpot, 3)
-    approximated_flows = round_list(approximated_flows, 3)
-    approximated_levelized_costs = round_list(approximated_levelized_costs, 3)
-    thresholds = np.array(thresholds)
-    thresholds[np.isinf(thresholds)] = 0
-    thresholds = round_list(thresholds.tolist(), 3)
+    #approximated_flows = round_list(approximated_flows, 3)
+    #approximated_levelized_costs = round_list(approximated_levelized_costs, 3)
+    #thresholds = np.array(thresholds)
+    #thresholds[np.isinf(thresholds)] = 0
+    #thresholds = round_list(thresholds.tolist(), 3)
     set_lcoh = round_list(set_lcoh, 3)
     set_thresholds = round_list(set_thresholds, 3)
     excess_heat_profile_monthly = round_list(excess_heat_profile_monthly, 3)
@@ -116,39 +116,40 @@ def generate_graphics(parameters, indicators, graphics_data):
                 }]
             }
         },
-        {
-            "type": "line",
-            "xLabel": "Annual delivered excess heat in GWh",
-            "yLabel": "Costs in ct/kWh",
-            "data": {
-                "labels": [str(x) for x in approximated_flows],
-                "datasets": [{
-                    "label": "Set transmission line threshold",
-                    "data": set_lcoh,
-                    "pointRadius": set_radius,
-                    "borderColor": "#fe7c60",
-                    "pointBackgroundColor": "#fe7c60",
-                    "showLine": False
-                }, {
-                    "label": "Set transmission line threshold",
-                    "data": set_threshold,
-                    "pointRadius": set_radius,
-                    "borderColor": "#fe7c60",
-                    "pointBackgroundColor": "#fe7c60",
-                    "showLine": False
-                },
-                    {
-                        "label": "levelized cost",
-                        "data": approximated_levelized_costs,
-                        "borderColor": "#3e95cd",
-                    }, {
-                        "label": "Transmission line threshold",
-                        "data": thresholds,
-                        "borderColor": "#32CD32",
-                    }
-                ]
-            }
-        },
+        # {
+        #     "type": "line",
+        #     "xLabel": "Annual delivered excess heat in GWh",
+        #     "yLabel": "Costs in ct/kWh",
+        #     "data": {
+        #         "labels": [str(x) for x in approximated_flows],
+        #         "datasets": [{
+        #             "label": "Set transmission line threshold",
+        #             "data": set_lcoh,
+        #             "pointRadius": set_radius,
+        #             "borderColor": "#fe7c60",
+        #             "pointBackgroundColor": "#fe7c60",
+        #             "showLine": False
+        #         }, {
+        #             "label": "Set transmission line threshold",
+        #             "data": set_threshold,
+        #             "pointRadius": set_radius,
+        #             "borderColor": "#fe7c60",
+        #             "pointBackgroundColor": "#fe7c60",
+        #             "showLine": False
+        #         },
+        #             # {
+        #             #     "label": "levelized cost",
+        #             #     "data": approximated_levelized_costs,
+        #             #     "borderColor": "#3e95cd",
+        #             # },
+        #             {
+        #                 "label": "Transmission line threshold",
+        #                 "data": thresholds,
+        #                 "borderColor": "#32CD32",
+        #             }
+        #         ]
+        #     }
+        # },
         {
             "type": "line",
             "xLabel": "Month",

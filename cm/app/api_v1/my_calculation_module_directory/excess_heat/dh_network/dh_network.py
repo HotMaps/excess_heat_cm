@@ -142,6 +142,7 @@ class DHNetwork:
             return costs
 
     def total_costs(self, typ="investment", mode="individual"):
+        #total = np.array(self.compute_transmission_line_costs(typ=typ, mode=mode))
         total = np.array(self.compute_transmission_line_costs(typ=typ, mode=mode)) +\
                 np.array(self.compute_heat_exchanger_costs(typ=typ, mode=mode)) +\
                 np.array(self.compute_pump_costs(typ=typ, mode=mode))

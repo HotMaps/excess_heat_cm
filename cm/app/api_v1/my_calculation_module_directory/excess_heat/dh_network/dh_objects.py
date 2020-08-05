@@ -29,7 +29,7 @@ class NetworkObject:
         if transported_heat > 0:
             return self.annual_costs() / transported_heat
         else:
-            return 1e12
+            return np.inf
 
 
 class TransmissionLine(NetworkObject):
@@ -74,11 +74,11 @@ class TransmissionLine(NetworkObject):
         if transported_heat > 0:
             return self.annual_costs() / transported_heat
         else:
-            return 1e12
+            return np.inf
 
     def find_lowest_specific_costs(self):
         lowest_selection = 0
-        lowest_specific_costs = 1e12
+        lowest_specific_costs = np.inf
         for i in range(len(PIPE_COSTS)):
             self.selection = i
             specific_costs = self.specific_costs()

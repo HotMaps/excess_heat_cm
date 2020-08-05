@@ -140,9 +140,9 @@ def excess_heat(inputs_parameter_selection, inputs_raster_selection, industrial_
         levelized_costs_of_heat_supply.append(cost_approximation_network.levelized_cost_of_heat_supply(mode="total"))
 
     graphics_data = dict()
-    graphics_data["approximated_costs"] = costs
-    graphics_data["approximated_flows"] = flows
-    graphics_data["approximated_levelized_costs"] = levelized_costs_of_heat_supply
+    #graphics_data["approximated_costs"] = costs
+    #graphics_data["approximated_flows"] = flows
+    #graphics_data["approximated_levelized_costs"] = levelized_costs_of_heat_supply
 
     network = DHNetwork(heat_sources, heat_sinks, heat_source_profiles, heat_sink_profiles)
     network.time_unit = time_resolution
@@ -166,16 +166,23 @@ def excess_heat(inputs_parameter_selection, inputs_raster_selection, industrial_
 
     network.generate_shape_file(output_transmission_lines)
     indicators = dict()
+
+    indicators["investment"] = network.compute_transmission_line_costs(typ="investment", mode="total")
+    indicators["annuity"] = network.compute_transmission_line_costs(typ="annuity", mode="total")
+    indicators["annual_cost"] = network.compute_transmission_line_costs(typ="annual_cost", mode="total")
+    '''
     indicators["investment"] = network.total_costs(typ="investment", mode="total")
     indicators["annuity"] = network.total_costs(typ="annuity", mode="total")
     indicators["annual_cost"] = network.total_costs(typ="annual_cost", mode="total")
+    '''
     indicators["heat_available"] = network.excess_heat_available()
     indicators["heat_connected"] = network.excess_heat_connected(mode="total")
     indicators["heat_used"] = network.heat_used(mode="total")
     indicators["heat_delivered"] = network.heat_delivered(mode="total")
     indicators["heat_lost"] = network.heat_lost(mode="total")
-    indicators["levelized_cost"] = network.levelized_cost_of_heat_supply(mode="total")
-    indicators["maintenance_cost"] = network.total_costs(typ="operational_costs", mode="total")
+    #indicators["levelized_cost"] = network.levelized_cost_of_heat_supply(mode="total")
+    indicators["levelized_cost"] = indicators["annual_cost"] / indicators["heat_delivered"]
+    #indicators["maintenance_cost"] = network.total_costs(typ="operational_costs", mode="total")
     indicators["pump_energy_costs"] = network.pump_energy_costs(mode="total")
 
     graphics_data["excess_heat_profile"] = network.heat_profile("source", mode="total")
