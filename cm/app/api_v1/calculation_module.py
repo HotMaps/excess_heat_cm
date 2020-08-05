@@ -35,7 +35,7 @@ def merge_industry_subsector(industrial_database_excess_heat, industrial_databas
 
 
 def calculation(output_directory, inputs_raster_selection, inputs_vector_selection, inputs_parameter_selection):
-#def calculation(output_directory=r'C:\Users\Mostafa\Desktop\exheat\cm\tests\data\output'):
+    #def calculation(output_directory=r'C:\Users\Mostafa\Desktop\exheat\cm\tests\data\output'):
     """ def calculation()"""
     '''
     inputs:
@@ -45,56 +45,9 @@ def calculation(output_directory, inputs_raster_selection, inputs_vector_selecti
 
     Outputs:
         DH_Regions: contains binary values (no units) showing coherent areas
-    '''
     #######
-
     '''
-    CM_NAME = "test"
-    from shutil import copyfile
-    UPLOAD_DIRECTORY = 'C:/var/hotmaps/cm_files_uploaded'
-    pp = r'C:\Users\Mostafa\Desktop\exheat\cm\tests\data'
-    raster_file_path = pp + '/test_heat_tot_curr_density.tif'
-    # simulate copy from HTAPI to CM
-    save_path = UPLOAD_DIRECTORY + "/test_heat_tot_curr_density.tif"
-    copyfile(raster_file_path, save_path)
 
-    inputs_raster_selection = {}
-    inputs_parameter_selection = {}
-    inputs_vector_selection = {}
-
-    inputs_vector_selection["industrial_database_excess_heat"] = pp + '/test_industrial_database_excess_heat.csv'
-    inputs_vector_selection["industrial_database_subsector"] = pp + '/test_industrial_database_subsector.csv'
-
-    # inputs_parameter_selection["search_radius"] = 20
-    inputs_parameter_selection["investment_period"] = 30
-    inputs_parameter_selection["discount_rate"] = 3
-    inputs_parameter_selection["cost_factor"] = 1
-    inputs_parameter_selection["operational_costs"] = 1
-    inputs_parameter_selection["heat_losses"] = 20
-    inputs_parameter_selection["transmission_line_threshold"] = 5
-    inputs_parameter_selection["time_resolution"] = "week"
-    # inputs_parameter_selection["spatial_resolution"] = 2
-    # nuts = ['PL22', 'PL21', "PL41", "PL42", "PL43", "PL51", "PL52", "CZ08"]
-    # nuts = ["DK05"]
-
-    inputs_parameter_selection["pix_threshold"] = 333
-    inputs_parameter_selection["DH_threshold"] = 30
-
-    inputs_raster_selection["heat"] = save_path
-    inputs_raster_selection["nuts_id_number"] = pp + "/test_nuts_id_number.tif"
-
-
-
-
-
-
-
-
-
-
-
-    '''
-    ############
     inputs_parameter_selection["pix_threshold"] = int(inputs_parameter_selection["pix_threshold"])
     inputs_parameter_selection["DH_threshold"] = int(inputs_parameter_selection["DH_threshold"])
     #inputs_parameter_selection["search_radius"] = float(inputs_parameter_selection["search_radius"]) * 1000
@@ -124,6 +77,8 @@ def calculation(output_directory, inputs_raster_selection, inputs_vector_selecti
     output_shp2 = output_directory + '/test2.shp'
     output_transmission_lines = output_directory + '/test.shp'
     '''
+
+
     result = dict()
     flag = merge_industry_subsector(industrial_database_excess_heat, industrial_database_subsector, ind_out_csv)
     if flag:
