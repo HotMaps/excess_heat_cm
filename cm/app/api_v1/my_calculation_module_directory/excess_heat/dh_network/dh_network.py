@@ -192,7 +192,7 @@ class DHNetwork:
     def heat_delivered(self, mode="individual"):
         tmp = np.array(self.heat_used(mode)) - np.array(self.heat_lost(mode))
         if tmp > 0:
-            return np.array(self.heat_used(mode)) - np.array(self.heat_lost(mode))
+            return tmp
         return 0
 
     def levelized_cost_of_heat_supply(self, mode="individual"):
@@ -263,7 +263,7 @@ class DHNetwork:
                 transmission_line.flow = np.abs(flow)   # ignore sign of flow direction
                 transmission_line.length = 2 * distance
                 transmission_line.find_recommended_selection()
-                if transmission_line.specific_costs() > highest_specific_costs[-1]:
+                if transmission_line.specific_costs() >= highest_specific_costs[-1]:
                     edge_to_delete = edge
                     highest_specific_costs[-1] = transmission_line.specific_costs()
             if mode == "individual":
