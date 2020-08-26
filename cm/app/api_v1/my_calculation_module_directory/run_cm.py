@@ -1,41 +1,43 @@
 import numpy as np
 import os
 
-from .dh_potential.CM_TUW4.polygonize import polygonize
-from .dh_potential.CM_TUW0.rem_mk_dir import rm_mk_dir, rm_file
-import dh_potential.CM_TUW4.district_heating_potential as DHP
-import dh_potential.CM_TUW19.run_cm as CM19
+from my_calculation_module_directory.dh_potential.CM_TUW4.polygonize import polygonize
+from my_calculation_module_directory.dh_potential.CM_TUW0.rem_mk_dir import rm_mk_dir, rm_file
+import my_calculation_module_directory.dh_potential.CM_TUW4.district_heating_potential as DHP
+import my_calculation_module_directory.dh_potential.CM_TUW19.run_cm as CM19
 
-from .excess_heat.excess_heat import excess_heat
-from .excess_heat.visualisation import round_to_n
+from my_calculation_module_directory.excess_heat.excess_heat import excess_heat
+from my_calculation_module_directory.excess_heat.utility import round_to_n
+from my_calculation_module_directory.format import generate_graphics, round_indicators
 
 
-def main(heat_density_map, pix_threshold, DH_threshold, output_raster1, output_raster2, output_shp1, output_shp2,
-         search_radius, investment_period, discount_rate, cost_factor, operational_costs, heat_losses, transmission_line_threshold,
-         time_resolution, spatial_resolution, nuts2_id, output_transmission_lines, industrial_sites_heat, industrial_sites_subsector,
-         in_orig=None, only_return_areas=False, ):
+def main(inputs_parameter_selection, inputs_raster_selection, industrial_database_excess_heat,
+         output_raster1, output_raster2, output_shp1, output_shp2, output_transmission_lines):
     # The CM can be run for the following ranges of pixel and Dh thresholds:
-    if pix_threshold < 1:
+    if inputs_parameter_selection["pix_threshold"] < 1:
         raise ValueError("Pixel threshold cannot be smaller than 1 GWh/km2!")
-    if DH_threshold < 1:
+    if inputs_parameter_selection["DH_threshold"] < 1:
         raise ValueError("DH threshold cannot be smaller than 1 GWh/year!")
 
-
     # DH_Regions: boolean array showing DH regions
-    DH_Regions, hdm_dh_region_cut, geo_transform, total_heat_demand = DHP.DHReg(heat_density_map,
-                                                                                 pix_threshold,
-                                                                                 DH_threshold,
-                                                                                 in_orig)
-    if only_return_areas:
-        geo_transform = None
-        return DH_Regions
-    DHPot, labels = DHP.DHPotential(DH_Regions, heat_density_map)
-    total_potential = np.around(np.sum(DHPot),2)
+    DH_Regions, hdm_dh_region_cut, geo_transform, total_heat_demand = DHP.DHReg(inputs_raster_selection["heat"],
+                                                                                inputs_parameter_selection["pix_threshold"],
+                                                                                inputs_parameter_selection["DH_threshold"],
+                                                                                None)
+
+    DHPot, labels = DHP.DHPotential(DH_Regions, inputs_raster_selection["heat"])
+    total_potential = np.around(np.sum(DHPot), 2)
     total_heat_demand = np.around(total_heat_demand, 2)
     if total_potential == 0:
         dh_area_flag = False
     else:
         dh_area_flag = True
+
+    indicators = dict()
+    graphics_data = dict()
+    indicators["total_potential"] = total_potential
+    graphics_data["DHPot"] = DHPot
+    indicators["total_heat_demand"] = total_heat_demand
 
     if dh_area_flag:
         CM19.main(output_raster1, geo_transform, 'int8', DH_Regions)
@@ -49,143 +51,15 @@ def main(heat_density_map, pix_threshold, DH_threshold, output_raster1, output_r
     else:
         return -1, "error: no dh area in selection"
 
-    results = excess_heat(output_shp2, search_radius, investment_period, discount_rate, cost_factor, operational_costs,
-                          heat_losses, transmission_line_threshold, time_resolution, spatial_resolution, nuts2_id,
-                          output_transmission_lines, industrial_sites_heat, industrial_sites_subsector)
+    results = excess_heat(inputs_parameter_selection, inputs_raster_selection, industrial_database_excess_heat,
+                    output_transmission_lines, output_raster1)
     if results[0] == -1:
         return results
 
-    total_excess_heat_available, total_excess_heat_connected, heat_used, total_flow_scalar, heat_loss, total_cost_scalar, \
-    annual_cost_of_network, levelised_cost_of_heat_supply, excess_heat_profile_monthly, \
-    heat_demand_profile_monthly, excess_heat_profile_daily, heat_demand_profile_daily, approximated_costs, \
-    approximated_flows, thresholds, thresholds_y, thresholds_y2, thresholds_y3, threshold_radius, \
-    approximated_levelized_costs, log_message = results
+    indicators_excess_heat, graphics_data_excess_heat, log_message = results
+    indicators = {**indicators, **indicators_excess_heat}
+    graphics_data = {**graphics_data, **graphics_data_excess_heat}
 
-
-    graphics = [
-        {
-            "type": "bar",
-            "xLabel": "DH Area Label",
-            "yLabel": "Potential (GWh/year)",
-            "data": {
-                "labels": [str(x) for x in range(1, 1+len(DHPot))],
-                "datasets": [{
-                    "label": "Potential in coherent areas",
-                    "backgroundColor": ["#3e95cd"]*len(DHPot),
-                    "data": list(np.around(DHPot, 2))
-                }]
-            }
-        },
-        {
-            "type": "bar",
-            "xLabel": "",
-            "yLabel": "Energy per year (GWh/year)",
-            "data": {
-                "labels": ["Annual heat demand", "DH potential", "Total excess heat available",
-                           "Total excess heat from connected sites", "Excess heat used", "Excess heat delivered"],
-                "datasets": [{
-                    "label": "Heat Demand and Excess heat",
-                    "backgroundColor": ["#3e95cd", "#3e95cd", "#fe7c60", "#fe7c60", "#fe7c60", "#fe7c60"],
-                    "data": [total_heat_demand, total_potential, round_to_n(total_excess_heat_available, 3),
-                             round_to_n(total_excess_heat_connected, 3), round_to_n(heat_used, 3), round_to_n(total_flow_scalar, 3)]
-                }]
-            }
-        },
-        {
-            "type": "line",
-            "xLabel": "Annual delivered excess heat in GWh",
-            "yLabel": "Cost in Euros",
-            "data": {
-                "labels": [str(x) for x in approximated_flows],
-                "datasets": [ {
-                    "label": "Set transmission line threshold",
-                    "data": thresholds_y,
-                    "pointRadius": threshold_radius,
-                    "borderColor": "#fe7c60",
-                    "pointBackgroundColor": "#fe7c60",
-                    "showLine": False
-                },
-                {
-                    "label": "Investments necessary for network",
-                    "data": approximated_costs,
-                    "borderColor": "#3e95cd",
-                }
-                ]
-            }
-        },
-        {
-            "type": "line",
-            "xLabel": "Annual delivered excess heat in GWh",
-            "yLabel": "Costs in ct/kWh",
-            "data": {
-                "labels": [str(x) for x in approximated_flows],
-                "datasets": [{
-                    "label": "Set transmission line threshold",
-                    "data": thresholds_y2,
-                    "pointRadius": threshold_radius,
-                    "borderColor": "#fe7c60",
-                    "pointBackgroundColor": "#fe7c60",
-                    "showLine": False
-                }, {
-                    "label": "Set transmission line threshold",
-                    "data": thresholds_y3,
-                    "pointRadius": threshold_radius,
-                    "borderColor": "#fe7c60",
-                    "pointBackgroundColor": "#fe7c60",
-                    "showLine": False
-                },
-                {
-                    "label": "levelized cost",
-                    "data": approximated_levelized_costs,
-                    "borderColor": "#3e95cd",
-                }, {
-                    "label": "Transmission line threshold",
-                    "data": thresholds,
-                    "borderColor": "#32CD32",
-                }
-                ]
-            }
-        },
-        {
-            "type": "line",
-            "xLabel": "Month",
-            "yLabel": "Demand / Excess in MW",
-            "data": {
-                "labels": ["January", "February", "March", "April", "May", "June", "July", "August", "September",
-                           "October", "November", "December"],
-                "datasets": [{
-                    "label": "Heat demand",
-                    "borderColor": "#3e95cd",
-                    "backgroundColor": "rgba(62, 149, 205, 0.35)",
-                    "data": heat_demand_profile_monthly
-                    }, {
-                    "label": "Excess heat",
-                    "borderColor": "#fe7c60",
-                    "backgroundColor": "rgba(254, 124, 96, 0.35)",
-                    "data": excess_heat_profile_monthly
-                }]
-            }
-        },
-        {
-            "type": "line",
-            "xLabel": "Day hour",
-            "yLabel": "Demand / Excess in MW",
-            "data": {
-                "labels": [str(x) for x in range(1, 25)],
-                "datasets": [{
-                    "label": "Heat demand",
-                    "borderColor": "#3e95cd",
-                    "backgroundColor": "rgba(62, 149, 205, 0.35)",
-                    "data": heat_demand_profile_daily
-                }, {
-                    "label": "Excess heat",
-                    "borderColor": "#fe7c60",
-                    "backgroundColor": "rgba(254, 124, 96, 0.35)",
-                    "data": excess_heat_profile_daily
-                }]
-            }
-        }
-    ]
-
-    return total_potential, total_heat_demand, graphics, total_excess_heat_available, total_excess_heat_connected, \
-           heat_used, total_flow_scalar, heat_loss, total_cost_scalar, annual_cost_of_network, levelised_cost_of_heat_supply, log_message
+    indicators = round_indicators(indicators, 3)
+    graphics = generate_graphics(inputs_parameter_selection, indicators, graphics_data)
+    return indicators, graphics, log_message

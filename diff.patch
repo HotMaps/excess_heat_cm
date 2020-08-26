@@ -1,0 +1,25 @@
+diff --git a/cm/Dockerfile b/cm/Dockerfile
+index b3f319a..71b2f6e 100644
+--- a/cm/Dockerfile
++++ b/cm/Dockerfile
+@@ -1,6 +1,6 @@
+ FROM hotmaps/base_cm:latest
+ 
+-RUN apt-get install -y python3-igraph
++RUN apt-get install -y python3-igraph libspatialindex-dev
+ # Setup app server
+ WORKDIR /
+ RUN mkdir -p /data
+diff --git a/cm/app/api_v1/my_calculation_module_directory/excess_heat/read_data.py b/cm/app/api_v1/my_calculation_module_directory/excess_heat/read_data.py
+index fe9c2bf..9d73d1c 100644
+--- a/cm/app/api_v1/my_calculation_module_directory/excess_heat/read_data.py
++++ b/cm/app/api_v1/my_calculation_module_directory/excess_heat/read_data.py
+@@ -370,7 +370,7 @@ def join_point_to_nuts2(industrial_database_excess_heat, path_nuts, delimiter=',
+     df_industry = df_industry.dropna(subset=['geometry_wkt'])
+     #df_industry [['SRID','LATLONG']] = df_industry.geom.str.split(";", expand=True,)
+     gdf_industry = gpd.GeoDataFrame( df_industry, geometry=[loads_wkt(x) for x in df_industry['geometry_wkt']], crs='EPSG:4326')
+-    gdf = gpd.sjoin(gdf_nuts, gdf_industry, how='right', op='intersects', lsuffix='left', rsuffix='right')
++    return gpd.sjoin(gdf_nuts, gdf_industry, how='right', op='intersects', lsuffix='left', rsuffix='right')
+ 
+ 
+ def ad_industrial_database_local(industrial_database_excess_heat, nuts2_ids): # here we need to get the industry sites

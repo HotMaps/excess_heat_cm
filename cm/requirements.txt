@@ -17,11 +17,14 @@ flasgger==0.9.0
 Pika==0.12.0
 scipy==1.3.0
 amqp==2.4.0
-pandas
+pandas==1.0.4
+geopandas==0.7.0
 pyomo
-numpy
+numpy==1.17.5
+rasterio
+scikit-image
 Fiona==1.8.6
 pyproj==2.1.3
 Shapely==1.6.4
 geopy==1.19.0
-
+rtree

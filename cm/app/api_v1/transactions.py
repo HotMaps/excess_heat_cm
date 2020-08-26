@@ -7,7 +7,7 @@ import requests
 import logging
 import os
 from flask import send_from_directory
-from app import helper
+from  app import helper
 from app import constant
 
 from app.api_v1 import errors
@@ -139,25 +139,28 @@ def compute():
     LOGGER.info('inputs_parameter_selection', inputs_parameter_selection)
 
 
-    nuts = helper.validateJSON(data["nuts"])
-    print ('nuts', nuts)
+    #nuts = helper.validateJSON(data["nuts"])
+    #print ('nuts', nuts)
 #    LOGGER.info('nuts', nuts)
 
 
+    
+    inputs_raster_selection = helper.validateJSON(data["inputs_raster_selection"])
     inputs_vector_selection = helper.validateJSON(data["inputs_vector_selection"])
+    inputs_parameter_selection = helper.validateJSON(data["inputs_parameter_selection"])
 
     output_directory = UPLOAD_DIRECTORY
     # call the calculation module function
-    result = calculation_module.calculation(output_directory, inputs_raster_selection,inputs_vector_selection,inputs_parameter_selection,nuts)
+    result = calculation_module.calculation(output_directory, inputs_raster_selection,inputs_vector_selection,inputs_parameter_selection)
 
     response = {
         'result': result
 
 
     }
-    print("response ",response)
- #   LOGGER.info('response', response)
-    print("type response ",type(response))
+    #print("response ",response)
+#    LOGGER.info('response', response)
+    #print("type response ",type(response))
 #    LOGGER.info("type response ",type(response))
     # convert response dict to json
     response = json.dumps(response)
