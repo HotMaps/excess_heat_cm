@@ -137,6 +137,8 @@ def calculation(output_directory, inputs_raster_selection, inputs_vector_selecti
                             "value": str(indicators["annual_cost"])},
                            {"unit": "ct/kWh", "name": "Levelized cost of heat supply",
                             "value": str(indicators["levelized_cost"] / 10)},
+                            {"unit": " - ", "name": industrial_database_subsector,
+                            "value": str(indicators["levelized_cost"] / 10)}
                            ]
 
     if log_message != "":
