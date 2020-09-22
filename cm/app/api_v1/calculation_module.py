@@ -25,7 +25,8 @@ def merge_industry_subsector(industrial_database_excess_heat, industrial_databas
     df1 = pd.read_csv(industrial_database_excess_heat, encoding='latin1')
     #df2 = pd.read_csv(industrial_database_subsector, encoding='latin1').drop_duplicates(subset=['geometry_wkt'])
     df2 = pd.read_csv(industrial_database_subsector, encoding='latin1')
-    print("################ Columns: ", df2.columns)
+    print("################ Columns excess heat: ", df1.columns)
+    print("################ Columns subsector: ", df2.columns)
     df2 = df2.drop_duplicates(subset=['geometry_wkt'])
     df = df1.merge(df2, on='geometry_wkt', how='left',
                    suffixes=('', '_right')).drop_duplicates(subset=['geometry_wkt',
