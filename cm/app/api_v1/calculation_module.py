@@ -23,13 +23,13 @@ def merge_industry_subsector(industrial_database_excess_heat, industrial_databas
     """merge industrial site and subsector csv layers"""
     #df1 = pd.read_csv(industrial_database_excess_heat, encoding='latin1').drop_duplicates(subset=['geometry_wkt'])
     df1 = pd.read_csv(industrial_database_excess_heat, encoding='latin1')
-    #df2 = pd.read_csv(industrial_database_subsector, encoding='latin1').drop_duplicates(subset=['geometry_wkt'])
-    df2 = pd.read_csv(industrial_database_subsector, encoding='latin1')
-    print("################ excess heat: ", industrial_database_excess_heat)
-    print("################ subsector: ", industrial_database_subsector)
-    print("################ Columns excess heat: ", df1.columns)
-    print("################ Columns subsector: ", df2.columns)
-    df2 = df2.drop_duplicates(subset=['geometry_wkt'])
+    df2 = pd.read_csv(industrial_database_subsector, encoding='latin1').drop_duplicates(subset=['geometry_wkt'])
+    #df2 = pd.read_csv(industrial_database_subsector, encoding='latin1')
+    #print("################ excess heat: ", industrial_database_excess_heat)
+    #print("################ subsector: ", industrial_database_subsector)
+    #print("################ Columns excess heat: ", df1.columns)
+    #print("################ Columns subsector: ", df2.columns)
+    #df2 = df2.drop_duplicates(subset=['geometry_wkt'])
     df = df1.merge(df2, on='geometry_wkt', how='left',
                    suffixes=('', '_right')).drop_duplicates(subset=['geometry_wkt',
                                                                     'excess_heat_100_200c',
@@ -137,8 +137,6 @@ def calculation(output_directory, inputs_raster_selection, inputs_vector_selecti
                             "value": str(indicators["annual_cost"])},
                            {"unit": "ct/kWh", "name": "Levelized cost of heat supply",
                             "value": str(indicators["levelized_cost"] / 10)},
-                            {"unit": " - ", "name": industrial_database_subsector,
-                            "value": str(indicators["levelized_cost"] / 10)}
                            ]
 
     if log_message != "":
