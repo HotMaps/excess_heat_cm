@@ -20,7 +20,7 @@ amqp==2.4.0
 pandas==1.0.4
 geopandas==0.7.0
 pyomo
-numpy==1.17.5
+numpy==1.22.0
 rasterio
 scikit-image
 Fiona==1.8.6
